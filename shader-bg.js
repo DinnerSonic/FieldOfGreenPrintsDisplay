@@ -318,6 +318,17 @@ void main() {
   gl_FragColor = vec4(col, 1.0);
 }`;
 
+  // iPad detection — modern iPadOS Safari masquerades as "Macintosh", so also
+  // treat a touch-capable Mac (maxTouchPoints > 1) as an iPad. On iPad we drop
+  // to quarter render resolution (0.5× per axis) and cap the effect at 30 FPS.
+  const IS_IPAD = (function () {
+    const ua = navigator.userAgent || '';
+    if (/iPad/.test(ua)) return true;
+    return navigator.platform === 'MacIntel' && (navigator.maxTouchPoints || 0) > 1;
+  })();
+  const RES_SCALE = IS_IPAD ? 0.5 : 1;          // 0.5× per axis => quarter pixels
+  const FRAME_INTERVAL_MS = IS_IPAD ? 1000 / 30 : 0;   // 30 FPS cap on iPad
+
   function mountMercury(canvas) {
     const gl = canvas.getContext('webgl', { antialias: false, premultipliedAlpha: false });
     if (!gl) { console.warn('[mercury] WebGL not available'); return { destroy() {} }; }
@@ -382,7 +393,7 @@ void main() {
     const uB_motion   = gl.getUniformLocation(brushProg, 'u_motionFactor');
     const uB_blob     = gl.getUniformLocation(brushProg, 'u_blobMode');
 
-    let DPR = Math.min(window.devicePixelRatio || 1, 1.5);
+    let DPR = Math.min(window.devicePixelRatio || 1, 1.5) * RES_SCALE;
     const start = performance.now();
     const nowT = () => (performance.now() - start) / 1000;
 
@@ -446,7 +457,7 @@ void main() {
     }
 
     function resize() {
-      DPR = Math.min(window.devicePixelRatio || 1, 1.5);
+      DPR = Math.min(window.devicePixelRatio || 1, 1.5) * RES_SCALE;
       const w = Math.max(1, canvas.clientWidth  || canvas.offsetWidth  || 1);
       const h = Math.max(1, canvas.clientHeight || canvas.offsetHeight || 1);
       canvas.width  = Math.floor(w * DPR);
@@ -529,9 +540,17 @@ void main() {
     const BRUSH_FADE       = 0.985;
     let smoothedSpeed = 0;
 
-    let raf = 0, alive = true, lastFrameT = performance.now();
+    let raf = 0, alive = true, lastFrameT = performance.now(), lastRenderT = performance.now();
     function frame(now) {
       if (!alive) return;
+      // 30 FPS cap on iPad: keep scheduling but skip the render until enough
+      // wall-clock time has elapsed. lastFrameT is left untouched on a skip so
+      // dt (and the brush motion smoothing) covers the full inter-render gap.
+      if (FRAME_INTERVAL_MS > 0 && (now - lastRenderT) < FRAME_INTERVAL_MS - 1) {
+        raf = requestAnimationFrame(frame);
+        return;
+      }
+      lastRenderT = now;
       const t = (now - start) / 1000;
       const dt = Math.max(0.001, (now - lastFrameT) / 1000);
       lastFrameT = now;
