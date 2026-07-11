@@ -67,9 +67,9 @@ function ScanHubScreen({ tweaks }) {
       {/* How it works — three steps */}
       <div className="row gap-20" style={{ marginBottom: 36 }}>
         {[
-          { n: '1', t: 'Pick a type', d: 'Choose what we’re scanning you into.' },
+          { n: '1', t: 'Pick a type', d: 'Choose what we\u2019re scanning you into.' },
           { n: '2', t: 'Hold still', d: '12 cameras snap a 360° pass.' },
-          { n: '3', t: 'Pick up later', d: 'Printed and ready in 45–90 mins.' },
+          { n: '3', t: 'Pick up later', d: 'Printed and ready in 45\u201390 mins.' },
         ].map((s) => (
           <div key={s.n} className="bubble-card flat" style={{
             '--card-color': '#ffffff', borderRadius: 28, padding: '20px 22px',
@@ -94,8 +94,9 @@ function ScanHubScreen({ tweaks }) {
 
       <div style={{
         flex: 1, display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
-        gridTemplateRows: '1fr 1fr',
+        gridTemplateColumns: 'repeat(4, 1fr)',
+        gridTemplateRows: 'minmax(0, 540px)',
+        alignContent: 'center',
         gap: 28,
       }}>
         {SCAN_TYPES.map((it, i) => (
@@ -145,7 +146,7 @@ function ScanCameraScreen({ type, tweaks }) {
         Scan: {safeType.label}
       </div>
       <div className="tagline" style={{ marginBottom: 24 }}>
-        {phase === 'ready' && 'Stand in the center of the ring. Tap Start when you’re set.'}
+        {phase === 'ready' && 'Stand in the center of the ring. Tap Start when you\u2019re set.'}
         {phase === 'scanning' && 'Hold very still — eyes forward, arms relaxed.'}
         {phase === 'done' && 'All set! Your scan is on its way to the print queue.'}
       </div>

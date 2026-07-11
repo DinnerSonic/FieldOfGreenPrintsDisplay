@@ -40,7 +40,7 @@ function MenuCard({ item, shape, ripple, wobble, peel, lip, onTap, cardRef }) {
       peel={peel}
       onTap={onTap}
       contentStyle={{
-        padding: '60px 64px',
+        padding: '48px 36px',
         display: 'flex', flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
@@ -116,12 +116,13 @@ function MenuScreen({ tweaks }) {
         </div>
       </div>
 
-      {/* 2×2 menu grid */}
+      {/* Landscape: 4 cards in a row */}
       <div style={{
         flex: 1, display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
-        gridTemplateRows: '1fr 1fr',
-        gap: 40,
+        gridTemplateColumns: 'repeat(4, 1fr)',
+        gridTemplateRows: 'minmax(440px, 560px)',
+        alignContent: 'center',
+        gap: 36,
       }}>
         {MENU_ITEMS.map((it, i) => (
           <MenuCard

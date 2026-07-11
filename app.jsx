@@ -63,8 +63,8 @@ function KioskFrame({ children, bgTint, bgFinish, bgSnake, bgMerge, bgMode, bgDr
   React.useEffect(() => {
     function fit() {
       if (!ref.current) return;
-      const W = 1080 + 72;   // bezel padding
-      const H = 1920 + 72;
+      const W = 2048 + 72;   // bezel padding
+      const H = 1536 + 72;
       const margin = 40;
       const s = Math.min(
         (window.innerWidth - margin) / W,

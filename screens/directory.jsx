@@ -23,7 +23,10 @@ function DirectoryHubScreen({ tweaks }) {
         Browse our print catalog or learn about the pride flags we print.
       </div>
 
-      <div className="col gap-32 flex-1">
+      <div className="flex-1" style={{
+        display: 'grid', gridTemplateColumns: '1fr 1fr',
+        gridTemplateRows: 'minmax(0, 620px)', alignContent: 'center', gap: 32,
+      }}>
         {DIR_ITEMS.map((it, i) => {
           const Ico = it.icon;
           return (
@@ -163,7 +166,7 @@ const FLAGS = [
   },
   {
     key: 'demisex', name: 'Demisexual',
-    desc: 'For those who only feel sexual attraction after forming a strong emotional bond. Triangle echoes the asexual flag’s palette.',
+    desc: 'For those who only feel sexual attraction after forming a strong emotional bond. Triangle echoes the asexual flag\u2019s palette.',
     stripes: ['#FFFFFF', '#FFFFFF', '#810081', '#A4A4A4'],
   },
   {
@@ -173,7 +176,7 @@ const FLAGS = [
   },
   {
     key: 'progress', name: 'Progress Pride',
-    desc: 'Daniel Quasar’s 2018 redesign adds a chevron of trans, black, and brown stripes pushing the movement forward.',
+    desc: 'Daniel Quasar\u2019s 2018 redesign adds a chevron of trans, black, and brown stripes pushing the movement forward.',
     stripes: ['#E50000', '#FF8D00', '#FFEE00', '#028121', '#004CFF', '#770088'],
     chevron: ['#FFFFFF', '#F5A9B8', '#5BCEFA', '#613915', '#000000'],
   },
@@ -279,7 +282,7 @@ function DirectoryFlagsScreen({ tweaks }) {
       <div className="scroll-y flex-1" style={{ paddingRight: 8 }}>
         <div style={{
           display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
+          gridTemplateColumns: 'repeat(4, 1fr)',
           gap: 24,
         }}>
           {FLAGS.map((f) => (

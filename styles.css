@@ -31,10 +31,10 @@ html, body {
   user-select: none;
 }
 
-/* ─── Kiosk bezel (10" kiosk 1080×1920 portrait) ─── */
+/* ─── Kiosk bezel (landscape kiosk 2048×1536, 4:3) ─── */
 .kiosk-bezel {
-  --kiosk-w: 1080px;
-  --kiosk-h: 1920px;
+  --kiosk-w: 2048px;
+  --kiosk-h: 1536px;
   width: var(--kiosk-w);
   height: var(--kiosk-h);
   flex: 0 0 var(--kiosk-w);
@@ -105,7 +105,7 @@ html, body {
 .screen {
   position: absolute; inset: 0;
   display: flex; flex-direction: column;
-  padding: 56px 56px 48px;
+  padding: 48px 72px 44px;
   --ox: 50%;
   --oy: 50%;
   will-change: clip-path, transform, opacity;

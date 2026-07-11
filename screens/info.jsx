@@ -68,7 +68,7 @@ function InfoHubScreen({ tweaks }) {
         Pick a topic to read more about.
       </div>
 
-      <div className="col gap-24 flex-1 scroll-y" style={{ paddingRight: 8 }}>
+      <div className="flex-1 scroll-y" style={{ paddingRight: 8, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, alignContent: 'start' }}>
         {INFO_ITEMS.map((it, i) => (
           <InfoRow
             key={it.key}
@@ -131,7 +131,7 @@ const INFO_COPY = {
   'contact': {
     title: 'Contact',
     body: [
-      'Lorem ipsum dolor sit amet · consectetur adipiscing elit',
+      'Lorem ipsum dolor sit amet \u00b7 consectetur adipiscing elit',
       'Email: lorem@ipsum.com\nInstagram: @loremipsum\nMastodon: @lorem@ipsum.af',
       'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua ut enim ad minim veniam.',
       'Quis nostrud exercitation: dolor@ipsum.com',
@@ -149,6 +149,7 @@ function InfoDetailScreen({ item, tweaks }) {
       <ScreenHeader />
       <div style={{
         display: 'flex', alignItems: 'center', gap: 24, marginBottom: 24,
+        width: '100%', maxWidth: 1500, alignSelf: 'center',
       }}>
         <div className="icon-plate" style={{
           width: 96, height: 96, borderRadius: 26,
@@ -163,6 +164,7 @@ function InfoDetailScreen({ item, tweaks }) {
         '--card-color': '#ffffff',
         borderRadius: 36, padding: '36px 40px',
         flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column',
+        width: '100%', maxWidth: 1500, alignSelf: 'center',
       }}>
         <div className="scroll-y body" style={{
           flex: 1, paddingRight: 16, whiteSpace: 'pre-wrap',

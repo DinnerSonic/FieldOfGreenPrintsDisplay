@@ -47,12 +47,13 @@ function PhotoIntroScreen({ tweaks }) {
         Snap a few pics, slap on filters and stickers, take home a print.
       </div>
 
-      {/* Big illustrated banner */}
+      {/* Banner + steps side by side in landscape */}
+      <div className="row gap-40" style={{ flex: 1, alignItems: 'center', marginBottom: 36 }}>
       <div className="bubble-card" style={{
         '--card-color': '#FF8FB8', '--card-shadow': '#c2557e',
         borderRadius: 56, padding: 40,
-        display: 'flex', alignItems: 'center', gap: 36,
-        marginBottom: 32,
+        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 24,
+        flex: 1, minWidth: 0, alignSelf: 'stretch', justifyContent: 'center',
       }}>
         <div className="icon-plate" style={{
           width: 220, height: 220, borderRadius: 999, flexShrink: 0,
@@ -70,10 +71,10 @@ function PhotoIntroScreen({ tweaks }) {
       </div>
 
       {/* Steps */}
-      <div className="col gap-20" style={{ marginBottom: 36 }}>
+      <div className="col gap-20" style={{ flex: 1, minWidth: 0, justifyContent: 'center' }}>
         {[
           { n: '1', t: 'Tap continue', d: 'Steps you through to the camera screen.' },
-          { n: '2', t: 'Take a few pics', d: 'Take as many as you like — retake any time.' },
+          { n: '2', t: 'Take a few pics', d: 'Take as many as you like \u2014 retake any time.' },
           { n: '3', t: 'Pick your keepers', d: 'Check the ones you love. The rest stay private.' },
           { n: '4', t: 'Customize & print', d: 'Add filters and stickers, then we print your strip.' },
         ].map((s) => (
@@ -96,7 +97,9 @@ function PhotoIntroScreen({ tweaks }) {
         ))}
       </div>
 
-      <div className="row gap-24" style={{ justifyContent: 'center', marginTop: 'auto' }}>
+      </div>
+
+      <div className="row gap-24" style={{ justifyContent: 'center' }}>
         <Tap as="button" className="btn primary lg" ripple wobble={tweaks.fxWobble}
              onTap={() => nav.go('photo-capture')}>
           Continue →
@@ -330,7 +333,7 @@ function PhotoGridScreen({ tweaks }) {
       <div className="scroll-y flex-1" style={{ paddingRight: 8 }}>
         <div style={{
           display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
+          gridTemplateColumns: 'repeat(4, 1fr)',
           gap: 28,
         }}>
           {photos.map((p) => (
@@ -379,16 +382,16 @@ const FILTERS = [
 ];
 
 const STICKERS = [
-  { id: 'heart',   label: 'Heart',   emoji: '❤️', color: '#FF6FA3' },
-  { id: 'star',    label: 'Star',    emoji: '⭐',       color: '#FFC857' },
-  { id: 'sparkle', label: 'Sparkle', emoji: '✨',       color: '#FFE48F' },
-  { id: 'flower',  label: 'Flower',  emoji: '🌸', color: '#FFB6CE' },
-  { id: 'rainbow', label: 'Rainbow', emoji: '🌈', color: '#A8DCFF' },
-  { id: 'cake',    label: 'Cake',    emoji: '🎂', color: '#FFB6CE' },
-  { id: 'crown',   label: 'Crown',   emoji: '👑', color: '#FFD45B' },
-  { id: 'frog',    label: 'Frog',    emoji: '🐸', color: '#9FECC4' },
-  { id: 'cat',     label: 'Cat',     emoji: '🐱', color: '#C8B4F2' },
-  { id: 'fire',    label: 'Fire',    emoji: '🔥', color: '#FF8E5C' },
+  { id: 'heart',   label: 'Heart',   emoji: '\u2764\ufe0f', color: '#FF6FA3' },
+  { id: 'star',    label: 'Star',    emoji: '\u2b50',       color: '#FFC857' },
+  { id: 'sparkle', label: 'Sparkle', emoji: '\u2728',       color: '#FFE48F' },
+  { id: 'flower',  label: 'Flower',  emoji: '\ud83c\udf38', color: '#FFB6CE' },
+  { id: 'rainbow', label: 'Rainbow', emoji: '\ud83c\udf08', color: '#A8DCFF' },
+  { id: 'cake',    label: 'Cake',    emoji: '\ud83c\udf82', color: '#FFB6CE' },
+  { id: 'crown',   label: 'Crown',   emoji: '\ud83d\udc51', color: '#FFD45B' },
+  { id: 'frog',    label: 'Frog',    emoji: '\ud83d\udc38', color: '#9FECC4' },
+  { id: 'cat',     label: 'Cat',     emoji: '\ud83d\udc31', color: '#C8B4F2' },
+  { id: 'fire',    label: 'Fire',    emoji: '\ud83d\udd25', color: '#FF8E5C' },
 ];
 
 function PhotoEditScreen({ photoId, tweaks }) {
@@ -413,7 +416,7 @@ function PhotoEditScreen({ photoId, tweaks }) {
       {/* Photo big */}
       <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
         <div style={{
-          width: '78%', aspectRatio: '3 / 4',
+          height: '100%', width: 'auto', maxWidth: '90%', aspectRatio: '3 / 4',
           borderRadius: 36, padding: 18,
           background: 'white',
           border: '3px solid rgba(0,0,0,0.08)',
