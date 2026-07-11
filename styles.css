@@ -1,0 +1,506 @@
+/* ─── Field of Green Prints kiosk styles ─── */
+
+:root {
+  /* Tinted-marble button texture */
+  --btn-tex: url("assets/button-texture.png");
+  --btn-tex-size: 260px;
+  --btn-blend: overlay;
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body {
+  margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden;
+  background: #1b1218;
+  font-family: 'Fredoka', system-ui, sans-serif;
+  color: #2a1a2e;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* App root — fits kiosk into viewport */
+#app-root {
+  position: fixed; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: radial-gradient(circle at 30% 20%, #2a1c24 0%, #110a10 70%);
+  overflow: hidden;
+}
+
+/* Kiosk content is never selectable (touch kiosk — no text highlighting) */
+.kiosk-bezel, .kiosk-bezel * {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* ─── Kiosk bezel (10" kiosk 1080×1920 portrait) ─── */
+.kiosk-bezel {
+  --kiosk-w: 1080px;
+  --kiosk-h: 1920px;
+  width: var(--kiosk-w);
+  height: var(--kiosk-h);
+  flex: 0 0 var(--kiosk-w);
+  background: linear-gradient(150deg, #1a1218 0%, #0c0408 100%);
+  border-radius: 56px;
+  padding: 36px;
+  box-shadow:
+    inset 0 0 0 2px rgba(255,255,255,0.04),
+    inset 0 4px 16px rgba(0,0,0,0.6),
+    0 50px 120px rgba(0,0,0,0.7),
+    0 0 0 1px rgba(0,0,0,0.5);
+  position: relative;
+  transform-origin: center center;
+}
+.kiosk-bezel::before {
+  /* tiny camera dot */
+  content: ''; position: absolute; top: 18px; left: 50%; transform: translateX(-50%);
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #050203;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
+}
+.kiosk-screen {
+  width: 100%; height: 100%; border-radius: 28px;
+  overflow: hidden; position: relative;
+  background: var(--bg, #FFD9E3);
+  isolation: isolate;
+}
+
+/* ─── Mercury shader background ─── */
+.mercury-bg {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  display: block;
+  z-index: -1;                   /* behind the screen stack; kiosk-screen
+                                    isolates the stacking context          */
+  background: #FFE9F0;            /* fallback before/if WebGL paints */
+  pointer-events: none;          /* taps fall through to the cards   */
+}
+
+/* The mercury background shows through ALL screens — none of them paint
+   their own wallpaper. Navigation crossfades content over the shared
+   shader (see the .tx-fade preset). */
+
+/* ─── Pink polka-dot wallpaper ─── */
+.kiosk-wallpaper {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(circle at 20% 90%, rgba(255,255,255,0.55) 0, transparent 40%),
+    radial-gradient(circle at 80% 10%, rgba(52, 211, 116, 0.18) 0, transparent 40%),
+    var(--bg, #FFD9E3);
+}
+.kiosk-wallpaper::after {
+  content: ''; position: absolute; inset: 0;
+  background-image: radial-gradient(circle, rgba(255,255,255,0.45) 1.5px, transparent 2px);
+  background-size: 38px 38px;
+  opacity: 0.55;
+  mix-blend-mode: overlay;
+}
+
+/* ─── Screen container & transitions ─────────────────────────────────────
+   Transitions are origin-aware. Each .screen carries CSS vars --ox / --oy
+   (the tap-point as a % within the kiosk screen) so animations can radiate
+   from the actual touch. Direction is set via .dir-forward / .dir-back, and
+   the active preset is set on .screen-stack via .tx-iris | .tx-bloom |
+   .tx-push | .tx-fade.
+─────────────────────────────────────────────────────────────────────────── */
+.screen-stack { position: absolute; inset: 0; }
+.screen {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  padding: 56px 56px 48px;
+  --ox: 50%;
+  --oy: 50%;
+  will-change: clip-path, transform, opacity;
+  /* No per-screen wallpaper — every screen is transparent so the shared
+     mercury shader shows through. Navigation crossfades content. */
+  background: transparent;
+}
+.screen::before { display: none; }
+.screen-exit { pointer-events: none; }
+/* Forward: new screen on top, animates in over the static old one.
+   Back:    old screen on top, animates OUT to reveal the static new one. */
+.screen-enter.dir-forward { z-index: 2; }
+.screen-exit.dir-forward  { z-index: 1; }
+.screen-exit.dir-back     { z-index: 2; }
+.screen-enter.dir-back    { z-index: 1; }
+
+/* The revealed screen never moves on Back, and the static screen never
+   moves on Forward — single-layer motion at all times. */
+
+/* ── Preset: Iris — clip-path circle from tap origin (default) ───────── */
+.tx-iris .screen-enter.dir-forward {
+  animation: irisIn 480ms cubic-bezier(.22, 1, .36, 1) both;
+}
+.tx-iris .screen-exit.dir-back {
+  /* Same ease-out as the forward — symmetric responsiveness on tap. */
+  animation: irisOut 360ms cubic-bezier(.22, 1, .36, 1) both;
+}
+@keyframes irisIn {
+  0%   { clip-path: circle(0%   at var(--ox) var(--oy)); }
+  100% { clip-path: circle(145% at var(--ox) var(--oy)); }
+}
+@keyframes irisOut {
+  0%   { clip-path: circle(145% at var(--ox) var(--oy)); }
+  100% { clip-path: circle(0%   at var(--ox) var(--oy)); }
+}
+
+/* ── Preset: Bloom — scale + tiny rotate from tap origin ─────────────── */
+.tx-bloom .screen-enter.dir-forward {
+  animation: bloomIn 520ms cubic-bezier(.22, 1.2, .36, 1) both;
+  transform-origin: var(--ox) var(--oy);
+}
+.tx-bloom .screen-exit.dir-back {
+  /* Fast-start ease so the screen begins collapsing the instant you tap.
+     The slow-end is invisible (element is near-zero scale + opacity). */
+  animation: bloomShrink 380ms cubic-bezier(.32, .72, .35, 1) both;
+  transform-origin: var(--ox) var(--oy);
+}
+@keyframes bloomIn {
+  0%   { opacity: 0; transform: scale(0.18) rotate(-8deg); }
+  55%  { opacity: 1; }
+  100% { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+@keyframes bloomShrink {
+  0%   { opacity: 1; transform: scale(1)    rotate(0deg); }
+  100% { opacity: 0; transform: scale(0.16) rotate(6deg); }
+}
+
+/* ── Preset: Push — directional slide ─────────────────────────────────── */
+/* Push intentionally moves both layers — that's the metaphor. */
+.tx-push .screen-enter.dir-forward { animation: pushInR  460ms cubic-bezier(.3, .8, .35, 1) both; }
+.tx-push .screen-exit.dir-forward  { animation: pushOutL 460ms cubic-bezier(.3, .8, .35, 1) both; }
+.tx-push .screen-enter.dir-back    { animation: pushInL  460ms cubic-bezier(.3, .8, .35, 1) both; }
+.tx-push .screen-exit.dir-back     { animation: pushOutR 460ms cubic-bezier(.3, .8, .35, 1) both; }
+@keyframes pushInR  { 0% { transform: translateX(100%); }                          100% { transform: translateX(0); } }
+@keyframes pushOutL { 0% { transform: translateX(0);    filter: brightness(1); opacity: 1; }   100% { transform: translateX(-24%); filter: brightness(0.78); opacity: 0; } }
+@keyframes pushInL  { 0% { transform: translateX(-24%); filter: brightness(0.78); } 100% { transform: translateX(0);    filter: brightness(1); } }
+@keyframes pushOutR { 0% { transform: translateX(0); }                              100% { transform: translateX(100%); } }
+
+/* ── Preset: Fade — crossfade content over the shared shader ──────────
+   Forward: the new screen fades IN on top of the static old one.
+   Back:    the old screen fades OUT on top, revealing the static new one. */
+.tx-fade .screen-enter.dir-forward { animation: fadeIn  340ms ease-out both; }
+.tx-fade .screen-exit.dir-back     { animation: fadeOut 340ms ease-in  both; }
+@keyframes fadeIn  { 0% { opacity: 0; } 100% { opacity: 1; } }
+@keyframes fadeOut { 0% { opacity: 1; } 100% { opacity: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .screen-enter, .screen-exit { animation: fadeIn 180ms ease-out both !important; }
+}
+
+
+/* ─── Header ─── */
+.brand-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 32px;
+  min-height: 96px;
+}
+.brand-logo { height: 96px; width: auto; user-select: none; pointer-events: none;
+  filter: drop-shadow(0 8px 14px rgba(0,0,0,0.18)); }
+.brand-logo.sm { height: 64px; }
+
+/* ─── Tap card base ─── */
+.tap {
+  position: relative; overflow: hidden;
+  cursor: pointer; user-select: none;
+  transition: transform 120ms cubic-bezier(.3,.7,.4,1), filter 120ms;
+  will-change: transform;
+}
+.tap:active { transform: scale(0.96); filter: brightness(1.05); }
+.tap.peel { transform-origin: 50% 100%; }
+.tap.peel:active { transform: perspective(900px) rotateX(8deg) scale(0.97); }
+
+/* ─── Shape-card press wrapper ────────────────────────────────────────────
+   When a Tap is wrapped with its shadow + outline as siblings (so they
+   render unmasked behind the masked surface), the press/peel/wobble must
+   move to the WRAPPER — otherwise only the inner surface scales and the
+   shadow sits frozen. The Tap inside delegates all motion to the wrapper.
+─────────────────────────────────────────────────────────────────────────── */
+.card-press {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  cursor: pointer;
+  transition: transform 120ms cubic-bezier(.3,.7,.4,1), filter 120ms;
+  transform-origin: 50% 100%;
+  will-change: transform;
+}
+.card-press:active        { transform: scale(0.96); filter: brightness(1.05); }
+.card-press.peel:active   { transform: perspective(900px) rotateX(8deg) scale(0.97); }
+.card-press:has(.tap.wobbling) {
+  animation: wobble 520ms cubic-bezier(.36, 1.5, .64, 1);
+}
+/* Suppress the inner Tap's own transforms so motion isn't doubled. */
+.card-press .tap:active,
+.card-press .tap.peel:active        { transform: none; filter: none; }
+.card-press .tap.wobble-on.wobbling { animation: none; }
+
+/* Ripple element */
+.ripple {
+  position: absolute; border-radius: 50%;
+  background: rgba(255,255,255,0.55);
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(0);
+  animation: rippleAnim 620ms cubic-bezier(.2,.7,.3,1) forwards;
+  mix-blend-mode: overlay;
+}
+@keyframes rippleAnim {
+  to { transform: translate(-50%, -50%) scale(7); opacity: 0; }
+}
+
+/* Wobble on press release */
+@keyframes wobble {
+  0%   { transform: scale(1); }
+  20%  { transform: scale(1.04) rotate(-1deg); }
+  40%  { transform: scale(0.98) rotate(0.8deg); }
+  60%  { transform: scale(1.02) rotate(-0.4deg); }
+  80%  { transform: scale(0.99) rotate(0.2deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+.tap.wobble-on.wobbling { animation: wobble 520ms cubic-bezier(.36, 1.5, .64, 1); }
+
+/* ─── Bubbly card surface ─── */
+.bubble-card {
+  position: relative;
+  background: var(--card-color, #FFD45B);
+  border-radius: 48px;
+  box-shadow:
+    inset 0 -8px 0 rgba(0,0,0,0.10),
+    inset 0 6px 0 rgba(255,255,255,0.45),
+    0 12px 0 var(--card-shadow, #d9a83a),
+    0 22px 36px rgba(60, 20, 40, 0.18);
+  border: 3px solid rgba(0,0,0,0.08);
+}
+.bubble-card::before {
+  /* glossy top highlight */
+  content: ''; position: absolute; left: 8%; right: 8%; top: 6%; height: 22%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(255,255,255,0.65) 0%, rgba(255,255,255,0) 70%);
+  pointer-events: none;
+}
+.bubble-card.flat { box-shadow: 0 10px 24px rgba(60, 20, 40, 0.15); border: 2.5px solid rgba(0,0,0,0.08); }
+.bubble-card.flat::before { display: none; }
+
+/* Sticker peel — a slightly tilted ribbon ear at top */
+.shape-blob { border-radius: 60% 50% 55% 65% / 55% 65% 50% 55%; }
+.shape-squircle { border-radius: 36px; }
+.shape-scallop {
+  border-radius: 48px;
+  -webkit-mask:
+    radial-gradient(20px at 20px 100%, transparent 98%, #000 100%) 0 0/40px 40px repeat-x,
+    linear-gradient(#000, #000);
+}
+
+/* ─── Buttons ─── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 14px; padding: 22px 36px;
+  background-color: #ffffff; color: #2a1a2e;
+  background-image: var(--btn-tex);
+  background-size: var(--btn-tex-size);
+  background-position: center;
+  background-blend-mode: var(--btn-blend);
+  border-radius: 32px;
+  font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 30px;
+  border: 3px solid rgba(0,0,0,0.08);
+  box-shadow:
+    inset 0 -5px 0 rgba(0,0,0,0.08),
+    inset 0 4px 0 rgba(255,255,255,0.7),
+    0 8px 0 rgba(0,0,0,0.10),
+    0 14px 24px rgba(60,20,40,0.14);
+  cursor: pointer; user-select: none;
+  white-space: nowrap;
+}
+.btn.primary { background-color: var(--accent-green, #34D374); color: #fff;
+  text-shadow: 0 1px 0 rgba(0,0,0,0.15); box-shadow:
+    inset 0 -5px 0 rgba(0,0,0,0.18),
+    inset 0 4px 0 rgba(255,255,255,0.35),
+    0 8px 0 #1f8a47, 0 14px 24px rgba(31,138,71,0.35); }
+.btn.pink    { background-color: #FF6FA3; color: #fff;
+  box-shadow:
+    inset 0 -5px 0 rgba(0,0,0,0.18),
+    inset 0 4px 0 rgba(255,255,255,0.35),
+    0 8px 0 #c14275, 0 14px 24px rgba(193,66,117,0.35); }
+.btn.ghost { background-color: rgba(255,255,255,0.8); }
+.btn.lg { font-size: 38px; padding: 28px 48px; border-radius: 40px; }
+.btn.sm { font-size: 22px; padding: 14px 24px; border-radius: 22px; }
+
+.back-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 84px; height: 84px; border-radius: 50%;
+  background-color: #ffffff; color: #2a1a2e;
+  background-image: var(--btn-tex);
+  background-size: var(--btn-tex-size);
+  background-position: center;
+  background-blend-mode: var(--btn-blend);
+  border: 3px solid rgba(0,0,0,0.08);
+  box-shadow:
+    inset 0 -4px 0 rgba(0,0,0,0.08),
+    inset 0 3px 0 rgba(255,255,255,0.7),
+    0 6px 0 rgba(0,0,0,0.08),
+    0 12px 20px rgba(60,20,40,0.14);
+  cursor: pointer;
+}
+
+/* ─── Type ─── */
+.h1 { font-family: 'Bagel Fat One', 'Fredoka', sans-serif; font-weight: 400;
+  font-size: 92px; line-height: 0.95; letter-spacing: -0.01em; color: #2a1a2e;
+  text-shadow: 0 4px 0 rgba(255,255,255,0.5);
+}
+.h2 { font-family: 'Fredoka', sans-serif; font-weight: 700;
+  font-size: 64px; line-height: 1.0; letter-spacing: -0.01em; color: #2a1a2e; }
+.h3 { font-family: 'Fredoka', sans-serif; font-weight: 700;
+  font-size: 44px; line-height: 1.1; color: #2a1a2e; }
+.body { font-family: 'Fredoka', sans-serif; font-weight: 500;
+  font-size: 30px; line-height: 1.45; color: #4a2f44; }
+.tagline { font-family: 'Fredoka', sans-serif; font-weight: 500;
+  font-size: 28px; color: rgba(42,26,46,0.6); }
+
+/* ─── Scrolling regions (touch friendly) ─── */
+.scroll-y { overflow-y: auto; overscroll-behavior: contain;
+  scrollbar-width: thin; scrollbar-color: rgba(0,0,0,0.2) transparent; }
+.scroll-x { overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain; }
+.scroll-y::-webkit-scrollbar, .scroll-x::-webkit-scrollbar { width: 8px; height: 8px; }
+.scroll-y::-webkit-scrollbar-thumb, .scroll-x::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.2); border-radius: 4px;
+}
+
+/* ─── Pride flag waving shader ─── */
+@keyframes flagWave {
+  0%   { transform: perspective(300px) rotateY(0deg)   skewY(0deg); }
+  25%  { transform: perspective(300px) rotateY(-6deg)  skewY(-1.2deg); }
+  50%  { transform: perspective(300px) rotateY(0deg)   skewY(0deg); }
+  75%  { transform: perspective(300px) rotateY(6deg)   skewY(1.2deg); }
+  100% { transform: perspective(300px) rotateY(0deg)   skewY(0deg); }
+}
+.flag-wave {
+  display: inline-block;
+  animation: flagWave 3.4s ease-in-out infinite;
+  transform-origin: 0% 50%;
+  filter: drop-shadow(0 6px 10px rgba(0,0,0,0.15));
+}
+.flag-shimmer {
+  position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(110deg,
+    transparent 30%, rgba(255,255,255,0.5) 50%, transparent 70%);
+  background-size: 220% 100%;
+  mix-blend-mode: overlay;
+  animation: flagShimmer 4s ease-in-out infinite;
+}
+@keyframes flagShimmer {
+  0% { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+
+/* ─── Camera viewfinder placeholder ─── */
+.viewfinder {
+  position: relative; width: 100%; height: 100%;
+  background:
+    radial-gradient(circle at 30% 30%, #4a3d52 0, #1c1521 70%),
+    #1c1521;
+  border-radius: 36px; overflow: hidden;
+  box-shadow: inset 0 0 60px rgba(0,0,0,0.6), inset 0 0 0 4px rgba(255,255,255,0.08);
+}
+.viewfinder::before {
+  /* scanning line for 3D scan */
+  content: ''; position: absolute; left: 0; right: 0; height: 4px;
+  background: linear-gradient(90deg, transparent, #34D374, transparent);
+  filter: blur(2px);
+  box-shadow: 0 0 18px #34D374;
+  animation: scanLine 2.4s ease-in-out infinite;
+}
+@keyframes scanLine { 0%,100% { top: 8%; } 50% { top: 92%; } }
+.viewfinder.no-scan::before { display: none; }
+.viewfinder-corner {
+  position: absolute; width: 60px; height: 60px;
+  border: 5px solid rgba(255,255,255,0.85); border-radius: 16px;
+}
+.viewfinder-corner.tl { top: 28px; left: 28px; border-right: 0; border-bottom: 0; }
+.viewfinder-corner.tr { top: 28px; right: 28px; border-left: 0; border-bottom: 0; }
+.viewfinder-corner.bl { bottom: 28px; left: 28px; border-right: 0; border-top: 0; }
+.viewfinder-corner.br { bottom: 28px; right: 28px; border-left: 0; border-top: 0; }
+
+/* Capture flash */
+.capture-flash {
+  position: absolute; inset: 0; background: white; opacity: 0; pointer-events: none;
+  animation: flashAnim 360ms ease-out forwards;
+}
+@keyframes flashAnim {
+  0% { opacity: 0; }
+  20% { opacity: 0.95; }
+  100% { opacity: 0; }
+}
+
+/* Photo strip indicator */
+.thumb-fly {
+  position: absolute; top: 36px; right: 36px;
+  width: 120px; height: 160px; border-radius: 18px;
+  background: var(--ph, #c98ab0);
+  border: 4px solid white;
+  box-shadow: 0 14px 30px rgba(0,0,0,0.3);
+  animation: thumbFly 1500ms ease both;
+  z-index: 10;
+}
+@keyframes thumbFly {
+  0% { transform: scale(0.3) translate(0, 200px); opacity: 0; }
+  25% { transform: scale(1.1) translate(0, 0); opacity: 1; }
+  40% { transform: scale(1) translate(0, 0); opacity: 1; }
+  100% { transform: scale(0.5) translate(120px, -200px); opacity: 0; }
+}
+
+/* Sample photo (placeholder face silhouettes etc) */
+.photo-sample {
+  width: 100%; height: 100%; border-radius: 16px; overflow: hidden;
+  position: relative;
+  background:
+    radial-gradient(circle at 50% 38%, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0) 22%),
+    radial-gradient(circle at 50% 60%, var(--ph2, #ffaac8) 0%, var(--ph, #c98ab0) 75%);
+}
+.photo-sample::after {
+  /* a friendly placeholder face dot */
+  content: ''; position: absolute; left: 50%; top: 38%;
+  width: 38%; height: 38%; border-radius: 50%;
+  background: rgba(255,255,255,0.25);
+  transform: translate(-50%, -50%);
+  box-shadow: inset 0 -8px 0 rgba(0,0,0,0.08);
+}
+
+/* ─── Misc helpers ─── */
+.row { display: flex; }
+.col { display: flex; flex-direction: column; }
+.gap-12 { gap: 12px; } .gap-16 { gap: 16px; } .gap-20 { gap: 20px; }
+.gap-24 { gap: 24px; } .gap-32 { gap: 32px; } .gap-40 { gap: 40px; } .gap-48 { gap: 48px; }
+.center { align-items: center; justify-content: center; }
+.between { justify-content: space-between; }
+.flex-1 { flex: 1; min-height: 0; }
+.wrap { flex-wrap: wrap; }
+
+/* Chip / pill */
+.chip {
+  display: inline-flex; align-items: center; gap: 12px;
+  padding: 12px 22px; border-radius: 999px;
+  background: white; color: #2a1a2e; font-weight: 600; font-size: 24px;
+  border: 2.5px solid rgba(0,0,0,0.08);
+  box-shadow: 0 4px 0 rgba(0,0,0,0.08), 0 8px 14px rgba(60,20,40,0.10);
+  white-space: nowrap;
+}
+
+/* Star/circle backplate behind icons */
+.icon-plate {
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,0.85);
+  border: 3px solid rgba(255,255,255,0.95);
+  box-shadow: inset 0 -4px 0 rgba(0,0,0,0.05), 0 6px 12px rgba(0,0,0,0.12);
+}
+
+/* On-screen toast */
+.toast {
+  position: absolute; left: 50%; bottom: 84px; transform: translateX(-50%);
+  background: rgba(42,26,46,0.92); color: white;
+  padding: 18px 30px; border-radius: 999px; font-weight: 600; font-size: 26px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  animation: toastIn 240ms cubic-bezier(.22, 1.2, .36, 1) both;
+  z-index: 50;
+}
+@keyframes toastIn {
+  from { transform: translate(-50%, 30px); opacity: 0; }
+  to { transform: translateX(-50%); opacity: 1; }
+}
