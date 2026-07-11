@@ -319,17 +319,41 @@ void main() {
 }`;
 
   // iPad detection — modern iPadOS Safari masquerades as "Macintosh", so also
-  // treat a touch-capable Mac (maxTouchPoints > 1) as an iPad. On iPad we drop
-  // to quarter render resolution (0.5× per axis) and cap the effect at 30 FPS.
+  // treat a touch-capable Mac as an iPad. `navigator.platform` is deprecated
+  // and unreliable, so key off maxTouchPoints rather than an exact string.
   const IS_IPAD = (function () {
     const ua = navigator.userAgent || '';
     if (/iPad/.test(ua)) return true;
-    return navigator.platform === 'MacIntel' && (navigator.maxTouchPoints || 0) > 1;
+    return /Mac/.test(ua) && (navigator.maxTouchPoints || 0) > 1;
   })();
+
+  // Low-power mode skips the WebGL shader entirely and shows a cheap static
+  // wallpaper in its place — the single biggest win on older tablets like the
+  // 2017 iPad (A9 GPU), where the full-screen procedural shader is too heavy.
+  // Auto-on for iPad; force either way for testing with ?lowpower=1 / =0.
+  const LOW_POWER = (function () {
+    try {
+      const q = new URLSearchParams(location.search).get('lowpower');
+      if (q === '1' || q === 'true')  return true;
+      if (q === '0' || q === 'false') return false;
+    } catch (e) {}
+    return IS_IPAD;
+  })();
+  window.MERCURY_LOW_POWER = LOW_POWER;
+
   const RES_SCALE = IS_IPAD ? 0.5 : 1;          // 0.5× per axis => quarter pixels
   const FRAME_INTERVAL_MS = IS_IPAD ? 1000 / 30 : 0;   // 30 FPS cap on iPad
 
   function mountMercury(canvas) {
+    // Low-power devices skip the shader entirely (a static CSS wallpaper is
+    // shown in its place — see MercuryBackground). Return an inert handle so
+    // callers can still call setTint / setFinish / destroy without guarding.
+    if (LOW_POWER) {
+      return {
+        setTint() {}, setFinish() {}, setSnake() {}, setSkirtMerge() {},
+        setSkirtMode() {}, setDrag() {}, setCardField() {}, destroy() {},
+      };
+    }
     const gl = canvas.getContext('webgl', { antialias: false, premultipliedAlpha: false });
     if (!gl) { console.warn('[mercury] WebGL not available'); return { destroy() {} }; }
 

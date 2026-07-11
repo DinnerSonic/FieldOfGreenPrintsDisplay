@@ -23,7 +23,9 @@ const SCREENS = {
 function MercuryBackground({ tint, finish, snake, merge, mode, drag }) {
   const ref = React.useRef(null);
   const handleRef = React.useRef(null);
+  const lowPower = window.MERCURY_LOW_POWER;
   React.useEffect(() => {
+    if (lowPower) return;   // static wallpaper instead of the WebGL shader
     if (!ref.current || !window.mountMercury) return;
     const handle = window.mountMercury(ref.current);
     handleRef.current = handle;
@@ -54,6 +56,9 @@ function MercuryBackground({ tint, finish, snake, merge, mode, drag }) {
     const h = handleRef.current;
     if (h && h.setDrag) h.setDrag(drag);
   }, [drag]);
+  // On low-power devices, a static gradient wallpaper (tinted by --bg) stands
+  // in for the WebGL shader — no canvas, no render loop.
+  if (lowPower) return <div className="mercury-bg mercury-static" />;
   return <canvas className="mercury-bg" ref={ref} />;
 }
 

@@ -74,6 +74,16 @@ html, body {
   pointer-events: none;          /* taps fall through to the cards   */
 }
 
+/* Low-power mode (e.g. 2017 iPad): a cheap static wallpaper stands in for the
+   WebGL shader. Soft gradient glows tinted by --bg — no animation, no GPU
+   shader, no render loop. */
+.mercury-bg.mercury-static {
+  background:
+    radial-gradient(circle at 22% 88%, rgba(255,255,255,0.45) 0, transparent 42%),
+    radial-gradient(circle at 82% 12%, rgba(52,211,116,0.14) 0, transparent 42%),
+    var(--bg, #FFD9E3);
+}
+
 /* The mercury background shows through ALL screens — none of them paint
    their own wallpaper. Navigation crossfades content over the shared
    shader (see the .tx-fade preset). */

@@ -518,6 +518,9 @@ function _skirtStart() {
 //   logoSpread skirt width around the logo, in CSS px
 function useSkirtField({ cardRefs, logoRef = null, shape, cardSpread = 6, logoSpread = 6 }) {
   React.useLayoutEffect(() => {
+    // No shader on low-power devices → nothing to feed a skirt into, and the
+    // compositor RAF loop is pure overhead. Skip registering entirely.
+    if (window.MERCURY_LOW_POWER) return;
     const src = { cardRefs, logoRef, shape, cardSpread, logoSpread, factor: undefined };
     _skirtSources.add(src);
     _skirtStart();
