@@ -1,0 +1,270 @@
+/* ══════════════════════════════════════════════════════════════════════════
+   BUBBLY KIT  ·  portable aesthetic extracted from "Field of Green Prints"
+   ──────────────────────────────────────────────────────────────────────────
+   A candy / sticker-book visual language: glossy 3D "bubble" cards, chunky
+   marble-textured buttons, a rounded display + body type pairing, and a soft
+   warm-pink palette. Drop this file + the /assets folder into any project.
+
+   HOW TO USE
+   1. Copy this file and the ./assets folder into your project.
+   2. In your <head>, load the two fonts:
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Bagel+Fat+One&display=swap">
+        <link rel="stylesheet" href="bubbly-kit.css">
+   3. Use the classes: .h1/.h2/.h3/.body, .bubble-card, .btn (+ .primary/.pink/
+      .ghost/.lg/.sm), .chip, .tap (for press feedback), plus layout helpers.
+
+   Sizes below are tuned for a large kiosk/tablet canvas. Scale the font-size
+   and radius values down for desktop/mobile — the recipe (gloss highlight +
+   inset shadows + hard drop shadow) is what makes the look, not the numbers.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ── Palette ──────────────────────────────────────────────────────────
+     Warm candy tones. Backgrounds are soft pinks; accents are a bright
+     spring green + hot pink. Ink is a deep plum, not pure black. */
+  --bg-pink:      #FFD9E3;   /* default surface */
+  --bg-blush:     #FFE9F0;
+  --bg-rose:      #FFC9D9;
+  --bg-cream:     #FCE5C1;   /* alt neutral */
+  --bg-mint:      #E4F4D8;
+  --bg-sky:       #D7E9FF;
+
+  --ink:          #2a1a2e;   /* headings / primary text (deep plum) */
+  --ink-soft:     #4a2f44;   /* body text */
+  --ink-faint:    rgba(42,26,46,0.6);
+
+  --accent-green: #34D374;   /* primary action */
+  --green-shadow: #1f8a47;   /* its hard-shadow / edge */
+  --accent-pink:  #FF6FA3;   /* secondary action */
+  --pink-shadow:  #c14275;
+
+  /* Card fill swatches (pair each color with a darker "shadow" for the 3D lip) */
+  --card-yellow:  #FFD45B;   --card-yellow-sh:  #cba23a;
+  --card-lilac:   #C8B4F2;   --card-lilac-sh:   #8d7ac0;
+  --card-sky:     #A8DCFF;   --card-sky-sh:     #6ba7d0;
+  --card-frog:    #9FECC4;   --card-frog-sh:    #63b98c;
+
+  /* ── Type ──────────────────────────────────────────────────────────── */
+  --font-display: 'Bagel Fat One', 'Fredoka', system-ui, sans-serif; /* fat rounded display */
+  --font-body:    'Fredoka', system-ui, sans-serif;                  /* rounded body/UI */
+
+  /* ── Marble button texture ────────────────────────────────────────────
+     button-texture.png is a light tinted-marble tile blended over the button
+     fill. Swap to -2 / -3 for alternate veining. */
+  --btn-tex: url("assets/button-texture.png");
+  --btn-tex-size: 260px;
+  --btn-blend: overlay;
+}
+
+/* ─── Reset-ish base ─── */
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  color: var(--ink);
+  background: var(--bg-pink);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Links inherit the palette (define these so editor-added links aren't blue). */
+a       { color: var(--accent-pink); text-decoration: none; }
+a:hover  { color: var(--pink-shadow); }
+
+/* ═══ TYPE SCALE ═══════════════════════════════════════════════════════════ */
+.h1 {
+  font-family: var(--font-display); font-weight: 400;
+  font-size: 92px; line-height: 0.95; letter-spacing: -0.01em; color: var(--ink);
+  text-shadow: 0 4px 0 rgba(255,255,255,0.5);   /* soft embossed lift */
+}
+.h2 { font-family: var(--font-body); font-weight: 700;
+  font-size: 64px; line-height: 1.0; letter-spacing: -0.01em; color: var(--ink); }
+.h3 { font-family: var(--font-body); font-weight: 700;
+  font-size: 44px; line-height: 1.1; color: var(--ink); }
+.body { font-family: var(--font-body); font-weight: 500;
+  font-size: 30px; line-height: 1.45; color: var(--ink-soft); }
+.tagline { font-family: var(--font-body); font-weight: 500;
+  font-size: 28px; color: var(--ink-faint); }
+
+/* ═══ PRESS FEEDBACK ═══════════════════════════════════════════════════════
+   Add .tap to anything interactive for a springy press. .tap.peel adds a
+   sticker-lift tilt. .tap.wobble-on.wobbling triggers the release wobble
+   (toggle the .wobbling class from JS on pointerup). */
+.tap {
+  position: relative; overflow: hidden;
+  cursor: pointer; user-select: none;
+  transition: transform 120ms cubic-bezier(.3,.7,.4,1), filter 120ms;
+  will-change: transform;
+}
+.tap:active { transform: scale(0.96); filter: brightness(1.05); }
+.tap.peel { transform-origin: 50% 100%; }
+.tap.peel:active { transform: perspective(900px) rotateX(8deg) scale(0.97); }
+.tap.wobble-on.wobbling { animation: wobble 520ms cubic-bezier(.36, 1.5, .64, 1); }
+
+/* Ripple element — inject a <span class="ripple"> at the tap point from JS. */
+.ripple {
+  position: absolute; border-radius: 50%;
+  background: rgba(255,255,255,0.55);
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(0);
+  animation: rippleAnim 620ms cubic-bezier(.2,.7,.3,1) forwards;
+  mix-blend-mode: overlay;
+}
+@keyframes rippleAnim { to { transform: translate(-50%, -50%) scale(7); opacity: 0; } }
+@keyframes wobble {
+  0%   { transform: scale(1); }
+  20%  { transform: scale(1.04) rotate(-1deg); }
+  40%  { transform: scale(0.98) rotate(0.8deg); }
+  60%  { transform: scale(1.02) rotate(-0.4deg); }
+  80%  { transform: scale(0.99) rotate(0.2deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+/* ═══ BUBBLE CARD ══════════════════════════════════════════════════════════
+   The signature element. Set --card-color and --card-shadow per instance:
+     <div class="bubble-card" style="--card-color:#FFD45B;--card-shadow:#cba23a">
+   .flat drops the 3D lip + gloss for a calmer variant. Shape modifiers:
+   .shape-squircle / .shape-blob / .shape-scallop. */
+.bubble-card {
+  position: relative;
+  background: var(--card-color, var(--card-yellow));
+  border-radius: 48px;
+  box-shadow:
+    inset 0 -8px 0 rgba(0,0,0,0.10),          /* bottom inner lip */
+    inset 0 6px 0 rgba(255,255,255,0.45),     /* top inner highlight */
+    0 12px 0 var(--card-shadow, var(--card-yellow-sh)), /* hard 3D shadow */
+    0 22px 36px rgba(60, 20, 40, 0.18);       /* soft ambient drop */
+  border: 3px solid rgba(0,0,0,0.08);
+}
+.bubble-card::before {   /* glossy top highlight blob */
+  content: ''; position: absolute; left: 8%; right: 8%; top: 6%; height: 22%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(255,255,255,0.65) 0%, rgba(255,255,255,0) 70%);
+  pointer-events: none;
+}
+.bubble-card.flat { box-shadow: 0 10px 24px rgba(60, 20, 40, 0.15); border: 2.5px solid rgba(0,0,0,0.08); }
+.bubble-card.flat::before { display: none; }
+
+.shape-squircle { border-radius: 36px; }
+.shape-blob     { border-radius: 60% 50% 55% 65% / 55% 65% 50% 55%; }
+.shape-scallop {
+  border-radius: 48px;
+  -webkit-mask:
+    radial-gradient(20px at 20px 100%, transparent 98%, #000 100%) 0 0/40px 40px repeat-x,
+    linear-gradient(#000, #000);
+}
+
+/* ═══ BUTTONS ══════════════════════════════════════════════════════════════ */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 14px; padding: 22px 36px;
+  background-color: #ffffff; color: var(--ink);
+  background-image: var(--btn-tex);
+  background-size: var(--btn-tex-size);
+  background-position: center;
+  background-blend-mode: var(--btn-blend);
+  border-radius: 32px;
+  font-family: var(--font-body); font-weight: 600; font-size: 30px;
+  border: 3px solid rgba(0,0,0,0.08);
+  box-shadow:
+    inset 0 -5px 0 rgba(0,0,0,0.08),
+    inset 0 4px 0 rgba(255,255,255,0.7),
+    0 8px 0 rgba(0,0,0,0.10),
+    0 14px 24px rgba(60,20,40,0.14);
+  cursor: pointer; user-select: none; white-space: nowrap;
+}
+.btn.primary { background-color: var(--accent-green); color: #fff;
+  text-shadow: 0 1px 0 rgba(0,0,0,0.15);
+  box-shadow: inset 0 -5px 0 rgba(0,0,0,0.18), inset 0 4px 0 rgba(255,255,255,0.35),
+    0 8px 0 var(--green-shadow), 0 14px 24px rgba(31,138,71,0.35); }
+.btn.pink { background-color: var(--accent-pink); color: #fff;
+  box-shadow: inset 0 -5px 0 rgba(0,0,0,0.18), inset 0 4px 0 rgba(255,255,255,0.35),
+    0 8px 0 var(--pink-shadow), 0 14px 24px rgba(193,66,117,0.35); }
+.btn.ghost { background-color: rgba(255,255,255,0.8); }
+.btn.lg { font-size: 38px; padding: 28px 48px; border-radius: 40px; }
+.btn.sm { font-size: 22px; padding: 14px 24px; border-radius: 22px; }
+
+/* Circular icon button (e.g. a back arrow). */
+.back-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 84px; height: 84px; border-radius: 50%;
+  background-color: #ffffff; color: var(--ink);
+  background-image: var(--btn-tex);
+  background-size: var(--btn-tex-size);
+  background-position: center;
+  background-blend-mode: var(--btn-blend);
+  border: 3px solid rgba(0,0,0,0.08);
+  box-shadow: inset 0 -4px 0 rgba(0,0,0,0.08), inset 0 3px 0 rgba(255,255,255,0.7),
+    0 6px 0 rgba(0,0,0,0.08), 0 12px 20px rgba(60,20,40,0.14);
+  cursor: pointer;
+}
+
+/* ═══ CHIP / PILL ══════════════════════════════════════════════════════════ */
+.chip {
+  display: inline-flex; align-items: center; gap: 12px;
+  padding: 12px 22px; border-radius: 999px;
+  background: white; color: var(--ink); font-weight: 600; font-size: 24px;
+  border: 2.5px solid rgba(0,0,0,0.08);
+  box-shadow: 0 4px 0 rgba(0,0,0,0.08), 0 8px 14px rgba(60,20,40,0.10);
+  white-space: nowrap;
+}
+
+/* Soft round backplate behind an icon. */
+.icon-plate {
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,0.85);
+  border: 3px solid rgba(255,255,255,0.95);
+  box-shadow: inset 0 -4px 0 rgba(0,0,0,0.05), 0 6px 12px rgba(0,0,0,0.12);
+}
+
+/* ═══ POLKA-DOT WALLPAPER ══════════════════════════════════════════════════
+   Optional full-bleed background. Put it as an absolutely-positioned layer
+   behind your content; set --bg to any palette surface. */
+.dot-wallpaper {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(circle at 20% 90%, rgba(255,255,255,0.55) 0, transparent 40%),
+    radial-gradient(circle at 80% 10%, rgba(52,211,116,0.18) 0, transparent 40%),
+    var(--bg, var(--bg-pink));
+}
+.dot-wallpaper::after {
+  content: ''; position: absolute; inset: 0;
+  background-image: radial-gradient(circle, rgba(255,255,255,0.45) 1.5px, transparent 2px);
+  background-size: 38px 38px; opacity: 0.55; mix-blend-mode: overlay;
+}
+
+/* ═══ TOAST ════════════════════════════════════════════════════════════════ */
+.toast {
+  position: absolute; left: 50%; bottom: 84px; transform: translateX(-50%);
+  background: rgba(42,26,46,0.92); color: white;
+  padding: 18px 30px; border-radius: 999px; font-weight: 600; font-size: 26px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  animation: toastIn 240ms cubic-bezier(.22, 1.2, .36, 1) both; z-index: 50;
+}
+@keyframes toastIn {
+  from { transform: translate(-50%, 30px); opacity: 0; }
+  to   { transform: translateX(-50%); opacity: 1; }
+}
+
+/* ═══ LAYOUT HELPERS ═══════════════════════════════════════════════════════ */
+.row { display: flex; }
+.col { display: flex; flex-direction: column; }
+.center { align-items: center; justify-content: center; }
+.between { justify-content: space-between; }
+.wrap { flex-wrap: wrap; }
+.flex-1 { flex: 1; min-height: 0; }
+.gap-12 { gap: 12px; } .gap-16 { gap: 16px; } .gap-20 { gap: 20px; }
+.gap-24 { gap: 24px; } .gap-32 { gap: 32px; } .gap-40 { gap: 40px; } .gap-48 { gap: 48px; }
+
+/* Touch-friendly scroll regions. */
+.scroll-y { overflow-y: auto; overscroll-behavior: contain;
+  scrollbar-width: thin; scrollbar-color: rgba(0,0,0,0.2) transparent; }
+.scroll-x { overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain; }
+.scroll-y::-webkit-scrollbar, .scroll-x::-webkit-scrollbar { width: 8px; height: 8px; }
+.scroll-y::-webkit-scrollbar-thumb, .scroll-x::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.2); border-radius: 4px;
+}

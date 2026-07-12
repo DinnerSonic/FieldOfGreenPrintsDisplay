@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Bubbly Kit — Style Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Bagel+Fat+One&display=swap">
+<link rel="stylesheet" href="bubbly-kit.css">
+<style>
+  html, body { height: auto; overflow: auto; }
+  body { background: var(--bg-blush); padding: 0 0 120px; }
+  .page { max-width: 1100px; margin: 0 auto; padding: 0 48px; }
+  .hero { padding: 80px 48px 56px; text-align: center; }
+  .hero .h1 { font-size: 108px; }
+  .hero .tagline { font-size: 30px; margin-top: 8px; }
+  section { margin-top: 72px; }
+  .section-label {
+    font-family: var(--font-body); font-weight: 700; font-size: 22px;
+    text-transform: uppercase; letter-spacing: 0.12em; color: var(--ink-faint);
+    margin-bottom: 24px; display: flex; align-items: center; gap: 14px;
+  }
+  .section-label::after { content: ''; flex: 1; height: 3px; border-radius: 2px;
+    background: rgba(42,26,46,0.10); }
+  .grid { display: grid; gap: 28px; }
+  .swatch { border-radius: 24px; height: 130px; display: flex; align-items: flex-end;
+    padding: 16px 18px; box-shadow: 0 8px 20px rgba(60,20,40,0.12);
+    border: 2px solid rgba(0,0,0,0.06); }
+  .swatch span { font-family: var(--font-body); font-weight: 600; font-size: 18px;
+    background: rgba(255,255,255,0.85); padding: 5px 11px; border-radius: 999px; color: var(--ink); }
+  .demo-card { padding: 40px 36px; }
+  .demo-card .h3 { margin: 0 0 8px; }
+  .demo-card p { margin: 0; }
+  .note { font-family: var(--font-body); font-weight: 500; font-size: 20px;
+    color: var(--ink-faint); margin-top: 10px; }
+  code { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.86em;
+    background: rgba(42,26,46,0.07); padding: 2px 7px; border-radius: 6px; }
+  .type-row { display: flex; align-items: baseline; gap: 20px; margin-bottom: 18px; flex-wrap: wrap; }
+  .type-row .meta { font-family: var(--font-body); font-size: 16px; color: var(--ink-faint); }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="h1">Bubbly Kit</div>
+  <div class="tagline">A candy / sticker-book visual language · portable design kit</div>
+  <div class="row center gap-12" style="margin-top:28px; flex-wrap:wrap;">
+    <span class="chip">Bagel Fat One + Fredoka</span>
+    <span class="chip">Glossy 3D cards</span>
+    <span class="chip">Marble buttons</span>
+  </div>
+</div>
+
+<div class="page">
+
+  <section>
+    <div class="section-label">Palette</div>
+    <div class="grid" style="grid-template-columns: repeat(6, 1fr);">
+      <div class="swatch" style="background:#FFD9E3"><span>Pink · bg</span></div>
+      <div class="swatch" style="background:#FFE9F0"><span>Blush · bg</span></div>
+      <div class="swatch" style="background:#FCE5C1"><span>Cream · bg</span></div>
+      <div class="swatch" style="background:#E4F4D8"><span>Mint · bg</span></div>
+      <div class="swatch" style="background:#D7E9FF"><span>Sky · bg</span></div>
+      <div class="swatch" style="background:#2a1a2e"><span>Ink</span></div>
+      <div class="swatch" style="background:#34D374"><span>Green</span></div>
+      <div class="swatch" style="background:#FF6FA3"><span>Pink acc.</span></div>
+      <div class="swatch" style="background:#FFD45B"><span>Yellow</span></div>
+      <div class="swatch" style="background:#C8B4F2"><span>Lilac</span></div>
+      <div class="swatch" style="background:#A8DCFF"><span>Sky card</span></div>
+      <div class="swatch" style="background:#9FECC4"><span>Frog</span></div>
+    </div>
+    <p class="note">Backgrounds are soft candy tints. Ink is a deep plum (<code>#2a1a2e</code>), never pure black. Green = primary action, hot pink = secondary. Card fills each pair with a darker "shadow" for the 3D lip.</p>
+  </section>
+
+  <section>
+    <div class="section-label">Type</div>
+    <div class="type-row"><div class="h1">Field of green</div><div class="meta">.h1 · Bagel Fat One</div></div>
+    <div class="type-row"><div class="h2">Section heading</div><div class="meta">.h2 · Fredoka 700</div></div>
+    <div class="type-row"><div class="h3">Subheading label</div><div class="meta">.h3 · Fredoka 700</div></div>
+    <div class="type-row"><div class="body">Body copy uses Fredoka at 500 weight with generous line height for a soft, friendly read.</div><div class="meta">.body</div></div>
+    <div class="type-row"><div class="tagline">Muted tagline / caption text</div><div class="meta">.tagline</div></div>
+  </section>
+
+  <section>
+    <div class="section-label">Bubble cards</div>
+    <div class="grid" style="grid-template-columns: repeat(3, 1fr);">
+      <div class="bubble-card demo-card tap peel" style="--card-color:#FFD45B;--card-shadow:#cba23a;">
+        <div class="h3">Glossy</div>
+        <p class="body">Default 3D card. Tap to feel the peel.</p>
+      </div>
+      <div class="bubble-card demo-card tap peel" style="--card-color:#C8B4F2;--card-shadow:#8d7ac0;">
+        <div class="h3">Lilac</div>
+        <p class="body">Set <code>--card-color</code> + <code>--card-shadow</code>.</p>
+      </div>
+      <div class="bubble-card demo-card flat tap" style="--card-color:#9FECC4;">
+        <div class="h3">Flat</div>
+        <p class="body">Add <code>.flat</code> for a calmer variant.</p>
+      </div>
+    </div>
+    <p class="note">Shape modifiers: <code>.shape-squircle</code>, <code>.shape-blob</code>, <code>.shape-scallop</code>.</p>
+  </section>
+
+  <section>
+    <div class="section-label">Buttons</div>
+    <div class="row gap-20 wrap center" style="justify-content:flex-start;">
+      <button class="btn primary tap">Primary</button>
+      <button class="btn pink tap">Pink</button>
+      <button class="btn tap">Marble</button>
+      <button class="btn ghost tap">Ghost</button>
+      <button class="btn sm tap">Small</button>
+      <button class="btn lg tap">Large</button>
+      <div class="back-btn tap" aria-label="back">←</div>
+    </div>
+    <p class="note">All buttons carry the tinted-marble texture (<code>button-texture.png</code>) blended over the fill, plus a hard bottom edge for the chunky look.</p>
+  </section>
+
+  <section>
+    <div class="section-label">Chips</div>
+    <div class="row gap-16 wrap" style="justify-content:flex-start;">
+      <span class="chip">Vegan</span>
+      <span class="chip">★ Popular</span>
+      <span class="chip">Gluten-free</span>
+      <span class="chip">New</span>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>

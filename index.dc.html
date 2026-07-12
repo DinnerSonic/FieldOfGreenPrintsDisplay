@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Bagel+Fat+One&display=swap">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Field of Green">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
+<script src="image-slot.js"></script>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    margin: 0; height: 100%; overflow: hidden;
+    font-family: 'Fredoka', system-ui, sans-serif;
+    background: #3f7a5a;
+    -webkit-font-smoothing: antialiased;
+    user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
+    -webkit-text-size-adjust: 100%;
+  }
+  img { -webkit-user-drag: none; user-drag: none; pointer-events: none; }
+  a { color: #FF6FA3; text-decoration: none; }
+  a:hover { color: #c14275; }
+  @keyframes drift { 0% { transform: translate(-3px,-4px); } 100% { transform: translate(3px,4px); } }
+  @keyframes floaty { 0% { transform: translateY(0); } 100% { transform: translateY(-22px); } }
+  @keyframes floaty2 { 0% { transform: translateY(0); } 100% { transform: translateY(18px); } }
+</style>
+</helmet>
+
+<div ref="{{ rootRef }}" style="position:fixed; inset:0; overflow:hidden; background:#3f7a5a; display:flex; align-items:center; justify-content:center;">
+  <!-- iPad viewport (A1822 landscape, 1024x768). Anything outside this box shows the dark mint = off-screen -->
+  <div style="position:relative; flex:0 0 auto; width:1024px; height:768px; min-width:1024px; min-height:768px; overflow:hidden; box-shadow:0 0 0 1px rgba(0,0,0,0.15);">
+
+    <!-- wallpaper -->
+    <div style="position:absolute; inset:0; background:radial-gradient(circle at 20% 90%, rgba(255,255,255,0.55) 0, transparent 40%), radial-gradient(circle at 80% 10%, rgba(52,211,116,0.18) 0, transparent 42%), #FFD9E3;" style-after="content:''; position:absolute; inset:0; background-image:radial-gradient(circle, rgba(255,255,255,0.45) 1.5px, transparent 2px); background-size:40px 40px; opacity:0.55; mix-blend-mode:overlay;"></div>
+
+    <!-- floating candy dots (burn-in guard) -->
+    <div style="position:absolute; width:80px; height:80px; border-radius:50%; left:9%; top:22%; background:radial-gradient(circle at 35% 30%, #fff, #9FECC4); box-shadow:0 8px 18px rgba(60,20,40,0.14); opacity:0.65; animation:floaty 11s ease-in-out infinite alternate;"></div>
+    <div style="position:absolute; width:52px; height:52px; border-radius:50%; right:12%; top:20%; background:radial-gradient(circle at 35% 30%, #fff, #FFD45B); box-shadow:0 8px 18px rgba(60,20,40,0.14); opacity:0.65; animation:floaty2 9.5s ease-in-out infinite alternate;"></div>
+    <div style="position:absolute; width:44px; height:44px; border-radius:50%; left:16%; bottom:14%; background:radial-gradient(circle at 35% 30%, #fff, #C8B4F2); box-shadow:0 8px 18px rgba(60,20,40,0.14); opacity:0.6; animation:floaty 12.5s ease-in-out infinite alternate;"></div>
+
+    <!-- ═══════════ HOME ═══════════ -->
+    <div style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:72px; padding:40px; animation:drift 34s ease-in-out infinite alternate;">
+      <img src="assets/logo.png" alt="Field of Green Prints" style="width:680px; height:auto; filter:drop-shadow(0 8px 0 rgba(0,0,0,0.10)) drop-shadow(0 18px 24px rgba(60,20,40,0.22));">
+
+      <div style="display:flex; gap:64px;">
+        <!-- Information -->
+        <div onClick="{{ goInfo }}" style="display:flex; flex-direction:column; align-items:center; gap:26px; cursor:pointer; transition:transform 130ms cubic-bezier(.3,.7,.4,1);" style-active="transform:scale(0.95)">
+          <div style="position:relative; width:210px; height:210px; border-radius:50%; background-color:#FFD45B; background-image:url('aesthetic-kit/assets/button-texture.png'); background-size:200px; background-position:center; background-blend-mode:overlay; border:3px solid rgba(0,0,0,0.08); box-shadow:inset 0 -7px 0 rgba(0,0,0,0.12), inset 0 6px 0 rgba(255,255,255,0.5), 0 12px 0 #cba23a, 0 22px 34px rgba(60,20,40,0.22); display:flex; align-items:center; justify-content:center;" style-before="content:''; position:absolute; left:16%; right:16%; top:9%; height:26%; border-radius:50%; background:radial-gradient(ellipse at center, rgba(255,255,255,0.72) 0%, rgba(255,255,255,0) 70%); pointer-events:none;">
+            <svg width="82" height="82" viewBox="0 0 24 24" fill="none" stroke="#2a1a2e" stroke-width="2.1" stroke-linecap="round"><circle cx="12" cy="12" r="9"></circle><line x1="12" y1="11" x2="12" y2="16.5"></line><circle cx="12" cy="7.4" r="0.6" fill="#2a1a2e" stroke-width="1.6"></circle></svg>
+          </div>
+          <div style="padding:14px 34px; border-radius:999px; background:#fff; border:2.5px solid rgba(0,0,0,0.08); box-shadow:0 4px 0 rgba(0,0,0,0.08), 0 8px 14px rgba(60,20,40,0.1); font-weight:700; font-size:32px; color:#2a1a2e;">Information</div>
+        </div>
+
+        <!-- Payment -->
+        <div onClick="{{ goPay }}" style="display:flex; flex-direction:column; align-items:center; gap:26px; cursor:pointer; transition:transform 130ms cubic-bezier(.3,.7,.4,1);" style-active="transform:scale(0.95)">
+          <div style="position:relative; width:210px; height:210px; border-radius:50%; background-color:#FF6FA3; background-image:url('aesthetic-kit/assets/button-texture.png'); background-size:200px; background-position:center; background-blend-mode:overlay; border:3px solid rgba(0,0,0,0.08); box-shadow:inset 0 -7px 0 rgba(0,0,0,0.16), inset 0 6px 0 rgba(255,255,255,0.4), 0 12px 0 #c14275, 0 22px 34px rgba(193,66,117,0.32); display:flex; align-items:center; justify-content:center;" style-before="content:''; position:absolute; left:16%; right:16%; top:9%; height:26%; border-radius:50%; background:radial-gradient(ellipse at center, rgba(255,255,255,0.62) 0%, rgba(255,255,255,0) 70%); pointer-events:none;">
+            <svg width="78" height="78" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.6"></rect><rect x="14" y="3" width="7" height="7" rx="1.6"></rect><rect x="3" y="14" width="7" height="7" rx="1.6"></rect><rect x="14.5" y="14.5" width="2.6" height="2.6" fill="#fff" stroke="none"></rect><rect x="18.5" y="18.5" width="2.6" height="2.6" fill="#fff" stroke="none"></rect><rect x="14.5" y="18.5" width="2.6" height="2.6" fill="#fff" stroke="none"></rect></svg>
+          </div>
+          <div style="padding:14px 34px; border-radius:999px; background:#fff; border:2.5px solid rgba(0,0,0,0.08); box-shadow:0 4px 0 rgba(0,0,0,0.08), 0 8px 14px rgba(60,20,40,0.1); font-weight:700; font-size:32px; color:#2a1a2e;">Payment</div>
+        </div>
+
+        <!-- Credits -->
+        <div onClick="{{ goCredits }}" style="display:flex; flex-direction:column; align-items:center; gap:26px; cursor:pointer; transition:transform 130ms cubic-bezier(.3,.7,.4,1);" style-active="transform:scale(0.95)">
+          <div style="position:relative; width:210px; height:210px; border-radius:50%; background-color:#C1A6F2; background-image:url('aesthetic-kit/assets/button-texture.png'); background-size:200px; background-position:center; background-blend-mode:overlay; border:3px solid rgba(0,0,0,0.08); box-shadow:inset 0 -7px 0 rgba(0,0,0,0.14), inset 0 6px 0 rgba(255,255,255,0.45), 0 12px 0 #9575D6, 0 22px 34px rgba(120,80,180,0.3); display:flex; align-items:center; justify-content:center;" style-before="content:''; position:absolute; left:16%; right:16%; top:9%; height:26%; border-radius:50%; background:radial-gradient(ellipse at center, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0) 70%); pointer-events:none;">
+            <svg width="82" height="82" viewBox="0 0 24 24" fill="none" stroke="#2a1a2e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 3 7v10l9 5 9-5V7z"></path><path d="M3 7l9 5 9-5"></path><path d="M12 12v10"></path></svg>
+          </div>
+          <div style="padding:14px 34px; border-radius:999px; background:#fff; border:2.5px solid rgba(0,0,0,0.08); box-shadow:0 4px 0 rgba(0,0,0,0.08), 0 8px 14px rgba(60,20,40,0.1); font-weight:700; font-size:32px; color:#2a1a2e;">Credits</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pride flags button (bottom-right, home only) -->
+    <div ref="{{ prideBtnRef }}" onClick="{{ goPride }}" style="position:absolute; right:30px; bottom:30px; z-index:6; width:82px; height:82px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; background:#fff; border:3px solid rgba(0,0,0,0.06); box-shadow:inset 0 4px 0 rgba(255,255,255,0.6), 0 6px 0 rgba(0,0,0,0.08), 0 12px 20px rgba(60,20,40,0.16); transition:transform 130ms cubic-bezier(.3,.7,.4,1), opacity 240ms ease;" style-active="transform:scale(0.92)">
+      <span style="font-size:44px; line-height:1;">&#127987;&#65039;&#8205;&#127752;</span>
+    </div>
+
+    <!-- ═══════════ INFORMATION PANEL ═══════════ -->
+    <div ref="{{ infoRef }}" style="position:absolute; inset:0; opacity:0; pointer-events:none; transform:translateY(16px); transition:opacity 280ms ease, transform 280ms ease; background:radial-gradient(circle at 18% 88%, rgba(255,255,255,0.5) 0, transparent 46%), #FFD9E3;">
+      <div onClick="{{ goHome }}" style="position:absolute; top:34px; left:36px; z-index:5; display:inline-flex; align-items:center; gap:12px; padding:14px 26px 14px 20px; border-radius:999px; cursor:pointer; color:#fff; background-color:#34D374; background-image:url('aesthetic-kit/assets/button-texture.png'); background-size:180px; background-position:center; background-blend-mode:overlay; border:3px solid rgba(0,0,0,0.08); text-shadow:0 1px 0 rgba(0,0,0,0.15); font-weight:600; font-size:24px; box-shadow:inset 0 -4px 0 rgba(0,0,0,0.18), inset 0 3px 0 rgba(255,255,255,0.35), 0 6px 0 #1f8a47, 0 10px 18px rgba(31,138,71,0.32); transition:transform 120ms;" style-active="transform:scale(0.95)">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 5 8 12 15 19"></polyline></svg>
+        Home
+      </div>
+
+      <div style="position:absolute; inset:0; display:flex; gap:44px; padding:112px 52px 96px 56px; animation:drift 36s ease-in-out infinite alternate;">
+        <!-- LEFT: blurb + selector buttons -->
+        <div style="flex:0 0 400px; display:flex; flex-direction:column;">
+          <div style="flex:1;">
+            <div style="font-family:'Bagel Fat One',cursive; font-size:52px; color:#2a1a2e; line-height:1.02;">Let&rsquo;s stay<br>in touch</div>
+            <div style="margin-top:22px; font-weight:500; font-size:24px; line-height:1.45; color:#4a2f44; opacity:0.82; max-width:360px; text-wrap:pretty;">Follow along for new prints, restocks and behind-the-scenes &mdash; or shop the whole collection online. Tap a button to pull up its code, then scan it with your camera.</div>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:16px;">
+            <div onClick="{{ selInstagram }}" data-side="info" data-sel="instagram" style="display:flex; align-items:center; gap:16px; padding:16px 24px; border-radius:22px; cursor:pointer; background:#fff; color:#2a1a2e; border:3px solid rgba(0,0,0,0.06); box-shadow:0 4px 0 rgba(0,0,0,0.08), 0 8px 14px rgba(60,20,40,0.1); font-weight:600; font-size:27px; transition:transform 120ms;" style-active="transform:scale(0.97)">
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5.5"></rect><circle cx="12" cy="12" r="4.2"></circle><circle cx="17.4" cy="6.6" r="1.2" fill="currentColor" stroke="none"></circle></svg>
+              Instagram
+            </div>
+            <div onClick="{{ selEtsy }}" data-side="info" data-sel="etsy" style="display:flex; align-items:center; gap:16px; padding:16px 24px; border-radius:22px; cursor:pointer; background:#fff; color:#2a1a2e; border:3px solid rgba(0,0,0,0.06); box-shadow:0 4px 0 rgba(0,0,0,0.08), 0 8px 14px rgba(60,20,40,0.1); font-weight:600; font-size:27px; transition:transform 120ms;" style-active="transform:scale(0.97)">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h12v3M6 4v16h12v-3M6 12h7M13 9v6"></path></svg>
+              Etsy
+            </div>
+          </div>
+        </div>
+        <!-- RIGHT: single large QR -->
+        <div style="flex:1; display:flex; align-items:center; justify-content:center;">
+          <div ref="{{ infoCardRef }}" style="display:flex; flex-direction:column; align-items:center; gap:18px; padding:28px; border-radius:42px; background:#fff; border:3px solid rgba(0,0,0,0.06); box-shadow:inset 0 6px 0 rgba(255,255,255,0.6), 0 16px 0 rgba(255,111,163,0.28), 0 30px 44px rgba(60,20,40,0.16);">
+            <div style="width:404px; height:404px; border-radius:24px; overflow:hidden; background:#fff; display:flex; align-items:center; justify-content:center;">
+              <img ref="{{ infoQrRef }}" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="QR code" style="width:404px; height:404px;">
+            </div>
+            <div style="display:flex; flex-direction:column; align-items:center; gap:2px;">
+              <div data-cap="info-label" style="font-weight:700; font-size:30px; color:#2a1a2e;">Instagram</div>
+              <div data-cap="info-sub" style="font-weight:500; font-size:20px; color:#4a2f44; opacity:0.7;">@fieldofgreenprints</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════ PAYMENT PANEL ═══════════ -->
+    <div ref="{{ payRef }}" style="position:absolute; inset:0; opacity:0; pointer-events:none; transform:translateY(16px); transition:opacity 280ms ease, transform 280ms ease; background:radial-gradient(circle at 18% 88%, rgba(255,255,255,0.5) 0, transparent 46%), #FFD9E3;">
+      <div onClick="{{ goHome }}" style="position:absolute; top:34px; left:36px; z-index:5; display:inline-flex; align-items:center; gap:12px; padding:14px 26px 14px 20px; border-radius:999px; cursor:pointer; color:#fff; background-color:#34D374; background-image:url('aesthetic-kit/assets/button-texture.png'); background-size:180px; background-position:center; background-blend-mode:overlay; border:3px solid rgba(0,0,0,0.08); text-shadow:0 1px 0 rgba(0,0,0,0.15); font-weight:600; font-size:24px; box-shadow:inset 0 -4px 0 rgba(0,0,0,0.18), inset 0 3px 0 rgba(255,255,255,0.35), 0 6px 0 #1f8a47, 0 10px 18px rgba(31,138,71,0.32); transition:transform 120ms;" style-active="transform:scale(0.95)">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 5 8 12 15 19"></polyline></svg>
+        Home
+      </div>
+
+      <div style="position:absolute; inset:0; display:flex; gap:44px; padding:100px 52px 90px 56px; animation:drift 36s ease-in-out infinite alternate;">
+        <!-- LEFT: blurb + big payment buttons -->
+        <div style="flex:0 0 420px; display:flex; flex-direction:column;">
+          <div style="margin-bottom:22px;">
+            <div style="font-family:'Bagel Fat One',cursive; font-size:46px; color:#2a1a2e; line-height:1.02;">Easy ways<br>to pay</div>
+            <div style="margin-top:14px; font-weight:500; font-size:22px; line-height:1.4; color:#4a2f44; opacity:0.82; max-width:380px; text-wrap:pretty;">Pick a method, then scan the code with your phone.</div>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:14px;">
+            <div onClick="{{ selZelle }}" data-side="pay" data-sel="zelle" style="display:flex; align-items:center; gap:18px; padding:18px 26px; border-radius:24px; cursor:pointer; background:#fff; color:#2a1a2e; border:3px solid rgba(0,0,0,0.06); box-shadow:0 4px 0 rgba(0,0,0,0.08), 0 8px 14px rgba(60,20,40,0.1); font-weight:600; font-size:30px; transition:transform 120ms;" style-active="transform:scale(0.98)">
+              <div style="width:44px; height:44px; border-radius:13px; border:3px solid currentColor; display:flex; align-items:center; justify-content:center; font-family:'Bagel Fat One',cursive; font-size:26px;">Z</div>
+              Zelle
+            </div>
+            <div onClick="{{ selVenmo }}" data-side="pay" data-sel="venmo" style="display:flex; align-items:center; gap:18px; padding:18px 26px; border-radius:24px; cursor:pointer; background:#fff; color:#2a1a2e; border:3px solid rgba(0,0,0,0.06); box-shadow:0 4px 0 rgba(0,0,0,0.08), 0 8px 14px rgba(60,20,40,0.1); font-weight:600; font-size:30px; transition:transform 120ms;" style-active="transform:scale(0.98)">
+              <div style="width:44px; height:44px; border-radius:13px; border:3px solid currentColor; display:flex; align-items:center; justify-content:center; font-family:'Bagel Fat One',cursive; font-size:26px;">V</div>
+              Venmo
+            </div>
+            <div onClick="{{ selPaypal }}" data-side="pay" data-sel="paypal" style="display:flex; align-items:center; gap:18px; padding:18px 26px; border-radius:24px; cursor:pointer; background:#fff; color:#2a1a2e; border:3px solid rgba(0,0,0,0.06); box-shadow:0 4px 0 rgba(0,0,0,0.08), 0 8px 14px rgba(60,20,40,0.1); font-weight:600; font-size:30px; transition:transform 120ms;" style-active="transform:scale(0.98)">
+              <div style="width:44px; height:44px; border-radius:13px; border:3px solid currentColor; display:flex; align-items:center; justify-content:center; font-family:'Bagel Fat One',cursive; font-size:24px;">P</div>
+              PayPal
+            </div>
+          </div>
+          <div style="margin-top:20px; display:inline-flex; align-items:center; gap:11px; padding:12px 20px; border-radius:18px; background:rgba(255,255,255,0.7); border:2px solid rgba(0,0,0,0.05); font-weight:500; font-size:19px; color:#4a2f44; line-height:1.3;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#34D374" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="flex:0 0 auto;"><path d="M20 6 9 17l-5-5"></path></svg>
+            Cash, card &amp; tap to pay also welcome &mdash; just ask!
+          </div>
+        </div>
+        <!-- RIGHT: single large QR -->
+        <div style="flex:1; display:flex; align-items:center; justify-content:center;">
+          <div ref="{{ payCardRef }}" style="display:flex; flex-direction:column; align-items:center; gap:18px; padding:28px; border-radius:42px; background:#fff; border:3px solid rgba(0,0,0,0.06); box-shadow:inset 0 6px 0 rgba(255,255,255,0.6), 0 16px 0 rgba(120,60,210,0.26), 0 30px 44px rgba(60,20,40,0.16);">
+            <div style="width:404px; height:404px; border-radius:24px; overflow:hidden; background:#fff; display:flex; align-items:center; justify-content:center;">
+              <img ref="{{ payQrRef }}" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="QR code" style="width:404px; height:404px;">
+            </div>
+            <div style="display:flex; flex-direction:column; align-items:center; gap:2px;">
+              <div data-cap="pay-label" style="font-weight:700; font-size:30px; color:#2a1a2e;">Zelle</div>
+              <div data-cap="pay-sub" style="font-weight:500; font-size:20px; color:#4a2f44; opacity:0.7;">Scan with your banking app</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════ CREDITS PANEL ═══════════ -->
+    <div ref="{{ creditsRef }}" style="position:absolute; inset:0; opacity:0; pointer-events:none; transform:translateY(16px); transition:opacity 280ms ease, transform 280ms ease; background:radial-gradient(circle at 82% 10%, rgba(193,166,242,0.22) 0, transparent 46%), #FFD9E3; display:flex; flex-direction:column;">
+      <div onClick="{{ goHome }}" style="position:absolute; top:34px; left:36px; z-index:5; display:inline-flex; align-items:center; gap:12px; padding:14px 26px 14px 20px; border-radius:999px; cursor:pointer; color:#fff; background-color:#34D374; background-image:url('aesthetic-kit/assets/button-texture.png'); background-size:180px; background-position:center; background-blend-mode:overlay; border:3px solid rgba(0,0,0,0.08); text-shadow:0 1px 0 rgba(0,0,0,0.15); font-weight:600; font-size:24px; box-shadow:inset 0 -4px 0 rgba(0,0,0,0.18), inset 0 3px 0 rgba(255,255,255,0.35), 0 6px 0 #1f8a47, 0 10px 18px rgba(31,138,71,0.32); transition:transform 120ms;" style-active="transform:scale(0.95)">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 5 8 12 15 19"></polyline></svg>
+        Home
+      </div>
+
+      <div style="flex:0 0 auto; padding:98px 56px 16px; text-align:center;">
+        <div style="font-family:'Bagel Fat One',cursive; font-size:50px; color:#2a1a2e; line-height:1;">Print credits</div>
+        <div style="margin-top:8px; font-weight:500; font-size:22px; color:#4a2f44; opacity:0.8;">With thanks to the makers behind our prints</div>
+      </div>
+
+      <div style="flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:8px 56px 46px;">
+        <div style="max-width:900px; margin:0 auto; display:grid; grid-template-columns:repeat(2, 1fr); gap:20px; align-items:stretch;">
+
+          <!-- badge tile -->
+          <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:16px; padding:32px 24px; border-radius:30px; background:#fff; border:3px solid rgba(0,0,0,0.05); box-shadow:0 8px 0 rgba(0,0,0,0.05), 0 16px 26px rgba(60,20,40,0.1);">
+            <image-slot id="credit-flexi" shape="circle" style="width:150px; height:150px; flex:0 0 auto;" placeholder="Logo"></image-slot>
+            <div style="font-weight:700; font-size:31px; color:#2a1a2e;">FlexiFactory</div>
+            <div style="font-weight:500; font-size:21px; line-height:1.35; color:#4a2f44; opacity:0.75;">Flexi Rex &amp; articulated animals &middot; MyMiniFactory</div>
+          </div>
+
+          <!-- text tile -->
+          <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:14px; padding:32px 24px; border-radius:30px; background:#fff; border:3px solid rgba(0,0,0,0.05); box-shadow:0 8px 0 rgba(0,0,0,0.05), 0 16px 26px rgba(60,20,40,0.1);">
+            <div style="font-family:'Bagel Fat One',cursive; font-size:44px; color:#FF6FA3; line-height:1.05;">#3DBenchy</div>
+            <div style="font-weight:500; font-size:21px; line-height:1.35; color:#4a2f44; opacity:0.75;">The jolly 3D-printing torture test &middot; Creative Tools</div>
+          </div>
+
+          <!-- badge tile -->
+          <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:16px; padding:32px 24px; border-radius:30px; background:#fff; border:3px solid rgba(0,0,0,0.05); box-shadow:0 8px 0 rgba(0,0,0,0.05), 0 16px 26px rgba(60,20,40,0.1);">
+            <image-slot id="credit-cinderwing" shape="circle" style="width:150px; height:150px; flex:0 0 auto;" placeholder="Logo"></image-slot>
+            <div style="font-weight:700; font-size:31px; color:#2a1a2e;">CinderWing3D</div>
+            <div style="font-weight:500; font-size:21px; line-height:1.35; color:#4a2f44; opacity:0.75;">Articulated dragons &amp; creatures &middot; Printables</div>
+          </div>
+
+          <!-- text tile -->
+          <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:14px; padding:32px 24px; border-radius:30px; background:#fff; border:3px solid rgba(0,0,0,0.05); box-shadow:0 8px 0 rgba(0,0,0,0.05), 0 16px 26px rgba(60,20,40,0.1);">
+            <div style="font-family:'Bagel Fat One',cursive; font-size:40px; color:#1f8a47; line-height:1.05;">Baby Groot Planter</div>
+            <div style="font-weight:500; font-size:21px; line-height:1.35; color:#4a2f44; opacity:0.75;">Design by purakito &middot; Thingiverse</div>
+          </div>
+
+          <!-- badge tile -->
+          <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:16px; padding:32px 24px; border-radius:30px; background:#fff; border:3px solid rgba(0,0,0,0.05); box-shadow:0 8px 0 rgba(0,0,0,0.05), 0 16px 26px rgba(60,20,40,0.1);">
+            <image-slot id="credit-mcgybeer" shape="circle" style="width:150px; height:150px; flex:0 0 auto;" placeholder="Logo"></image-slot>
+            <div style="font-weight:700; font-size:31px; color:#2a1a2e;">McGybeer</div>
+            <div style="font-weight:500; font-size:21px; line-height:1.35; color:#4a2f44; opacity:0.75;">Print-in-place whales &amp; sharks &middot; Printables</div>
+          </div>
+
+          <!-- note tile -->
+          <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:10px; padding:32px 26px; border-radius:30px; background:rgba(255,255,255,0.55); border:2px dashed rgba(0,0,0,0.14);">
+            <div style="font-weight:700; font-size:28px; color:#2a1a2e;">Add your own</div>
+            <div style="font-weight:500; font-size:20px; line-height:1.35; color:#4a2f44; opacity:0.75;">Edit any name or detail, and drop a logo onto a badge to credit the makers of your prints.</div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════ PRIDE FLAGS PANEL ═══════════ -->
+    <div ref="{{ prideRef }}" style="position:absolute; inset:0; opacity:0; pointer-events:none; transform:translateY(16px); transition:opacity 280ms ease, transform 280ms ease; background:#FFF4F8; display:flex; flex-direction:column;">
+      <div onClick="{{ goHome }}" style="position:absolute; top:34px; left:36px; z-index:5; display:inline-flex; align-items:center; gap:12px; padding:14px 26px 14px 20px; border-radius:999px; cursor:pointer; color:#fff; background-color:#34D374; background-image:url('aesthetic-kit/assets/button-texture.png'); background-size:180px; background-position:center; background-blend-mode:overlay; border:3px solid rgba(0,0,0,0.08); text-shadow:0 1px 0 rgba(0,0,0,0.15); font-weight:600; font-size:24px; box-shadow:inset 0 -4px 0 rgba(0,0,0,0.18), inset 0 3px 0 rgba(255,255,255,0.35), 0 6px 0 #1f8a47, 0 10px 18px rgba(31,138,71,0.32); transition:transform 120ms;" style-active="transform:scale(0.95)">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 5 8 12 15 19"></polyline></svg>
+        Home
+      </div>
+
+      <div style="flex:0 0 auto; padding:34px 56px 14px; text-align:center;">
+        <div style="font-family:'Bagel Fat One',cursive; font-size:46px; color:#2a1a2e; line-height:1;">Pride flags</div>
+        <div style="margin-top:6px; font-weight:500; font-size:21px; color:#4a2f44; opacity:0.8;">Every flag and what it stands for</div>
+      </div>
+
+      <div style="flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:10px 34px 40px;">
+        <div style="display:grid; grid-template-columns:repeat(9, 1fr); gap:22px 12px;">
+
+          <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;">
+            <image-slot id="pride-rainbow" shape="rounded" radius="6" style="width:92px; height:58px; flex:0 0 auto; box-shadow:0 3px 8px rgba(0,0,0,0.16);" placeholder="Flag"></image-slot>
+            <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Rainbow</div>
+            <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">The classic LGBTQ+ flag &mdash; each stripe a facet of community.</div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;">
+            <image-slot id="pride-progress" shape="rounded" radius="6" style="width:92px; height:58px; flex:0 0 auto; box-shadow:0 3px 8px rgba(0,0,0,0.16);" placeholder="Flag"></image-slot>
+            <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Progress</div>
+            <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">Adds trans and BIPOC stripes as a forward-pushing chevron.</div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;">
+            <image-slot id="pride-trans" shape="rounded" radius="6" style="width:92px; height:58px; flex:0 0 auto; box-shadow:0 3px 8px rgba(0,0,0,0.16);" placeholder="Flag"></image-slot>
+            <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Transgender</div>
+            <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">Light blue, pink and white for trans identities.</div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;">
+            <image-slot id="pride-bi" shape="rounded" radius="6" style="width:92px; height:58px; flex:0 0 auto; box-shadow:0 3px 8px rgba(0,0,0,0.16);" placeholder="Flag"></image-slot>
+            <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Bisexual</div>
+            <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">Pink, purple and blue for attraction across genders.</div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;">
+            <image-slot id="pride-lesbian" shape="rounded" radius="6" style="width:92px; height:58px; flex:0 0 auto; box-shadow:0 3px 8px rgba(0,0,0,0.16);" placeholder="Flag"></image-slot>
+            <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Lesbian</div>
+            <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">Shades of orange to pink for love between women.</div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;">
+            <image-slot id="pride-pan" shape="rounded" radius="6" style="width:92px; height:58px; flex:0 0 auto; box-shadow:0 3px 8px rgba(0,0,0,0.16);" placeholder="Flag"></image-slot>
+            <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Pansexual</div>
+            <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">Pink, yellow and blue for attraction regardless of gender.</div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;">
+            <image-slot id="pride-ace" shape="rounded" radius="6" style="width:92px; height:58px; flex:0 0 auto; box-shadow:0 3px 8px rgba(0,0,0,0.16);" placeholder="Flag"></image-slot>
+            <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Asexual</div>
+            <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">Black, grey, white and purple across the ace spectrum.</div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;">
+            <image-slot id="pride-enby" shape="rounded" radius="6" style="width:92px; height:58px; flex:0 0 auto; box-shadow:0 3px 8px rgba(0,0,0,0.16);" placeholder="Flag"></image-slot>
+            <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Non-binary</div>
+            <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">Yellow, white, purple and black beyond the binary.</div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;">
+            <image-slot id="pride-fluid" shape="rounded" radius="6" style="width:92px; height:58px; flex:0 0 auto; box-shadow:0 3px 8px rgba(0,0,0,0.16);" placeholder="Flag"></image-slot>
+            <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Genderfluid</div>
+            <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">Colors for a gender that shifts over time.</div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;">
+            <image-slot id="pride-gq" shape="rounded" radius="6" style="width:92px; height:58px; flex:0 0 auto; box-shadow:0 3px 8px rgba(0,0,0,0.16);" placeholder="Flag"></image-slot>
+            <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Genderqueer</div>
+            <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">Lavender, white and green for queer genders.</div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;">
+            <image-slot id="pride-agender" shape="rounded" radius="6" style="width:92px; height:58px; flex:0 0 auto; box-shadow:0 3px 8px rgba(0,0,0,0.16);" placeholder="Flag"></image-slot>
+            <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Agender</div>
+            <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">Black, grey, white and green for having no gender.</div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;">
+            <image-slot id="pride-intersex" shape="rounded" radius="6" style="width:92px; height:58px; flex:0 0 auto; box-shadow:0 3px 8px rgba(0,0,0,0.16);" placeholder="Flag"></image-slot>
+            <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Intersex</div>
+            <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">Yellow with a purple circle for wholeness and autonomy.</div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;">
+            <image-slot id="pride-aro" shape="rounded" radius="6" style="width:92px; height:58px; flex:0 0 auto; box-shadow:0 3px 8px rgba(0,0,0,0.16);" placeholder="Flag"></image-slot>
+            <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Aromantic</div>
+            <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">Greens and greys for little or no romantic attraction.</div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;">
+            <image-slot id="pride-demi" shape="rounded" radius="6" style="width:92px; height:58px; flex:0 0 auto; box-shadow:0 3px 8px rgba(0,0,0,0.16);" placeholder="Flag"></image-slot>
+            <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Demisexual</div>
+            <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">Attraction that forms only after a close bond.</div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;">
+            <image-slot id="pride-poly" shape="rounded" radius="6" style="width:92px; height:58px; flex:0 0 auto; box-shadow:0 3px 8px rgba(0,0,0,0.16);" placeholder="Flag"></image-slot>
+            <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Polysexual</div>
+            <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">Pink, green and blue for attraction to many genders.</div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;">
+            <image-slot id="pride-omni" shape="rounded" radius="6" style="width:92px; height:58px; flex:0 0 auto; box-shadow:0 3px 8px rgba(0,0,0,0.16);" placeholder="Flag"></image-slot>
+            <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Omnisexual</div>
+            <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">Pinks and blue for attraction to all genders.</div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;">
+            <image-slot id="pride-twospirit" shape="rounded" radius="6" style="width:92px; height:58px; flex:0 0 auto; box-shadow:0 3px 8px rgba(0,0,0,0.16);" placeholder="Flag"></image-slot>
+            <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Two-Spirit</div>
+            <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">Honors Indigenous people holding dual spirits.</div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;">
+            <image-slot id="pride-queer" shape="rounded" radius="6" style="width:92px; height:58px; flex:0 0 auto; box-shadow:0 3px 8px rgba(0,0,0,0.16);" placeholder="Flag"></image-slot>
+            <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Queer</div>
+            <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">An umbrella reclaiming the word with pride.</div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════ BRB PANEL ═══════════ -->
+    <div ref="{{ brbRef }}" style="position:absolute; inset:0; z-index:20; opacity:0; pointer-events:none; transition:opacity 400ms ease; background:radial-gradient(circle at 50% 30%, #FFE4EC 0, #FFC9DB 70%, #FFB8CE 100%); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:30px;">
+      <div style="position:absolute; width:120px; height:120px; border-radius:50%; left:14%; top:24%; background:radial-gradient(circle at 35% 30%, #fff, #9FECC4); opacity:0.55; animation:floaty 10s ease-in-out infinite alternate;"></div>
+      <div style="position:absolute; width:70px; height:70px; border-radius:50%; right:16%; top:30%; background:radial-gradient(circle at 35% 30%, #fff, #FFD45B); opacity:0.55; animation:floaty2 8.5s ease-in-out infinite alternate;"></div>
+      <div style="position:absolute; width:56px; height:56px; border-radius:50%; right:24%; bottom:20%; background:radial-gradient(circle at 35% 30%, #fff, #C8B4F2); opacity:0.5; animation:floaty 12s ease-in-out infinite alternate;"></div>
+      <div style="display:flex; flex-direction:column; align-items:center; gap:22px; animation:drift 30s ease-in-out infinite alternate;">
+        <img src="assets/logo.png" alt="Field of Green Prints" style="width:440px; height:auto; filter:drop-shadow(0 6px 0 rgba(0,0,0,0.08)) drop-shadow(0 14px 20px rgba(60,20,40,0.2));">
+        <div style="font-family:'Bagel Fat One',cursive; font-size:88px; color:#FF6FA3; line-height:0.95; text-align:center; text-shadow:0 3px 0 rgba(255,255,255,0.6), 0 8px 16px rgba(193,66,117,0.25);">Be right back!</div>
+        <div style="font-weight:500; font-size:30px; color:#7a4a5e;">Back at the counter in a moment</div>
+      </div>
+    </div>
+
+    <!-- secret corner trigger: press &amp; hold bottom-left ~1.4s to toggle BRB -->
+    <div onPointerDown="{{ brbDown }}" onPointerUp="{{ brbUp }}" onPointerLeave="{{ brbUp }}" onPointerCancel="{{ brbUp }}" style="position:absolute; left:0; bottom:0; width:84px; height:84px; z-index:60; cursor:default;"></div>
+
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { screen: 'home', brb: false, infoSel: 'instagram', paySel: 'zelle' };
+
+  constructor(props) {
+    super(props);
+    this.rootRef = React.createRef();
+    this.infoRef = React.createRef();
+    this.payRef = React.createRef();
+    this.brbRef = React.createRef();
+    this.creditsRef = React.createRef();
+    this.prideRef = React.createRef();
+    this.prideBtnRef = React.createRef();
+    this.infoQrRef = React.createRef();
+    this.payQrRef = React.createRef();
+    this.infoCardRef = React.createRef();
+    this.payCardRef = React.createRef();
+    this._pressTimer = null;
+    this._qrTimer = null;
+    this.qrCache = {};
+    this.brands = {
+      instagram: { color: '#FF6FA3', shadow: 'rgba(255,111,163,0.28)', dark: '#c14275', label: 'Instagram', sub: '@fieldofgreenprints', url: 'https://www.instagram.com/fieldofgreenprints/' },
+      etsy: { color: '#F1641E', shadow: 'rgba(241,100,30,0.28)', dark: '#bd4610', label: 'Etsy', sub: 'fieldofgreenprints.etsy.com', url: 'https://fieldofgreenprints.etsy.com' },
+      zelle: { color: '#6D1ED4', shadow: 'rgba(109,30,212,0.26)', dark: '#4e14a0', label: 'Zelle', sub: 'Scan with your banking app', url: 'https://enroll.zellepay.com/qr-codes?data=eyJuYW1lIjoiTUFUVEhFVyIsInRva2VuIjoiMjQwNzIyMjc1NyIsImFjdGlvbiI6InBheW1lbnQifQ==' },
+      venmo: { color: '#3D95CE', shadow: 'rgba(61,149,206,0.28)', dark: '#2c6f9c', label: 'Venmo', sub: 'Scan in the Venmo app', url: 'https://venmo.com/code?user_id=2222016857899008071&created=1756528263' },
+      paypal: { color: '#003087', shadow: 'rgba(0,48,135,0.26)', dark: '#001d55', label: 'PayPal', sub: 'Scan with your camera or PayPal app', url: 'https://www.paypal.com/qrcodes/managed/15aa2e26-0853-41d1-b75b-e7816938c23d?utm_source=consapp_onscreen' }
+    };
+  }
+
+  componentDidMount() { this.applyScreens(); this.generateAll(); this.updateSelUI(); }
+  componentDidUpdate() { this.applyScreens(); this.updateSelUI(); }
+
+  applyScreens() {
+    const s = this.state.screen;
+    const set = (ref, on) => {
+      const el = ref.current;
+      if (!el) return;
+      el.style.opacity = on ? '1' : '0';
+      el.style.pointerEvents = on ? 'auto' : 'none';
+      el.style.transform = on ? 'translateY(0)' : 'translateY(16px)';
+    };
+    set(this.infoRef, s === 'info');
+    set(this.payRef, s === 'payment');
+    set(this.creditsRef, s === 'credits');
+    set(this.prideRef, s === 'pride');
+    const pb = this.prideBtnRef.current;
+    if (pb) {
+      const showBtn = s === 'home' && !this.state.brb;
+      pb.style.opacity = showBtn ? '1' : '0';
+      pb.style.pointerEvents = showBtn ? 'auto' : 'none';
+    }
+    const b = this.brbRef.current;
+    if (b) {
+      b.style.opacity = this.state.brb ? '1' : '0';
+      b.style.pointerEvents = this.state.brb ? 'auto' : 'none';
+    }
+  }
+
+  goto(screen) { this.setState({ screen }); }
+  select(side, key) { this.setState(side === 'info' ? { infoSel: key } : { paySel: key }); }
+
+  styleBtn(btn, active, brand) {
+    if (active) {
+      btn.style.background = brand.color;
+      btn.style.color = '#fff';
+      btn.style.borderColor = 'rgba(0,0,0,0.08)';
+      btn.style.boxShadow = 'inset 0 -4px 0 rgba(0,0,0,0.18), inset 0 3px 0 rgba(255,255,255,0.28), 0 6px 0 ' + brand.dark + ', 0 12px 20px rgba(0,0,0,0.16)';
+      btn.style.transform = 'translateY(-1px)';
+    } else {
+      btn.style.background = '#fff';
+      btn.style.color = '#2a1a2e';
+      btn.style.borderColor = 'rgba(0,0,0,0.06)';
+      btn.style.boxShadow = '0 4px 0 rgba(0,0,0,0.08), 0 8px 14px rgba(60,20,40,0.1)';
+      btn.style.transform = 'none';
+    }
+  }
+
+  updateSelUI() {
+    const root = this.rootRef.current;
+    if (!root) return;
+    const info = this.state.infoSel;
+    const pay = this.state.paySel;
+    root.querySelectorAll('[data-side][data-sel]').forEach((btn) => {
+      const side = btn.getAttribute('data-side');
+      const key = btn.getAttribute('data-sel');
+      const active = (side === 'info' ? info : pay) === key;
+      this.styleBtn(btn, active, this.brands[key]);
+    });
+    if (this.infoQrRef.current && this.qrCache[info]) this.infoQrRef.current.src = this.qrCache[info];
+    if (this.payQrRef.current && this.qrCache[pay]) this.payQrRef.current.src = this.qrCache[pay];
+    const setCap = (sel, side) => {
+      const b = this.brands[sel];
+      const l = root.querySelector('[data-cap="' + side + '-label"]');
+      const s = root.querySelector('[data-cap="' + side + '-sub"]');
+      if (l) l.textContent = b.label;
+      if (s) s.textContent = b.sub;
+    };
+    setCap(info, 'info');
+    setCap(pay, 'pay');
+    if (this.infoCardRef.current) this.infoCardRef.current.style.boxShadow = 'inset 0 6px 0 rgba(255,255,255,0.6), 0 16px 0 ' + this.brands[info].shadow + ', 0 30px 44px rgba(60,20,40,0.16)';
+    if (this.payCardRef.current) this.payCardRef.current.style.boxShadow = 'inset 0 6px 0 rgba(255,255,255,0.6), 0 16px 0 ' + this.brands[pay].shadow + ', 0 30px 44px rgba(60,20,40,0.16)';
+  }
+
+  generateAll() {
+    if (!window.QRCodeStyling) {
+      clearTimeout(this._qrTimer);
+      this._qrTimer = setTimeout(() => this.generateAll(), 300);
+      return;
+    }
+    Object.entries(this.brands).forEach(([key, b]) => {
+      if (this.qrCache[key]) return;
+      let cached = null;
+      try { cached = localStorage.getItem('fogp_qr_' + key); } catch (e) {}
+      if (cached) { this.qrCache[key] = cached; this.updateSelUI(); return; }
+      const qr = new window.QRCodeStyling({
+        width: 480, height: 480, type: 'canvas', data: b.url, margin: 6,
+        qrOptions: { errorCorrectionLevel: 'H' },
+        dotsOptions: { color: '#2a1a2e', type: 'rounded' },
+        backgroundOptions: { color: '#ffffff' },
+        cornersSquareOptions: { type: 'extra-rounded', color: '#FF6FA3' },
+        cornersDotOptions: { type: 'dot', color: '#34D374' }
+      });
+      qr.getRawData('png').then((blob) => {
+        const r = new FileReader();
+        r.onload = () => {
+          this.qrCache[key] = r.result;
+          try { localStorage.setItem('fogp_qr_' + key, r.result); } catch (e) {}
+          this.updateSelUI();
+        };
+        r.readAsDataURL(blob);
+      });
+    });
+  }
+
+  brbDown() {
+    clearTimeout(this._pressTimer);
+    this._pressTimer = setTimeout(() => {
+      this.setState((s) => ({ brb: !s.brb }));
+    }, 1400);
+  }
+  brbUp() { clearTimeout(this._pressTimer); }
+
+  renderVals() {
+    return {
+      rootRef: this.rootRef,
+      infoRef: this.infoRef,
+      payRef: this.payRef,
+      brbRef: this.brbRef,
+      creditsRef: this.creditsRef,
+      prideRef: this.prideRef,
+      prideBtnRef: this.prideBtnRef,
+      infoQrRef: this.infoQrRef,
+      payQrRef: this.payQrRef,
+      infoCardRef: this.infoCardRef,
+      payCardRef: this.payCardRef,
+      goInfo: () => this.goto('info'),
+      goPay: () => this.goto('payment'),
+      goCredits: () => this.goto('credits'),
+      goPride: () => this.goto('pride'),
+      goHome: () => this.goto('home'),
+      selInstagram: () => this.select('info', 'instagram'),
+      selEtsy: () => this.select('info', 'etsy'),
+      selZelle: () => this.select('pay', 'zelle'),
+      selVenmo: () => this.select('pay', 'venmo'),
+      selPaypal: () => this.select('pay', 'paypal'),
+      brbDown: () => this.brbDown(),
+      brbUp: () => this.brbUp()
+    };
+  }
+}
+</script>
+</body>
+</html>
