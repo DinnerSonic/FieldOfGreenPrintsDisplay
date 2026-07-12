@@ -17,6 +17,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Field of Green">
 <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
+<script src="image-slot.js"></script>
 <style>
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body {
@@ -52,7 +53,7 @@
     <div style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:72px; padding:40px; animation:drift 34s ease-in-out infinite alternate;">
       <img src="assets/logo.png" alt="Field of Green Prints" style="width:680px; height:auto; filter:drop-shadow(0 8px 0 rgba(0,0,0,0.10)) drop-shadow(0 18px 24px rgba(60,20,40,0.22));">
 
-      <div style="display:flex; gap:96px;">
+      <div style="display:flex; gap:64px;">
         <!-- Information -->
         <div onClick="{{ goInfo }}" style="display:flex; flex-direction:column; align-items:center; gap:26px; cursor:pointer; transition:transform 130ms cubic-bezier(.3,.7,.4,1);" style-active="transform:scale(0.95)">
           <div style="position:relative; width:210px; height:210px; border-radius:50%; background-color:#FFD45B; background-image:url('aesthetic-kit/assets/button-texture.png'); background-size:200px; background-position:center; background-blend-mode:overlay; border:3px solid rgba(0,0,0,0.08); box-shadow:inset 0 -7px 0 rgba(0,0,0,0.12), inset 0 6px 0 rgba(255,255,255,0.5), 0 12px 0 #cba23a, 0 22px 34px rgba(60,20,40,0.22); display:flex; align-items:center; justify-content:center;" style-before="content:''; position:absolute; left:16%; right:16%; top:9%; height:26%; border-radius:50%; background:radial-gradient(ellipse at center, rgba(255,255,255,0.72) 0%, rgba(255,255,255,0) 70%); pointer-events:none;">
@@ -68,7 +69,20 @@
           </div>
           <div style="padding:14px 34px; border-radius:999px; background:#fff; border:2.5px solid rgba(0,0,0,0.08); box-shadow:0 4px 0 rgba(0,0,0,0.08), 0 8px 14px rgba(60,20,40,0.1); font-weight:700; font-size:32px; color:#2a1a2e;">Payment</div>
         </div>
+
+        <!-- Credits -->
+        <div onClick="{{ goCredits }}" style="display:flex; flex-direction:column; align-items:center; gap:26px; cursor:pointer; transition:transform 130ms cubic-bezier(.3,.7,.4,1);" style-active="transform:scale(0.95)">
+          <div style="position:relative; width:210px; height:210px; border-radius:50%; background-color:#C1A6F2; background-image:url('aesthetic-kit/assets/button-texture.png'); background-size:200px; background-position:center; background-blend-mode:overlay; border:3px solid rgba(0,0,0,0.08); box-shadow:inset 0 -7px 0 rgba(0,0,0,0.14), inset 0 6px 0 rgba(255,255,255,0.45), 0 12px 0 #9575D6, 0 22px 34px rgba(120,80,180,0.3); display:flex; align-items:center; justify-content:center;" style-before="content:''; position:absolute; left:16%; right:16%; top:9%; height:26%; border-radius:50%; background:radial-gradient(ellipse at center, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0) 70%); pointer-events:none;">
+            <svg width="82" height="82" viewBox="0 0 24 24" fill="none" stroke="#2a1a2e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 3 7v10l9 5 9-5V7z"></path><path d="M3 7l9 5 9-5"></path><path d="M12 12v10"></path></svg>
+          </div>
+          <div style="padding:14px 34px; border-radius:999px; background:#fff; border:2.5px solid rgba(0,0,0,0.08); box-shadow:0 4px 0 rgba(0,0,0,0.08), 0 8px 14px rgba(60,20,40,0.1); font-weight:700; font-size:32px; color:#2a1a2e;">Credits</div>
+        </div>
       </div>
+    </div>
+
+    <!-- Pride flags button (bottom-right, home only) -->
+    <div ref="{{ prideBtnRef }}" onClick="{{ goPride }}" style="position:absolute; right:30px; bottom:30px; z-index:6; width:82px; height:82px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; background:#fff; border:3px solid rgba(0,0,0,0.06); box-shadow:inset 0 4px 0 rgba(255,255,255,0.6), 0 6px 0 rgba(0,0,0,0.08), 0 12px 20px rgba(60,20,40,0.16); transition:transform 130ms cubic-bezier(.3,.7,.4,1), opacity 240ms ease;" style-active="transform:scale(0.92)">
+      <span style="font-size:44px; line-height:1;">&#127987;&#65039;&#8205;&#127752;</span>
     </div>
 
     <!-- ═══════════ INFORMATION PANEL ═══════════ -->
@@ -159,6 +173,191 @@
       </div>
     </div>
 
+    <!-- ═══════════ CREDITS PANEL ═══════════ -->
+    <div ref="{{ creditsRef }}" style="position:absolute; inset:0; opacity:0; pointer-events:none; transform:translateY(16px); transition:opacity 280ms ease, transform 280ms ease; background:radial-gradient(circle at 82% 10%, rgba(193,166,242,0.22) 0, transparent 46%), #FFD9E3; display:flex; flex-direction:column;">
+      <div onClick="{{ goHome }}" style="position:absolute; top:34px; left:36px; z-index:5; display:inline-flex; align-items:center; gap:12px; padding:14px 26px 14px 20px; border-radius:999px; cursor:pointer; color:#fff; background-color:#34D374; background-image:url('aesthetic-kit/assets/button-texture.png'); background-size:180px; background-position:center; background-blend-mode:overlay; border:3px solid rgba(0,0,0,0.08); text-shadow:0 1px 0 rgba(0,0,0,0.15); font-weight:600; font-size:24px; box-shadow:inset 0 -4px 0 rgba(0,0,0,0.18), inset 0 3px 0 rgba(255,255,255,0.35), 0 6px 0 #1f8a47, 0 10px 18px rgba(31,138,71,0.32); transition:transform 120ms;" style-active="transform:scale(0.95)">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 5 8 12 15 19"></polyline></svg>
+        Home
+      </div>
+
+      <div style="flex:0 0 auto; padding:98px 56px 16px; text-align:center;">
+        <div style="font-family:'Bagel Fat One',cursive; font-size:50px; color:#2a1a2e; line-height:1;">Print credits</div>
+        <div style="margin-top:8px; font-weight:500; font-size:22px; color:#4a2f44; opacity:0.8;">With thanks to the makers behind our prints</div>
+      </div>
+
+      <div style="flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:8px 56px 46px;">
+        <div style="max-width:900px; margin:0 auto; display:grid; grid-template-columns:repeat(2, 1fr); gap:20px; align-items:stretch;">
+
+          <!-- badge tile -->
+          <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:16px; padding:32px 24px; border-radius:30px; background:#fff; border:3px solid rgba(0,0,0,0.05); box-shadow:0 8px 0 rgba(0,0,0,0.05), 0 16px 26px rgba(60,20,40,0.1);">
+            <image-slot id="credit-flexi" shape="circle" style="width:150px; height:150px; flex:0 0 auto;" placeholder="Logo"></image-slot>
+            <div style="font-weight:700; font-size:31px; color:#2a1a2e;">FlexiFactory</div>
+            <div style="font-weight:500; font-size:21px; line-height:1.35; color:#4a2f44; opacity:0.75;">Flexi Rex &amp; articulated animals &middot; MyMiniFactory</div>
+          </div>
+
+          <!-- text tile -->
+          <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:14px; padding:32px 24px; border-radius:30px; background:#fff; border:3px solid rgba(0,0,0,0.05); box-shadow:0 8px 0 rgba(0,0,0,0.05), 0 16px 26px rgba(60,20,40,0.1);">
+            <div style="font-family:'Bagel Fat One',cursive; font-size:44px; color:#FF6FA3; line-height:1.05;">#3DBenchy</div>
+            <div style="font-weight:500; font-size:21px; line-height:1.35; color:#4a2f44; opacity:0.75;">The jolly 3D-printing torture test &middot; Creative Tools</div>
+          </div>
+
+          <!-- badge tile -->
+          <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:16px; padding:32px 24px; border-radius:30px; background:#fff; border:3px solid rgba(0,0,0,0.05); box-shadow:0 8px 0 rgba(0,0,0,0.05), 0 16px 26px rgba(60,20,40,0.1);">
+            <image-slot id="credit-cinderwing" shape="circle" style="width:150px; height:150px; flex:0 0 auto;" placeholder="Logo"></image-slot>
+            <div style="font-weight:700; font-size:31px; color:#2a1a2e;">CinderWing3D</div>
+            <div style="font-weight:500; font-size:21px; line-height:1.35; color:#4a2f44; opacity:0.75;">Articulated dragons &amp; creatures &middot; Printables</div>
+          </div>
+
+          <!-- text tile -->
+          <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:14px; padding:32px 24px; border-radius:30px; background:#fff; border:3px solid rgba(0,0,0,0.05); box-shadow:0 8px 0 rgba(0,0,0,0.05), 0 16px 26px rgba(60,20,40,0.1);">
+            <div style="font-family:'Bagel Fat One',cursive; font-size:40px; color:#1f8a47; line-height:1.05;">Baby Groot Planter</div>
+            <div style="font-weight:500; font-size:21px; line-height:1.35; color:#4a2f44; opacity:0.75;">Design by purakito &middot; Thingiverse</div>
+          </div>
+
+          <!-- badge tile -->
+          <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:16px; padding:32px 24px; border-radius:30px; background:#fff; border:3px solid rgba(0,0,0,0.05); box-shadow:0 8px 0 rgba(0,0,0,0.05), 0 16px 26px rgba(60,20,40,0.1);">
+            <image-slot id="credit-mcgybeer" shape="circle" style="width:150px; height:150px; flex:0 0 auto;" placeholder="Logo"></image-slot>
+            <div style="font-weight:700; font-size:31px; color:#2a1a2e;">McGybeer</div>
+            <div style="font-weight:500; font-size:21px; line-height:1.35; color:#4a2f44; opacity:0.75;">Print-in-place whales &amp; sharks &middot; Printables</div>
+          </div>
+
+          <!-- note tile -->
+          <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:10px; padding:32px 26px; border-radius:30px; background:rgba(255,255,255,0.55); border:2px dashed rgba(0,0,0,0.14);">
+            <div style="font-weight:700; font-size:28px; color:#2a1a2e;">Add your own</div>
+            <div style="font-weight:500; font-size:20px; line-height:1.35; color:#4a2f44; opacity:0.75;">Edit any name or detail, and drop a logo onto a badge to credit the makers of your prints.</div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════ PRIDE FLAGS PANEL ═══════════ -->
+    <div ref="{{ prideRef }}" style="position:absolute; inset:0; opacity:0; pointer-events:none; transform:translateY(16px); transition:opacity 280ms ease, transform 280ms ease; background:#FFF4F8; display:flex; flex-direction:column;">
+      <div onClick="{{ goHome }}" style="position:absolute; top:34px; left:36px; z-index:5; display:inline-flex; align-items:center; gap:12px; padding:14px 26px 14px 20px; border-radius:999px; cursor:pointer; color:#fff; background-color:#34D374; background-image:url('aesthetic-kit/assets/button-texture.png'); background-size:180px; background-position:center; background-blend-mode:overlay; border:3px solid rgba(0,0,0,0.08); text-shadow:0 1px 0 rgba(0,0,0,0.15); font-weight:600; font-size:24px; box-shadow:inset 0 -4px 0 rgba(0,0,0,0.18), inset 0 3px 0 rgba(255,255,255,0.35), 0 6px 0 #1f8a47, 0 10px 18px rgba(31,138,71,0.32); transition:transform 120ms;" style-active="transform:scale(0.95)">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 5 8 12 15 19"></polyline></svg>
+        Home
+      </div>
+
+      <div style="flex:0 0 auto; padding:34px 56px 14px; text-align:center;">
+        <div style="font-family:'Bagel Fat One',cursive; font-size:46px; color:#2a1a2e; line-height:1;">Pride flags</div>
+        <div style="margin-top:6px; font-weight:500; font-size:21px; color:#4a2f44; opacity:0.8;">Every flag and what it stands for</div>
+      </div>
+
+      <div style="flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:10px 34px 40px;">
+        <div style="display:grid; grid-template-columns:repeat(9, 1fr); gap:22px 12px;">
+
+          <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;">
+            <image-slot id="pride-rainbow" shape="rounded" radius="6" style="width:92px; height:58px; flex:0 0 auto; box-shadow:0 3px 8px rgba(0,0,0,0.16);" placeholder="Flag"></image-slot>
+            <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Rainbow</div>
+            <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">The classic LGBTQ+ flag &mdash; each stripe a facet of community.</div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;">
+            <image-slot id="pride-progress" shape="rounded" radius="6" style="width:92px; height:58px; flex:0 0 auto; box-shadow:0 3px 8px rgba(0,0,0,0.16);" placeholder="Flag"></image-slot>
+            <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Progress</div>
+            <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">Adds trans and BIPOC stripes as a forward-pushing chevron.</div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;">
+            <image-slot id="pride-trans" shape="rounded" radius="6" style="width:92px; height:58px; flex:0 0 auto; box-shadow:0 3px 8px rgba(0,0,0,0.16);" placeholder="Flag"></image-slot>
+            <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Transgender</div>
+            <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">Light blue, pink and white for trans identities.</div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;">
+            <image-slot id="pride-bi" shape="rounded" radius="6" style="width:92px; height:58px; flex:0 0 auto; box-shadow:0 3px 8px rgba(0,0,0,0.16);" placeholder="Flag"></image-slot>
+            <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Bisexual</div>
+            <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">Pink, purple and blue for attraction across genders.</div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;">
+            <image-slot id="pride-lesbian" shape="rounded" radius="6" style="width:92px; height:58px; flex:0 0 auto; box-shadow:0 3px 8px rgba(0,0,0,0.16);" placeholder="Flag"></image-slot>
+            <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Lesbian</div>
+            <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">Shades of orange to pink for love between women.</div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;">
+            <image-slot id="pride-pan" shape="rounded" radius="6" style="width:92px; height:58px; flex:0 0 auto; box-shadow:0 3px 8px rgba(0,0,0,0.16);" placeholder="Flag"></image-slot>
+            <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Pansexual</div>
+            <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">Pink, yellow and blue for attraction regardless of gender.</div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;">
+            <image-slot id="pride-ace" shape="rounded" radius="6" style="width:92px; height:58px; flex:0 0 auto; box-shadow:0 3px 8px rgba(0,0,0,0.16);" placeholder="Flag"></image-slot>
+            <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Asexual</div>
+            <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">Black, grey, white and purple across the ace spectrum.</div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;">
+            <image-slot id="pride-enby" shape="rounded" radius="6" style="width:92px; height:58px; flex:0 0 auto; box-shadow:0 3px 8px rgba(0,0,0,0.16);" placeholder="Flag"></image-slot>
+            <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Non-binary</div>
+            <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">Yellow, white, purple and black beyond the binary.</div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;">
+            <image-slot id="pride-fluid" shape="rounded" radius="6" style="width:92px; height:58px; flex:0 0 auto; box-shadow:0 3px 8px rgba(0,0,0,0.16);" placeholder="Flag"></image-slot>
+            <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Genderfluid</div>
+            <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">Colors for a gender that shifts over time.</div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;">
+            <image-slot id="pride-gq" shape="rounded" radius="6" style="width:92px; height:58px; flex:0 0 auto; box-shadow:0 3px 8px rgba(0,0,0,0.16);" placeholder="Flag"></image-slot>
+            <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Genderqueer</div>
+            <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">Lavender, white and green for queer genders.</div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;">
+            <image-slot id="pride-agender" shape="rounded" radius="6" style="width:92px; height:58px; flex:0 0 auto; box-shadow:0 3px 8px rgba(0,0,0,0.16);" placeholder="Flag"></image-slot>
+            <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Agender</div>
+            <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">Black, grey, white and green for having no gender.</div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;">
+            <image-slot id="pride-intersex" shape="rounded" radius="6" style="width:92px; height:58px; flex:0 0 auto; box-shadow:0 3px 8px rgba(0,0,0,0.16);" placeholder="Flag"></image-slot>
+            <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Intersex</div>
+            <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">Yellow with a purple circle for wholeness and autonomy.</div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;">
+            <image-slot id="pride-aro" shape="rounded" radius="6" style="width:92px; height:58px; flex:0 0 auto; box-shadow:0 3px 8px rgba(0,0,0,0.16);" placeholder="Flag"></image-slot>
+            <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Aromantic</div>
+            <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">Greens and greys for little or no romantic attraction.</div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;">
+            <image-slot id="pride-demi" shape="rounded" radius="6" style="width:92px; height:58px; flex:0 0 auto; box-shadow:0 3px 8px rgba(0,0,0,0.16);" placeholder="Flag"></image-slot>
+            <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Demisexual</div>
+            <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">Attraction that forms only after a close bond.</div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;">
+            <image-slot id="pride-poly" shape="rounded" radius="6" style="width:92px; height:58px; flex:0 0 auto; box-shadow:0 3px 8px rgba(0,0,0,0.16);" placeholder="Flag"></image-slot>
+            <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Polysexual</div>
+            <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">Pink, green and blue for attraction to many genders.</div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;">
+            <image-slot id="pride-omni" shape="rounded" radius="6" style="width:92px; height:58px; flex:0 0 auto; box-shadow:0 3px 8px rgba(0,0,0,0.16);" placeholder="Flag"></image-slot>
+            <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Omnisexual</div>
+            <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">Pinks and blue for attraction to all genders.</div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;">
+            <image-slot id="pride-twospirit" shape="rounded" radius="6" style="width:92px; height:58px; flex:0 0 auto; box-shadow:0 3px 8px rgba(0,0,0,0.16);" placeholder="Flag"></image-slot>
+            <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Two-Spirit</div>
+            <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">Honors Indigenous people holding dual spirits.</div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;">
+            <image-slot id="pride-queer" shape="rounded" radius="6" style="width:92px; height:58px; flex:0 0 auto; box-shadow:0 3px 8px rgba(0,0,0,0.16);" placeholder="Flag"></image-slot>
+            <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Queer</div>
+            <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">An umbrella reclaiming the word with pride.</div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
     <!-- ═══════════ BRB PANEL ═══════════ -->
     <div ref="{{ brbRef }}" style="position:absolute; inset:0; z-index:20; opacity:0; pointer-events:none; transition:opacity 400ms ease; background:radial-gradient(circle at 50% 30%, #FFE4EC 0, #FFC9DB 70%, #FFB8CE 100%); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:30px;">
       <div style="position:absolute; width:120px; height:120px; border-radius:50%; left:14%; top:24%; background:radial-gradient(circle at 35% 30%, #fff, #9FECC4); opacity:0.55; animation:floaty 10s ease-in-out infinite alternate;"></div>
@@ -187,6 +386,9 @@ class Component extends DCLogic {
     this.infoRef = React.createRef();
     this.payRef = React.createRef();
     this.brbRef = React.createRef();
+    this.creditsRef = React.createRef();
+    this.prideRef = React.createRef();
+    this.prideBtnRef = React.createRef();
     this.infoQrRef = React.createRef();
     this.payQrRef = React.createRef();
     this.infoCardRef = React.createRef();
@@ -217,6 +419,14 @@ class Component extends DCLogic {
     };
     set(this.infoRef, s === 'info');
     set(this.payRef, s === 'payment');
+    set(this.creditsRef, s === 'credits');
+    set(this.prideRef, s === 'pride');
+    const pb = this.prideBtnRef.current;
+    if (pb) {
+      const showBtn = s === 'home' && !this.state.brb;
+      pb.style.opacity = showBtn ? '1' : '0';
+      pb.style.pointerEvents = showBtn ? 'auto' : 'none';
+    }
     const b = this.brbRef.current;
     if (b) {
       b.style.opacity = this.state.brb ? '1' : '0';
@@ -314,12 +524,17 @@ class Component extends DCLogic {
       infoRef: this.infoRef,
       payRef: this.payRef,
       brbRef: this.brbRef,
+      creditsRef: this.creditsRef,
+      prideRef: this.prideRef,
+      prideBtnRef: this.prideBtnRef,
       infoQrRef: this.infoQrRef,
       payQrRef: this.payQrRef,
       infoCardRef: this.infoCardRef,
       payCardRef: this.payCardRef,
       goInfo: () => this.goto('info'),
       goPay: () => this.goto('payment'),
+      goCredits: () => this.goto('credits'),
+      goPride: () => this.goto('pride'),
       goHome: () => this.goto('home'),
       selInstagram: () => this.select('info', 'instagram'),
       selEtsy: () => this.select('info', 'etsy'),
