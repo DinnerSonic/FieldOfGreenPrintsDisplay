@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&amp;family=Bagel+Fat+One&amp;display=swap">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Field of Green">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    margin: 0; height: 100%; overflow: hidden;
+    font-family: 'Fredoka', system-ui, sans-serif;
+    background: #3f7a5a;
+    -webkit-font-smoothing: antialiased;
+    user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
+    -webkit-text-size-adjust: 100%;
+  }
+  img { -webkit-user-drag: none; user-drag: none; pointer-events: none; }
+  a { color: #FF6FA3; text-decoration: none; }
+  a:hover { color: #c14275; }
+  @keyframes drift { 0% { transform: translate(-3px,-4px); } 100% { transform: translate(3px,4px); } }
+  @keyframes floaty { 0% { transform: translateY(0); } 100% { transform: translateY(-22px); } }
+  @keyframes floaty2 { 0% { transform: translateY(0); } 100% { transform: translateY(18px); } }
+</style>
+</helmet>
+
+<div ref="{{ rootRef }}" style="position:fixed; inset:0; overflow:hidden; background:#3f7a5a; display:flex; align-items:center; justify-content:center;">
+  <div ref="{{ boxRef }}" style="position:relative; flex:0 0 auto; width:1024px; height:768px; min-width:1024px; min-height:768px; overflow:hidden; box-shadow:0 0 0 1px rgba(0,0,0,0.15); background:radial-gradient(circle at 50% 30%, #FFE4EC 0, #FFC9DB 70%, #FFB8CE 100%); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:30px;">
+
+    <!-- floating candy dots (burn-in guard) -->
+    <div style="position:absolute; width:120px; height:120px; border-radius:50%; left:14%; top:24%; background:radial-gradient(circle at 35% 30%, #fff, #9FECC4); opacity:0.55; animation:floaty 10s ease-in-out infinite alternate;"></div>
+    <div style="position:absolute; width:70px; height:70px; border-radius:50%; right:16%; top:30%; background:radial-gradient(circle at 35% 30%, #fff, #FFD45B); opacity:0.55; animation:floaty2 8.5s ease-in-out infinite alternate;"></div>
+    <div style="position:absolute; width:56px; height:56px; border-radius:50%; right:24%; bottom:20%; background:radial-gradient(circle at 35% 30%, #fff, #C8B4F2); opacity:0.5; animation:floaty 12s ease-in-out infinite alternate;"></div>
+    <div style="position:absolute; width:64px; height:64px; border-radius:50%; left:22%; bottom:16%; background:radial-gradient(circle at 35% 30%, #fff, #9FECC4); opacity:0.5; animation:floaty2 11s ease-in-out infinite alternate;"></div>
+
+    <div style="display:flex; flex-direction:column; align-items:center; gap:22px; animation:drift 30s ease-in-out infinite alternate;">
+      <img src="assets/logo.png" alt="Field of Green Prints" style="width: 881px; height: 252px; filter: drop-shadow(0 6px 0 rgba(0,0,0,0.08)) drop-shadow(0 14px 20px rgba(60,20,40,0.2))">
+      <div style="font-family:'Bagel Fat One',cursive; font-size:88px; color:#FF6FA3; line-height:0.95; text-align:center; text-shadow:0 3px 0 rgba(255,255,255,0.6), 0 8px 16px rgba(193,66,117,0.25);">We’ll be back<br>at 5:30 PM!</div>
+      <div style="font-weight:500; font-size:30px; color:#7a4a5e;">Thanks for your patience 💚</div>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.rootRef = React.createRef();
+    this.boxRef = React.createRef();
+  }
+
+  componentDidMount() { this.applyViewportMode(); }
+
+  // On PC/browser: keep the fixed 1024x768 iPad frame (mint shows the off-screen area).
+  // When launched as a full-screen home-screen app on the iPad, fill the whole viewport.
+  applyViewportMode() {
+    const standalone = (window.navigator.standalone === true) ||
+      (window.matchMedia && (window.matchMedia('(display-mode: standalone)').matches ||
+                             window.matchMedia('(display-mode: fullscreen)').matches));
+    if (!standalone) return;
+    const root = this.rootRef.current;
+    const box = this.boxRef.current;
+    if (root) root.style.background = '#FFC9DB';
+    if (box) {
+      box.style.flex = '1 1 auto';
+      box.style.width = '100%';
+      box.style.height = '100%';
+      box.style.maxWidth = 'none';
+      box.style.minWidth = '0';
+      box.style.minHeight = '0';
+      box.style.boxShadow = 'none';
+    }
+  }
+
+  renderVals() {
+    return {
+      rootRef: this.rootRef,
+      boxRef: this.boxRef
+    };
+  }
+}
+</script>
+</body>
+</html>
