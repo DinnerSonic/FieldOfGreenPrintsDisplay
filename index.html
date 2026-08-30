@@ -10,9 +10,12 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 <title>Field of Green Prints</title>
-<!-- Redirect the bare root URL to the app -->
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<!-- Redirect the bare root URL to the app, cache-busted so the iPad never serves a stale build -->
 <meta http-equiv="refresh" content="0; url=index.dc.html">
-<script>location.replace('index.dc.html');</script>
+<script>location.replace('index.dc.html?v=' + Date.now());</script>
 <style>
   html, body { margin: 0; height: 100%; background: #9FECC4; }
 </style>
