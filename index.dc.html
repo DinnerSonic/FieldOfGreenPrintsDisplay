@@ -692,15 +692,26 @@ class Component extends DCLogic {
     if (!standalone) { this.fitStage(); return; }
     const root = this.rootRef.current;
     const box = this.boxRef.current;
-    if (root) root.style.background = '#FFD9E3';
+    // iOS standalone can report a viewport a few px shorter than the real window;
+    // whatever sliver the fixed layer misses shows html/body, so make those pink too.
+    document.documentElement.style.background = '#FFD9E3';
+    document.body.style.background = '#FFD9E3';
+    if (root) {
+      root.style.background = '#FFD9E3';
+      root.style.height = '100dvh';
+      root.style.minHeight = '100vh';
+      root.style.bottom = 'auto';
+    }
     if (box) {
       box.style.flex = '0 0 auto';
       // Size from the visual viewport in real px — html/body 100% can overshoot in
       // a home-screen app (translucent status bar / home indicator), which is what
       // was clipping the bottom edge.
       const vv = window.visualViewport;
-      box.style.width = Math.round(vv ? vv.width : window.innerWidth) + 'px';
-      box.style.height = Math.round(vv ? vv.height : window.innerHeight) + 'px';
+      const w = Math.round(Math.max(vv ? vv.width : 0, window.innerWidth || 0, document.documentElement.clientWidth || 0));
+      const h = Math.round(Math.max(vv ? vv.height : 0, window.innerHeight || 0, document.documentElement.clientHeight || 0));
+      box.style.width = w + 'px';
+      box.style.height = h + 'px';
       box.style.maxWidth = 'none';
       box.style.minWidth = '0';
       box.style.minHeight = '0';
