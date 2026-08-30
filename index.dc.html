@@ -569,7 +569,7 @@
     </div>
 
     <!-- build stamp: confirms which version the iPad is actually running -->
-    <div style="position:absolute; left:8px; bottom:5px; z-index:70; pointer-events:none; font-family:ui-monospace,monospace; font-size:11px; letter-spacing:0.02em; color:#4a2f44; opacity:0.28;">build 2026-08-30 · mint</div>
+    <div style="position:absolute; left:8px; bottom:5px; z-index:70; pointer-events:none; font-family:ui-monospace,monospace; font-size:11px; letter-spacing:0.02em; color:#4a2f44; opacity:0.28;">build 2026-08-30b · lvh</div>
 
     <!-- secret corner trigger: press &amp; hold bottom-left ~1.4s to toggle BRB -->
     <div onPointerDown="{{ brbDown }}" onPointerUp="{{ brbUp }}" onPointerLeave="{{ brbUp }}" onPointerCancel="{{ brbUp }}" style="position:absolute; left:0; bottom:0; width:84px; height:84px; z-index:60; cursor:default;"></div>
@@ -705,8 +705,14 @@ class Component extends DCLogic {
     document.body.style.background = '#9FECC4';
     if (root) {
       root.style.background = '#9FECC4';
+      // Fallback chain — the last unit the browser understands wins. lvh is the full
+      // window height, so it ignores the short numbers iOS reports.
+      root.style.height = '100%';
+      root.style.height = '100vh';
       root.style.height = '100dvh';
-      root.style.minHeight = '100vh';
+      root.style.height = '100lvh';
+      root.style.minHeight = '0';
+      root.style.top = '0';
       root.style.bottom = 'auto';
     }
     if (box) {
@@ -714,11 +720,9 @@ class Component extends DCLogic {
       // Size from the visual viewport in real px — html/body 100% can overshoot in
       // a home-screen app (translucent status bar / home indicator), which is what
       // was clipping the bottom edge.
-      const vv = window.visualViewport;
-      const w = Math.round(Math.max(vv ? vv.width : 0, window.innerWidth || 0, document.documentElement.clientWidth || 0));
-      const h = Math.round(Math.max(vv ? vv.height : 0, window.innerHeight || 0, document.documentElement.clientHeight || 0));
-      box.style.width = w + 'px';
-      box.style.height = h + 'px';
+      // No pixel measurement — just fill the parent, which is now 100lvh tall.
+      box.style.width = '100%';
+      box.style.height = '100%';
       box.style.maxWidth = 'none';
       box.style.minWidth = '0';
       box.style.minHeight = '0';
