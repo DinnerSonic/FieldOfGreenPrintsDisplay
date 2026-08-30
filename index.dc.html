@@ -25,7 +25,7 @@
   html, body {
     margin: 0; height: 100%; overflow: hidden;
     font-family: 'Fredoka', system-ui, sans-serif;
-    background: #3f7a5a;
+    background: #FFD9E3;
     -webkit-font-smoothing: antialiased;
     user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
     -webkit-text-size-adjust: 100%;
@@ -39,7 +39,7 @@
 </style>
 </helmet>
 
-<div ref="{{ rootRef }}" style="position:fixed; inset:0; overflow:hidden; background:#3f7a5a; display:flex; align-items:center; justify-content:center;">
+<div ref="{{ rootRef }}" style="position:fixed; inset:0; overflow:hidden; background:#FFD9E3; display:flex; align-items:center; justify-content:center;">
   <!-- On PC: fixed 1024x768 iPad frame, mint = off-screen. On the iPad home-screen app: JS fills the viewport (see applyViewportMode). -->
   <div ref="{{ boxRef }}" style="position:relative; flex:0 0 auto; width:1024px; height:768px; min-width:1024px; min-height:768px; overflow:hidden; box-shadow:0 0 0 1px rgba(0,0,0,0.15);">
 
@@ -657,9 +657,13 @@ class Component extends DCLogic {
   }
 
   isStandalone() {
+    // Treat any touch device as "device mode" — standalone detection is unreliable
+    // for home-screen apps, and a green surround should never be visible there.
+    const mm = window.matchMedia;
     return (window.navigator.standalone === true) ||
-      (window.matchMedia && (window.matchMedia('(display-mode: standalone)').matches ||
-                             window.matchMedia('(display-mode: fullscreen)').matches));
+      (mm && (mm('(display-mode: standalone)').matches ||
+              mm('(display-mode: fullscreen)').matches ||
+              (mm('(pointer: coarse)').matches && mm('(hover: none)').matches)));
   }
 
   // Scale the 1024x768 stage down so it always fits the real viewport — no clipped
