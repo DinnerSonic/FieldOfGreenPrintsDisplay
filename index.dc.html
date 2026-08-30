@@ -97,11 +97,11 @@
       <div style="position:absolute; inset:0; display:flex; gap:44px; padding:112px 52px 96px 56px; animation:drift 36s ease-in-out infinite alternate;">
         <!-- LEFT: blurb + selector buttons -->
         <div style="flex:0 0 400px; display:flex; flex-direction:column;">
-          <div style="flex:1;">
+          <div style="flex:0 1 auto;">
             <div style="font-family:'Bagel Fat One',cursive; font-size:52px; color:#2a1a2e; line-height:1.02;">Let’s stay<br>in touch</div>
             <div style="margin-top:22px; font-weight:500; font-size:24px; line-height:1.45; color:#4a2f44; opacity:0.82; max-width:360px; text-wrap:pretty;">Want to talk more? Feel free to hit me up on Instagram, or check out my selection of products on Etsy!<br><br>Tap a button to pull up its QR code, then scan it with your camera.</div>
           </div>
-          <div style="display:flex; flex-direction:column; gap:16px;">
+          <div style="margin-top:22px; display:flex; flex-direction:column; gap:16px;">
             <div onClick="{{ selInstagram }}" data-side="info" data-sel="instagram" style="display:flex; align-items:center; gap:16px; padding:16px 24px; border-radius:22px; cursor:pointer; background:#fff; color:#2a1a2e; border:3px solid rgba(0,0,0,0.06); box-shadow:0 4px 0 rgba(0,0,0,0.08), 0 8px 14px rgba(60,20,40,0.1); font-weight:600; font-size:27px; transition:transform 120ms;" style-active="transform:scale(0.97)">
               <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5.5"></rect><circle cx="12" cy="12" r="4.2"></circle><circle cx="17.4" cy="6.6" r="1.2" fill="currentColor" stroke="none"></circle></svg>
               Instagram
@@ -109,6 +109,10 @@
             <div onClick="{{ selEtsy }}" data-side="info" data-sel="etsy" style="display:flex; align-items:center; gap:16px; padding:16px 24px; border-radius:22px; cursor:pointer; background:#fff; color:#2a1a2e; border:3px solid rgba(0,0,0,0.06); box-shadow:0 4px 0 rgba(0,0,0,0.08), 0 8px 14px rgba(60,20,40,0.1); font-weight:600; font-size:27px; transition:transform 120ms;" style-active="transform:scale(0.97)">
               <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h12v3M6 4v16h12v-3M6 12h7M13 9v6"></path></svg>
               Etsy
+            </div>
+            <div onClick="{{ openCommission }}" style="margin-top:8px; display:flex; align-items:center; justify-content:center; gap:14px; padding:17px 24px; border-radius:22px; cursor:pointer; color:#2a1a2e; background-color:#FFD45B; background-image:url('aesthetic-kit/assets/button-texture.png'); background-size:180px; background-position:center; background-blend-mode:overlay; border:3px solid rgba(0,0,0,0.08); box-shadow:inset 0 -5px 0 rgba(0,0,0,0.12), inset 0 4px 0 rgba(255,255,255,0.5), 0 6px 0 #cba23a, 0 12px 20px rgba(60,20,40,0.16); font-weight:700; font-size:27px; transition:transform 120ms;" style-active="transform:scale(0.97)">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2a1a2e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"></path></svg>
+              Request a commission
             </div>
           </div>
         </div>
@@ -309,122 +313,246 @@
       </div>
 
       <div style="flex:0 0 auto; padding:34px 56px 14px; text-align:center;">
-        <div style="font-family:'Bagel Fat One',cursive; font-size:46px; color:#2a1a2e; line-height:1;">Pride flags</div>
-        <div style="margin-top:6px; font-weight:500; font-size:21px; color:#4a2f44; opacity:0.8;">Every flag and what it stands for</div>
+        <div style="font-family:'Bagel Fat One',cursive; font-size:46px; color:#2a1a2e; line-height:1;">Pride Flags</div>
+        <div style="margin-top:6px; font-weight:500; font-size:21px; color:#4a2f44; opacity:0.8;">A selection of flags and what they stand for</div>
       </div>
 
       <div style="flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:10px 34px 40px;">
         <div style="display:grid; grid-template-columns:repeat(9, 1fr); gap:22px 12px;">
 
           <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;">
-            <image-slot id="pride-rainbow" shape="rounded" radius="6" style="width:92px; height:58px; flex:0 0 auto; box-shadow:0 3px 8px rgba(0,0,0,0.16);" placeholder="Flag"></image-slot>
+            <img src="assets/PrideFlags/small/LGBT%20Rainbow%20Flag.png" alt="" style="width:92px; height:58px; flex:0 0 auto; object-fit:cover; border-radius:6px; box-shadow:0 3px 8px rgba(0,0,0,0.16);" />
             <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Rainbow</div>
             <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">The classic LGBTQ+ flag — each stripe a facet of community.</div>
           </div>
 
           <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;">
-            <image-slot id="pride-progress" shape="rounded" radius="6" style="width:92px; height:58px; flex:0 0 auto; box-shadow:0 3px 8px rgba(0,0,0,0.16);" placeholder="Flag"></image-slot>
+            <img src="assets/PrideFlags/small/Philadelphia%20Pride.png" alt="" style="width:92px; height:58px; flex:0 0 auto; object-fit:cover; border-radius:6px; box-shadow:0 3px 8px rgba(0,0,0,0.16);" />
+            <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Philadelphia Pride</div>
+            <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">Adds black and brown stripes for LGBTQ+ people of color.</div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;">
+            <img src="assets/PrideFlags/small/Progress%20Pride.png" alt="" style="width:92px; height:58px; flex:0 0 auto; object-fit:cover; border-radius:6px; box-shadow:0 3px 8px rgba(0,0,0,0.16);" />
             <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Progress</div>
             <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">Adds trans and BIPOC stripes as a forward-pushing chevron.</div>
           </div>
 
           <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;">
-            <image-slot id="pride-trans" shape="rounded" radius="6" style="width:92px; height:58px; flex:0 0 auto; box-shadow:0 3px 8px rgba(0,0,0,0.16);" placeholder="Flag"></image-slot>
+            <img src="assets/PrideFlags/small/Transgender.png" alt="" style="width:92px; height:58px; flex:0 0 auto; object-fit:cover; border-radius:6px; box-shadow:0 3px 8px rgba(0,0,0,0.16);" />
             <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Transgender</div>
             <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">Light blue, pink and white for trans identities.</div>
           </div>
 
           <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;">
-            <image-slot id="pride-bi" shape="rounded" radius="6" style="width:92px; height:58px; flex:0 0 auto; box-shadow:0 3px 8px rgba(0,0,0,0.16);" placeholder="Flag"></image-slot>
+            <img src="assets/PrideFlags/small/bisexual.png" alt="" style="width:92px; height:58px; flex:0 0 auto; object-fit:cover; border-radius:6px; box-shadow:0 3px 8px rgba(0,0,0,0.16);" />
             <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Bisexual</div>
             <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">Pink, purple and blue for attraction across genders.</div>
           </div>
 
           <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;">
-            <image-slot id="pride-lesbian" shape="rounded" radius="6" style="width:92px; height:58px; flex:0 0 auto; box-shadow:0 3px 8px rgba(0,0,0,0.16);" placeholder="Flag"></image-slot>
+            <img src="assets/PrideFlags/small/Lesbian.png" alt="" style="width:92px; height:58px; flex:0 0 auto; object-fit:cover; border-radius:6px; box-shadow:0 3px 8px rgba(0,0,0,0.16);" />
             <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Lesbian</div>
             <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">Shades of orange to pink for love between women.</div>
           </div>
 
           <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;">
-            <image-slot id="pride-pan" shape="rounded" radius="6" style="width:92px; height:58px; flex:0 0 auto; box-shadow:0 3px 8px rgba(0,0,0,0.16);" placeholder="Flag"></image-slot>
+            <img src="assets/PrideFlags/small/Pan.png" alt="" style="width:92px; height:58px; flex:0 0 auto; object-fit:cover; border-radius:6px; box-shadow:0 3px 8px rgba(0,0,0,0.16);" />
             <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Pansexual</div>
             <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">Pink, yellow and blue for attraction regardless of gender.</div>
           </div>
 
           <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;">
-            <image-slot id="pride-ace" shape="rounded" radius="6" style="width:92px; height:58px; flex:0 0 auto; box-shadow:0 3px 8px rgba(0,0,0,0.16);" placeholder="Flag"></image-slot>
+            <img src="assets/PrideFlags/small/Asexual.png" alt="" style="width:92px; height:58px; flex:0 0 auto; object-fit:cover; border-radius:6px; box-shadow:0 3px 8px rgba(0,0,0,0.16);" />
             <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Asexual</div>
             <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">Black, grey, white and purple across the ace spectrum.</div>
           </div>
 
           <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;">
-            <image-slot id="pride-enby" shape="rounded" radius="6" style="width:92px; height:58px; flex:0 0 auto; box-shadow:0 3px 8px rgba(0,0,0,0.16);" placeholder="Flag"></image-slot>
+            <img src="assets/PrideFlags/small/Nonbinary.png" alt="" style="width:92px; height:58px; flex:0 0 auto; object-fit:cover; border-radius:6px; box-shadow:0 3px 8px rgba(0,0,0,0.16);" />
             <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Non-binary</div>
             <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">Yellow, white, purple and black beyond the binary.</div>
           </div>
 
           <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;">
-            <image-slot id="pride-fluid" shape="rounded" radius="6" style="width:92px; height:58px; flex:0 0 auto; box-shadow:0 3px 8px rgba(0,0,0,0.16);" placeholder="Flag"></image-slot>
+            <img src="assets/PrideFlags/small/genderfluid.png" alt="" style="width:92px; height:58px; flex:0 0 auto; object-fit:cover; border-radius:6px; box-shadow:0 3px 8px rgba(0,0,0,0.16);" />
             <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Genderfluid</div>
             <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">Colors for a gender that shifts over time.</div>
           </div>
 
           <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;">
-            <image-slot id="pride-gq" shape="rounded" radius="6" style="width:92px; height:58px; flex:0 0 auto; box-shadow:0 3px 8px rgba(0,0,0,0.16);" placeholder="Flag"></image-slot>
+            <img src="assets/PrideFlags/small/Genderqueer.png" alt="" style="width:92px; height:58px; flex:0 0 auto; object-fit:cover; border-radius:6px; box-shadow:0 3px 8px rgba(0,0,0,0.16);" />
             <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Genderqueer</div>
             <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">Lavender, white and green for queer genders.</div>
           </div>
 
           <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;">
-            <image-slot id="pride-agender" shape="rounded" radius="6" style="width:92px; height:58px; flex:0 0 auto; box-shadow:0 3px 8px rgba(0,0,0,0.16);" placeholder="Flag"></image-slot>
+            <img src="assets/PrideFlags/small/Agender.png" alt="" style="width:92px; height:58px; flex:0 0 auto; object-fit:cover; border-radius:6px; box-shadow:0 3px 8px rgba(0,0,0,0.16);" />
             <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Agender</div>
             <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">Black, grey, white and green for having no gender.</div>
           </div>
 
           <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;">
-            <image-slot id="pride-intersex" shape="rounded" radius="6" style="width:92px; height:58px; flex:0 0 auto; box-shadow:0 3px 8px rgba(0,0,0,0.16);" placeholder="Flag"></image-slot>
+            <img src="assets/PrideFlags/small/intersex.png" alt="" style="width:92px; height:58px; flex:0 0 auto; object-fit:cover; border-radius:6px; box-shadow:0 3px 8px rgba(0,0,0,0.16);" />
             <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Intersex</div>
             <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">Yellow with a purple circle for wholeness and autonomy.</div>
           </div>
 
           <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;">
-            <image-slot id="pride-aro" shape="rounded" radius="6" style="width:92px; height:58px; flex:0 0 auto; box-shadow:0 3px 8px rgba(0,0,0,0.16);" placeholder="Flag"></image-slot>
+            <img src="assets/PrideFlags/small/Aromantic.png" alt="" style="width:92px; height:58px; flex:0 0 auto; object-fit:cover; border-radius:6px; box-shadow:0 3px 8px rgba(0,0,0,0.16);" />
             <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Aromantic</div>
             <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">Greens and greys for little or no romantic attraction.</div>
           </div>
 
           <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;">
-            <image-slot id="pride-demi" shape="rounded" radius="6" style="width:92px; height:58px; flex:0 0 auto; box-shadow:0 3px 8px rgba(0,0,0,0.16);" placeholder="Flag"></image-slot>
-            <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Demisexual</div>
-            <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">Attraction that forms only after a close bond.</div>
+            <img src="assets/PrideFlags/small/Gay%20Man.png" alt="" style="width:92px; height:58px; flex:0 0 auto; object-fit:cover; border-radius:6px; box-shadow:0 3px 8px rgba(0,0,0,0.16);" />
+            <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Gay Man</div>
+            <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">Teals, white and blues for gay and MLM identities.</div>
           </div>
 
           <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;">
-            <image-slot id="pride-poly" shape="rounded" radius="6" style="width:92px; height:58px; flex:0 0 auto; box-shadow:0 3px 8px rgba(0,0,0,0.16);" placeholder="Flag"></image-slot>
-            <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Polysexual</div>
-            <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">Pink, green and blue for attraction to many genders.</div>
+            <img src="assets/PrideFlags/small/Black%20Trans%20Pride.png" alt="" style="width:92px; height:58px; flex:0 0 auto; object-fit:cover; border-radius:6px; box-shadow:0 3px 8px rgba(0,0,0,0.16);" />
+            <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Black Trans Pride</div>
+            <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">Trans colors with a black stripe for Black trans lives.</div>
           </div>
 
           <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;">
-            <image-slot id="pride-omni" shape="rounded" radius="6" style="width:92px; height:58px; flex:0 0 auto; box-shadow:0 3px 8px rgba(0,0,0,0.16);" placeholder="Flag"></image-slot>
-            <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Omnisexual</div>
-            <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">Pinks and blue for attraction to all genders.</div>
+            <img src="assets/PrideFlags/small/Gray%20Aromantic.png" alt="" style="width:92px; height:58px; flex:0 0 auto; object-fit:cover; border-radius:6px; box-shadow:0 3px 8px rgba(0,0,0,0.16);" />
+            <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Gray-Aromantic</div>
+            <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">For romantic attraction felt rarely or faintly.</div>
           </div>
 
           <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;">
-            <image-slot id="pride-twospirit" shape="rounded" radius="6" style="width:92px; height:58px; flex:0 0 auto; box-shadow:0 3px 8px rgba(0,0,0,0.16);" placeholder="Flag"></image-slot>
-            <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Two-Spirit</div>
-            <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">Honors Indigenous people holding dual spirits.</div>
+            <img src="assets/PrideFlags/small/Gray%20Asexual.png" alt="" style="width:92px; height:58px; flex:0 0 auto; object-fit:cover; border-radius:6px; box-shadow:0 3px 8px rgba(0,0,0,0.16);" />
+            <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Gray-Asexual</div>
+            <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">For sexual attraction felt rarely or faintly.</div>
           </div>
 
           <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;">
-            <image-slot id="pride-queer" shape="rounded" radius="6" style="width:92px; height:58px; flex:0 0 auto; box-shadow:0 3px 8px rgba(0,0,0,0.16);" placeholder="Flag"></image-slot>
-            <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Queer</div>
-            <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">An umbrella reclaiming the word with pride.</div>
+            <img src="assets/PrideFlags/small/Maverique.png" alt="" style="width:92px; height:58px; flex:0 0 auto; object-fit:cover; border-radius:6px; box-shadow:0 3px 8px rgba(0,0,0,0.16);" />
+            <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Maverique</div>
+            <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">Yellow, white and orange for a gender apart from the binary.</div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;">
+            <img src="assets/PrideFlags/small/Neutrois.png" alt="" style="width:92px; height:58px; flex:0 0 auto; object-fit:cover; border-radius:6px; box-shadow:0 3px 8px rgba(0,0,0,0.16);" />
+            <div style="font-weight:700; font-size:15px; color:#2a1a2e; line-height:1.15;">Neutrois</div>
+            <div style="font-weight:500; font-size:12.5px; line-height:1.3; color:#4a2f44; opacity:0.75;">White, green and black for a neutral or null gender.</div>
           </div>
 
         </div>
+
+        <div style="margin-top:26px; text-align:center; font-weight:600; font-size:15px; color:#4a2f44; opacity:0.7;">More flags in the works — ask if you don't see yours.</div>
+      </div>
+    </div>
+
+    <!-- ═══════════ COMMISSION FORM PANEL ═══════════ -->
+    <div ref="{{ commissionRef }}" style="position:absolute; inset:0; z-index:20; opacity:0; pointer-events:none; transform:translateY(16px); transition:opacity 280ms ease, transform 280ms ease; background:radial-gradient(circle at 18% 88%, rgba(255,255,255,0.5) 0, transparent 46%), #FFD9E3; display:flex; align-items:center; justify-content:center; padding:34px;">
+      <div style="width:100%; max-width:800px; max-height:100%; overflow-y:auto; -webkit-overflow-scrolling:touch; background:#fff; border:3px solid rgba(0,0,0,0.06); border-radius:38px; box-shadow:inset 0 6px 0 rgba(255,255,255,0.6), 0 16px 0 rgba(255,111,163,0.24), 0 30px 44px rgba(60,20,40,0.16); padding:28px 40px 26px;">
+        <div style="font-family:'Bagel Fat One',cursive; font-size:44px; color:#2a1a2e; line-height:1.02;">Commission request</div>
+        <div style="margin-top:6px; font-weight:500; font-size:20px; color:#4a2f44; opacity:0.8;">Tell me a bit about the piece you have in mind.</div>
+
+        <div style="margin-top:18px; display:flex; flex-direction:column; gap:14px;">
+          <label style="display:flex; flex-direction:column; gap:7px; font-weight:600; font-size:20px; color:#2a1a2e;">
+            Name
+            <input ref="{{ nameRef }}" type="text" placeholder="Your name" style="width:100%; padding:14px 18px; border-radius:16px; border:3px solid rgba(0,0,0,0.08); background:#fff; font-family:'Fredoka',sans-serif; font-size:21px; color:#2a1a2e; outline:none; -webkit-user-select:text; user-select:text; box-shadow:inset 0 2px 4px rgba(0,0,0,0.04);" style-focus="border-color:#FF6FA3">
+          </label>
+          <label style="display:flex; flex-direction:column; gap:7px; font-weight:600; font-size:20px; color:#2a1a2e;">
+            Contact <span style="color:#FF6FA3;">*</span>
+            <input ref="{{ contactRef }}" type="text" placeholder="Email, phone, or @handle" style="width:100%; padding:14px 18px; border-radius:16px; border:3px solid rgba(0,0,0,0.08); background:#fff; font-family:'Fredoka',sans-serif; font-size:21px; color:#2a1a2e; outline:none; -webkit-user-select:text; user-select:text; box-shadow:inset 0 2px 4px rgba(0,0,0,0.04);" style-focus="border-color:#FF6FA3">
+          </label>
+          <label style="display:flex; flex-direction:column; gap:7px; font-weight:600; font-size:20px; color:#2a1a2e;">
+            What would you like? <span style="color:#FF6FA3;">*</span>
+            <textarea ref="{{ requestRef }}" rows="3" placeholder="Describe your commission — subject, style, size, anything helpful." style="width:100%; padding:14px 18px; border-radius:16px; border:3px solid rgba(0,0,0,0.08); background:#fff; font-family:'Fredoka',sans-serif; font-size:21px; line-height:1.4; color:#2a1a2e; outline:none; resize:none; -webkit-user-select:text; user-select:text; box-shadow:inset 0 2px 4px rgba(0,0,0,0.04);" style-focus="border-color:#FF6FA3"></textarea>
+          </label>
+
+          <div style="display:flex; flex-direction:column; gap:10px;">
+            <div style="font-weight:600; font-size:20px; color:#2a1a2e;">Photo <span style="opacity:0.6; font-weight:500;">(optional)</span></div>
+            <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
+              <div onClick="{{ startCamera }}" style="display:inline-flex; align-items:center; justify-content:center; gap:12px; padding:14px 22px; border-radius:18px; cursor:pointer; color:#2a1a2e; background:#FFD45B; border:3px solid rgba(0,0,0,0.08); box-shadow:inset 0 -5px 0 rgba(0,0,0,0.12), inset 0 4px 0 rgba(255,255,255,0.5), 0 6px 0 #cba23a, 0 10px 16px rgba(60,20,40,0.14); font-weight:700; font-size:21px; font-family:'Fredoka',sans-serif; transition:transform 120ms;" style-active="transform:scale(0.97)">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2a1a2e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-2.5h6L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"></path><circle cx="12" cy="13" r="3.4"></circle></svg>
+                Take a photo
+              </div>
+              <div ref="{{ photoWrapRef }}" style="display:none; align-items:center; gap:12px;">
+                <img ref="{{ photoImgRef }}" alt="captured photo" style="width:84px; height:84px; border-radius:16px; object-fit:cover; border:3px solid rgba(0,0,0,0.08); pointer-events:none;">
+                <div onClick="{{ removePhoto }}" style="display:inline-flex; align-items:center; gap:8px; padding:11px 18px; border-radius:14px; cursor:pointer; color:#7a4a5e; background:#fff; border:3px solid rgba(0,0,0,0.08); box-shadow:0 4px 0 rgba(0,0,0,0.06); font-weight:600; font-size:18px; transition:transform 120ms;" style-active="transform:scale(0.96)">Remove</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:22px; display:flex; gap:16px;">
+          <div onClick="{{ cancelCommission }}" style="flex:1; display:flex; align-items:center; justify-content:center; padding:17px 24px; border-radius:20px; cursor:pointer; color:#7a4a5e; background:#fff; border:3px solid rgba(0,0,0,0.08); box-shadow:0 4px 0 rgba(0,0,0,0.08), 0 8px 14px rgba(60,20,40,0.1); font-weight:700; font-size:24px; transition:transform 120ms;" style-active="transform:scale(0.98)">Cancel</div>
+          <div onClick="{{ submitStep1 }}" style="flex:2; display:flex; align-items:center; justify-content:center; padding:17px 24px; border-radius:20px; cursor:pointer; color:#fff; background:#FF6FA3; border:3px solid rgba(0,0,0,0.08); box-shadow:inset 0 -5px 0 rgba(0,0,0,0.16), inset 0 4px 0 rgba(255,255,255,0.4), 0 6px 0 #c14275, 0 12px 20px rgba(193,66,117,0.3); font-weight:700; font-size:24px; transition:transform 120ms;" style-active="transform:scale(0.98)">Submit request</div>
+        </div>
+      </div>
+
+      <!-- CAMERA OVERLAY -->
+      <div ref="{{ cameraRef }}" style="position:absolute; inset:0; z-index:35; opacity:0; pointer-events:none; transition:opacity 260ms ease; background:#1a1016; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:26px;">
+        <div ref="{{ cameraMsgRef }}" style="display:none; color:#fff; font-size:24px; font-weight:600; text-align:center; padding:0 40px; max-width:600px; line-height:1.4;"></div>
+        <video ref="{{ videoRef }}" style="width:620px; max-width:84%; height:auto; border-radius:28px; transform:scaleX(-1); background:#000; box-shadow:0 20px 44px rgba(0,0,0,0.5);"></video>
+        <div style="display:flex; align-items:center; justify-content:center; gap:34px;">
+          <div onClick="{{ closeCamera }}" style="display:inline-flex; align-items:center; justify-content:center; padding:15px 28px; border-radius:999px; cursor:pointer; color:#2a1a2e; background:#fff; border:3px solid rgba(0,0,0,0.08); box-shadow:0 5px 0 rgba(0,0,0,0.12); font-weight:700; font-size:22px; transition:transform 120ms;" style-active="transform:scale(0.96)">Cancel</div>
+          <div onClick="{{ capturePhoto }}" style="width:96px; height:96px; border-radius:50%; cursor:pointer; background:#fff; border:5px solid rgba(255,255,255,0.55); display:flex; align-items:center; justify-content:center; box-shadow:0 8px 20px rgba(0,0,0,0.4); transition:transform 120ms;" style-active="transform:scale(0.92)">
+            <div style="width:66px; height:66px; border-radius:50%; background:#FF6FA3; box-shadow:inset 0 -4px 0 rgba(0,0,0,0.15);"></div>
+          </div>
+          <div style="width:120px;"></div>
+        </div>
+        <canvas ref="{{ canvasRef }}" style="display:none;"></canvas>
+      </div>
+    </div>
+
+    <!-- ═══════════ THANK YOU PANEL ═══════════ -->
+    <div ref="{{ thanksRef }}" onPointerDown="{{ thanksDown }}" onPointerUp="{{ thanksUp }}" onPointerLeave="{{ thanksUp }}" onPointerCancel="{{ thanksUp }}" style="position:absolute; inset:0; z-index:22; opacity:0; pointer-events:none; transition:opacity 400ms ease; background:radial-gradient(circle at 50% 30%, #FFE4EC 0, #FFC9DB 70%, #FFB8CE 100%); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:26px;">
+      <div style="position:absolute; width:120px; height:120px; border-radius:50%; left:14%; top:22%; background:radial-gradient(circle at 35% 30%, #fff, #9FECC4); opacity:0.55; animation:floaty 10s ease-in-out infinite alternate;"></div>
+      <div style="position:absolute; width:70px; height:70px; border-radius:50%; right:16%; top:28%; background:radial-gradient(circle at 35% 30%, #fff, #FFD45B); opacity:0.55; animation:floaty2 8.5s ease-in-out infinite alternate;"></div>
+      <div style="position:absolute; width:56px; height:56px; border-radius:50%; right:24%; bottom:20%; background:radial-gradient(circle at 35% 30%, #fff, #C8B4F2); opacity:0.5; animation:floaty 12s ease-in-out infinite alternate;"></div>
+      <div style="display:flex; flex-direction:column; align-items:center; gap:20px; animation:drift 30s ease-in-out infinite alternate;">
+        <div style="font-family:'Bagel Fat One',cursive; font-size:104px; color:#FF6FA3; line-height:0.95; text-align:center; text-shadow:0 3px 0 rgba(255,255,255,0.6), 0 8px 16px rgba(193,66,117,0.25);">Thank you!</div>
+        <div style="font-weight:500; font-size:32px; color:#7a4a5e; text-align:center;">Your request has been received 💚</div>
+      </div>
+    </div>
+
+    <!-- ═══════════ REVIEW PANEL (artist) ═══════════ -->
+    <div ref="{{ reviewRef }}" style="position:absolute; inset:0; z-index:24; opacity:0; pointer-events:none; transform:translateY(16px); transition:opacity 280ms ease, transform 280ms ease; background:radial-gradient(circle at 82% 12%, rgba(193,166,242,0.22) 0, transparent 46%), #FFD9E3; display:flex; align-items:center; justify-content:center; padding:34px;">
+      <div style="width:100%; max-width:820px; max-height:100%; overflow-y:auto; -webkit-overflow-scrolling:touch; background:#fff; border:3px solid rgba(0,0,0,0.06); border-radius:38px; box-shadow:inset 0 6px 0 rgba(255,255,255,0.6), 0 16px 0 rgba(120,60,210,0.22), 0 30px 44px rgba(60,20,40,0.16); padding:32px 40px 30px;">
+        <div style="font-family:'Bagel Fat One',cursive; font-size:40px; color:#2a1a2e; line-height:1.02;">Review &amp; finalize</div>
+        <div style="margin-top:5px; font-weight:500; font-size:19px; color:#4a2f44; opacity:0.8;">Artist only — add price and notes, then save the request.</div>
+
+        <div style="display:flex; flex-direction:column; gap:12px; margin-top:20px; padding:20px 22px; border-radius:22px; background:#FFF4F8; border:2px solid rgba(0,0,0,0.05);">
+          <div style="display:flex; gap:14px;"><div style="width:110px; flex:0 0 auto; font-weight:700; font-size:19px; color:#4a2f44; opacity:0.85;">Name</div><div ref="{{ revNameRef }}" style="flex:1; font-weight:500; font-size:20px; color:#2a1a2e;"></div></div>
+          <div style="display:flex; gap:14px;"><div style="width:110px; flex:0 0 auto; font-weight:700; font-size:19px; color:#4a2f44; opacity:0.85;">Contact</div><div ref="{{ revContactRef }}" style="flex:1; font-weight:500; font-size:20px; color:#2a1a2e;"></div></div>
+          <div style="display:flex; gap:14px;"><div style="width:110px; flex:0 0 auto; font-weight:700; font-size:19px; color:#4a2f44; opacity:0.85;">Request</div><div ref="{{ revRequestRef }}" style="flex:1; font-weight:500; font-size:20px; line-height:1.4; color:#2a1a2e; white-space:pre-wrap;"></div></div>
+          <div ref="{{ revPhotoWrapRef }}" style="display:none; gap:14px; align-items:center;"><div style="width:110px; flex:0 0 auto; font-weight:700; font-size:19px; color:#4a2f44; opacity:0.85;">Photo</div><img ref="{{ revPhotoImgRef }}" alt="photo" style="width:130px; height:130px; border-radius:16px; object-fit:cover; border:3px solid rgba(0,0,0,0.08); pointer-events:none;"></div>
+        </div>
+
+        <div style="margin-top:20px; display:flex; flex-direction:column; gap:18px;">
+          <label style="display:flex; flex-direction:column; gap:7px; font-weight:600; font-size:20px; color:#2a1a2e;">
+            Price
+            <input ref="{{ revPriceRef }}" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%; padding:14px 18px; border-radius:16px; border:3px solid rgba(0,0,0,0.08); background:#fff; font-family:'Fredoka',sans-serif; font-size:21px; color:#2a1a2e; outline:none; -webkit-user-select:text; user-select:text; box-shadow:inset 0 2px 4px rgba(0,0,0,0.04);" style-focus="border-color:#9575D6">
+          </label>
+          <label style="display:flex; flex-direction:column; gap:7px; font-weight:600; font-size:20px; color:#2a1a2e;">
+            Notes
+            <textarea ref="{{ revNotesRef }}" rows="3" placeholder="Private notes for this request" style="width:100%; padding:14px 18px; border-radius:16px; border:3px solid rgba(0,0,0,0.08); background:#fff; font-family:'Fredoka',sans-serif; font-size:21px; line-height:1.4; color:#2a1a2e; outline:none; resize:none; -webkit-user-select:text; user-select:text; box-shadow:inset 0 2px 4px rgba(0,0,0,0.04);" style-focus="border-color:#9575D6"></textarea>
+          </label>
+        </div>
+
+        <div style="margin-top:26px; display:flex;">
+          <div onClick="{{ submitFinal }}" style="flex:1; display:flex; align-items:center; justify-content:center; gap:12px; padding:17px 24px; border-radius:20px; cursor:pointer; color:#fff; background:#34D374; border:3px solid rgba(0,0,0,0.08); box-shadow:inset 0 -5px 0 rgba(0,0,0,0.18), inset 0 4px 0 rgba(255,255,255,0.35), 0 6px 0 #1f8a47, 0 12px 20px rgba(31,138,71,0.3); text-shadow:0 1px 0 rgba(0,0,0,0.15); font-weight:700; font-size:24px; transition:transform 120ms;" style-active="transform:scale(0.98)">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"></path><path d="M22 2 15 22l-4-9-9-4z"></path></svg>
+            Save &amp; send
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════ SEND STATUS PANEL ═══════════ -->
+    <div ref="{{ statusRef }}" style="position:absolute; inset:0; z-index:26; opacity:0; pointer-events:none; transform:translateY(16px); transition:opacity 280ms ease, transform 280ms ease; background:radial-gradient(circle at 50% 30%, #FFF0F5 0, #FFD9E3 72%); display:flex; align-items:center; justify-content:center; padding:40px;">
+      <div style="width:100%; max-width:640px; text-align:center; background:#fff; border:3px solid rgba(0,0,0,0.06); border-radius:40px; box-shadow:inset 0 6px 0 rgba(255,255,255,0.6), 0 16px 0 rgba(255,111,163,0.24), 0 30px 44px rgba(60,20,40,0.16); padding:52px 46px 44px;">
+        <div ref="{{ statusIconRef }}" style="font-size:96px; line-height:1; color:#1f8a47;">✓</div>
+        <div ref="{{ statusTitleRef }}" style="margin-top:14px; font-family:'Bagel Fat One',cursive; font-size:46px; color:#2a1a2e; line-height:1.05;">Saved!</div>
+        <div ref="{{ statusSubRef }}" style="margin-top:12px; font-weight:500; font-size:23px; line-height:1.4; color:#4a2f44; opacity:0.82;"></div>
+        <div onClick="{{ returnMenu }}" style="margin-top:36px; display:inline-flex; align-items:center; justify-content:center; gap:12px; padding:17px 40px; border-radius:999px; cursor:pointer; color:#fff; background:#34D374; border:3px solid rgba(0,0,0,0.08); box-shadow:inset 0 -5px 0 rgba(0,0,0,0.18), inset 0 4px 0 rgba(255,255,255,0.35), 0 6px 0 #1f8a47, 0 12px 20px rgba(31,138,71,0.3); text-shadow:0 1px 0 rgba(0,0,0,0.15); font-weight:700; font-size:24px; transition:transform 120ms;" style-active="transform:scale(0.97)">Return to main menu</div>
       </div>
     </div>
 
@@ -448,7 +576,7 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script>
 class Component extends DCLogic {
-  state = { screen: 'home', brb: false, infoSel: 'instagram', paySel: 'zelle' };
+  state = { screen: 'home', brb: false, infoSel: 'instagram', paySel: 'zelle', cameraOpen: false };
 
   constructor(props) {
     super(props);
@@ -464,6 +592,40 @@ class Component extends DCLogic {
     this.payQrRef = React.createRef();
     this.infoCardRef = React.createRef();
     this.payCardRef = React.createRef();
+
+    // ── Commission flow refs ──
+    this.commissionRef = React.createRef();
+    this.cameraRef = React.createRef();
+    this.thanksRef = React.createRef();
+    this.reviewRef = React.createRef();
+    this.statusRef = React.createRef();
+    this.nameRef = React.createRef();
+    this.contactRef = React.createRef();
+    this.requestRef = React.createRef();
+    this.photoWrapRef = React.createRef();
+    this.photoImgRef = React.createRef();
+    this.videoRef = React.createRef();
+    this.canvasRef = React.createRef();
+    this.cameraMsgRef = React.createRef();
+    this.revNameRef = React.createRef();
+    this.revContactRef = React.createRef();
+    this.revRequestRef = React.createRef();
+    this.revPhotoWrapRef = React.createRef();
+    this.revPhotoImgRef = React.createRef();
+    this.revPriceRef = React.createRef();
+    this.revNotesRef = React.createRef();
+    this.statusIconRef = React.createRef();
+    this.statusTitleRef = React.createRef();
+    this.statusSubRef = React.createRef();
+    this._photo = null;
+    this.draft = null;
+    this._stream = null;
+    this._thanksTimer = null;
+
+    // ═══ PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL BETWEEN THE QUOTES BELOW ═══
+    // Leave it empty ('') to run in local-backup mode (saves on the iPad only).
+    this.APPS_SCRIPT_URL = '';
+
     this._pressTimer = null;
     this._qrTimer = null;
     this.qrCache = {};
@@ -476,7 +638,16 @@ class Component extends DCLogic {
     };
   }
 
-  componentDidMount() { this.applyViewportMode(); this.applyScreens(); this.generateAll(); this.updateSelUI(); }
+  componentDidMount() {
+    this.applyViewportMode(); this.applyScreens(); this.generateAll(); this.updateSelUI();
+    this._onOnline = () => this.flushQueue();
+    window.addEventListener('online', this._onOnline);
+    this.flushQueue();
+  }
+  componentWillUnmount() {
+    window.removeEventListener('online', this._onOnline);
+    this.stopStream();
+  }
 
   // On PC/browser: keep the fixed 1024x768 iPad frame (mint shows the off-screen area).
   // When launched as a full-screen home-screen app on the iPad, fill the whole viewport.
@@ -513,6 +684,15 @@ class Component extends DCLogic {
     set(this.payRef, s === 'payment');
     set(this.creditsRef, s === 'credits');
     set(this.prideRef, s === 'pride');
+    set(this.commissionRef, s === 'commission');
+    set(this.thanksRef, s === 'thanks');
+    set(this.reviewRef, s === 'review');
+    set(this.statusRef, s === 'status');
+    const cam = this.cameraRef.current;
+    if (cam) {
+      cam.style.opacity = this.state.cameraOpen ? '1' : '0';
+      cam.style.pointerEvents = this.state.cameraOpen ? 'auto' : 'none';
+    }
     const pb = this.prideBtnRef.current;
     if (pb) {
       const showBtn = s === 'home' && !this.state.brb;
@@ -610,6 +790,182 @@ class Component extends DCLogic {
   }
   brbUp() { clearTimeout(this._pressTimer); }
 
+  // ─────────── Commission flow ───────────
+  openCommission() {
+    this._photo = null; this.draft = null;
+    ['nameRef', 'contactRef', 'requestRef'].forEach((k) => { if (this[k].current) this[k].current.value = ''; });
+    if (this.photoWrapRef.current) this.photoWrapRef.current.style.display = 'none';
+    this.flagField(this.contactRef, true);
+    this.flagField(this.requestRef, true);
+    this.goto('commission');
+  }
+  flagField(ref, ok) {
+    if (ref.current) ref.current.style.borderColor = ok ? 'rgba(0,0,0,0.08)' : '#e0416b';
+  }
+  cancelCommission() {
+    this.stopStream();
+    this.setState({ cameraOpen: false });
+    this._photo = null; this.draft = null;
+    this.goto('info');
+  }
+
+  async startCamera() {
+    this.setState({ cameraOpen: true });
+    const msg = this.cameraMsgRef.current;
+    const v = this.videoRef.current;
+    try {
+      if (msg) msg.style.display = 'none';
+      if (v) v.style.display = '';
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
+      this._stream = stream;
+      if (v) {
+        v.srcObject = stream;
+        v.muted = true; v.playsInline = true; v.setAttribute('playsinline', '');
+        await v.play().catch(() => {});
+      }
+    } catch (e) {
+      if (v) v.style.display = 'none';
+      if (msg) { msg.style.display = 'block'; msg.textContent = 'Camera unavailable — please allow camera access, or tap Cancel to skip the photo.'; }
+    }
+  }
+  stopStream() {
+    if (this._stream) { this._stream.getTracks().forEach((t) => t.stop()); this._stream = null; }
+    const v = this.videoRef.current;
+    if (v) { try { v.srcObject = null; } catch (e) {} }
+  }
+  closeCamera() { this.stopStream(); this.setState({ cameraOpen: false }); }
+  capturePhoto() {
+    const v = this.videoRef.current, c = this.canvasRef.current;
+    if (!v || !c || !v.videoWidth) return;
+    const maxW = 1000;
+    const scale = Math.min(1, maxW / v.videoWidth);
+    const w = Math.round(v.videoWidth * scale), h = Math.round(v.videoHeight * scale);
+    c.width = w; c.height = h;
+    const ctx = c.getContext('2d');
+    ctx.save(); ctx.translate(w, 0); ctx.scale(-1, 1);
+    ctx.drawImage(v, 0, 0, w, h); ctx.restore();
+    this._photo = c.toDataURL('image/jpeg', 0.72);
+    if (this.photoImgRef.current) this.photoImgRef.current.src = this._photo;
+    if (this.photoWrapRef.current) this.photoWrapRef.current.style.display = 'flex';
+    this.stopStream();
+    this.setState({ cameraOpen: false });
+  }
+  removePhoto() {
+    this._photo = null;
+    if (this.photoWrapRef.current) this.photoWrapRef.current.style.display = 'none';
+  }
+
+  submitStep1() {
+    const val = (ref) => (ref.current ? ref.current.value.trim() : '');
+    const name = val(this.nameRef), contact = val(this.contactRef), request = val(this.requestRef);
+    this.flagField(this.contactRef, !!contact);
+    this.flagField(this.requestRef, !!request);
+    if (!contact || !request) {
+      const bad = !contact ? this.contactRef : this.requestRef;
+      if (bad.current) bad.current.focus();
+      return;
+    }
+    this.draft = { name: name, contact: contact, request: request, photo: this._photo || '' };
+    this.goto('thanks');
+  }
+
+  thanksDown() {
+    clearTimeout(this._thanksTimer);
+    this._thanksTimer = setTimeout(() => { this.fillReview(); this.goto('review'); }, 3000);
+  }
+  thanksUp() { clearTimeout(this._thanksTimer); }
+
+  fillReview() {
+    const d = this.draft || {};
+    const put = (ref, v) => { if (ref.current) ref.current.textContent = (v && String(v).trim()) ? v : '—'; };
+    put(this.revNameRef, d.name);
+    put(this.revContactRef, d.contact);
+    put(this.revRequestRef, d.request);
+    if (this.revPhotoWrapRef.current) {
+      if (d.photo) {
+        this.revPhotoWrapRef.current.style.display = 'flex';
+        if (this.revPhotoImgRef.current) this.revPhotoImgRef.current.src = d.photo;
+      } else {
+        this.revPhotoWrapRef.current.style.display = 'none';
+      }
+    }
+    if (this.revPriceRef.current) this.revPriceRef.current.value = '';
+    if (this.revNotesRef.current) this.revNotesRef.current.value = '';
+  }
+
+  async submitFinal() {
+    const d = this.draft || {};
+    const record = {
+      name: d.name || '', contact: d.contact || '', request: d.request || '',
+      price: this.revPriceRef.current ? this.revPriceRef.current.value.trim() : '',
+      notes: this.revNotesRef.current ? this.revNotesRef.current.value.trim() : '',
+      photo: d.photo || '',
+      timestamp: new Date().toISOString()
+    };
+    // Always keep a metadata backup on the device (without the heavy image).
+    this.appendLog(Object.assign({}, record, { photo: record.photo ? '[photo attached]' : '' }));
+    this.goto('status');
+    this.setStatus('sending');
+    if (!this.APPS_SCRIPT_URL) { this.setStatus('local'); return; }
+    const res = await this.trySend(record);
+    if (res.ok) { this.setStatus('sent'); }
+    else { this.queue(record); this.setStatus('queued'); }
+  }
+
+  async trySend(record) {
+    if (!this.APPS_SCRIPT_URL) return { ok: false, reason: 'noendpoint' };
+    try {
+      const fd = new FormData();
+      Object.entries(record).forEach(([k, v]) => fd.append(k, v == null ? '' : v));
+      await fetch(this.APPS_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: fd });
+      return { ok: true };
+    } catch (e) {
+      return { ok: false, reason: 'network' };
+    }
+  }
+
+  setStatus(kind) {
+    const map = {
+      sending: { icon: '⏳', title: 'Saving…', sub: 'Sending your request…', color: '#4a2f44' },
+      sent: { icon: '✓', title: 'Sent!', sub: 'The request was delivered successfully.', color: '#1f8a47' },
+      queued: { icon: '☁', title: 'Saved — will send when online', sub: "There's no connection right now. It will upload automatically once the iPad is back online.", color: '#c98a1a' },
+      local: { icon: '✓', title: 'Saved on this device', sub: 'No online destination is set yet, so the request is stored locally as a backup.', color: '#1f8a47' }
+    };
+    const m = map[kind] || map.sending;
+    if (this.statusIconRef.current) { this.statusIconRef.current.textContent = m.icon; this.statusIconRef.current.style.color = m.color; }
+    if (this.statusTitleRef.current) this.statusTitleRef.current.textContent = m.title;
+    if (this.statusSubRef.current) this.statusSubRef.current.textContent = m.sub;
+  }
+
+  queue(record) {
+    try {
+      const q = JSON.parse(localStorage.getItem('fogp_commission_queue') || '[]');
+      q.push(record);
+      localStorage.setItem('fogp_commission_queue', JSON.stringify(q));
+    } catch (e) {}
+  }
+  appendLog(meta) {
+    try {
+      const l = JSON.parse(localStorage.getItem('fogp_commission_log') || '[]');
+      l.push(meta);
+      localStorage.setItem('fogp_commission_log', JSON.stringify(l));
+    } catch (e) {}
+  }
+  async flushQueue() {
+    if (!this.APPS_SCRIPT_URL) return;
+    let q;
+    try { q = JSON.parse(localStorage.getItem('fogp_commission_queue') || '[]'); } catch (e) { return; }
+    if (!q.length) return;
+    const remain = [];
+    for (const r of q) {
+      const res = await this.trySend(r);
+      if (!res.ok) remain.push(r);
+    }
+    try { localStorage.setItem('fogp_commission_queue', JSON.stringify(remain)); } catch (e) {}
+  }
+
+  returnMenu() { this._photo = null; this.draft = null; this.goto('home'); }
+
   renderVals() {
     return {
       rootRef: this.rootRef,
@@ -624,6 +980,40 @@ class Component extends DCLogic {
       payQrRef: this.payQrRef,
       infoCardRef: this.infoCardRef,
       payCardRef: this.payCardRef,
+      commissionRef: this.commissionRef,
+      cameraRef: this.cameraRef,
+      thanksRef: this.thanksRef,
+      reviewRef: this.reviewRef,
+      statusRef: this.statusRef,
+      nameRef: this.nameRef,
+      contactRef: this.contactRef,
+      requestRef: this.requestRef,
+      photoWrapRef: this.photoWrapRef,
+      photoImgRef: this.photoImgRef,
+      videoRef: this.videoRef,
+      canvasRef: this.canvasRef,
+      cameraMsgRef: this.cameraMsgRef,
+      revNameRef: this.revNameRef,
+      revContactRef: this.revContactRef,
+      revRequestRef: this.revRequestRef,
+      revPhotoWrapRef: this.revPhotoWrapRef,
+      revPhotoImgRef: this.revPhotoImgRef,
+      revPriceRef: this.revPriceRef,
+      revNotesRef: this.revNotesRef,
+      statusIconRef: this.statusIconRef,
+      statusTitleRef: this.statusTitleRef,
+      statusSubRef: this.statusSubRef,
+      openCommission: () => this.openCommission(),
+      cancelCommission: () => this.cancelCommission(),
+      startCamera: () => this.startCamera(),
+      closeCamera: () => this.closeCamera(),
+      capturePhoto: () => this.capturePhoto(),
+      removePhoto: () => this.removePhoto(),
+      submitStep1: () => this.submitStep1(),
+      thanksDown: () => this.thanksDown(),
+      thanksUp: () => this.thanksUp(),
+      submitFinal: () => this.submitFinal(),
+      returnMenu: () => this.returnMenu(),
       goInfo: () => this.goto('info'),
       goPay: () => this.goto('payment'),
       goCredits: () => this.goto('credits'),
