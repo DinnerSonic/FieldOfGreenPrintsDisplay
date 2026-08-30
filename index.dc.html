@@ -25,6 +25,7 @@
   html, body {
     margin: 0; height: 100%; overflow: hidden;
     font-family: 'Fredoka', system-ui, sans-serif;
+    /* Frame color: also what iOS paints below the document in a home-screen app. */
     background: #9FECC4;
     -webkit-font-smoothing: antialiased;
     user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
@@ -39,11 +40,12 @@
 </style>
 </helmet>
 
-<div ref="{{ rootRef }}" style="position:fixed; inset:0; overflow:hidden; background:#9FECC4; display:flex; align-items:center; justify-content:center;">
+<div ref="{{ rootRef }}" style="position:fixed; inset:0; overflow:hidden; background:#9FECC4; display:flex;
+ align-items:center; justify-content:center;">
   <!-- On PC: fixed 1024x768 iPad frame, mint = off-screen. On the iPad home-screen app: JS fills the viewport (see applyViewportMode). -->
   <!-- bleed layer: paints the wallpaper past every edge, so any strip iOS leaves outside
        the layout viewport shows the design's background instead of the page default -->
-  <div ref="{{ bleedRef }}" style="display:none; position:fixed; left:-240px; right:-240px; top:-240px; bottom:-240px; z-index:0; pointer-events:none; background:#FFD9E3;"></div>
+  <div ref="{{ bleedRef }}" style="display:none; position:fixed; left:-240px; right:-240px; top:-240px; bottom:-240px; z-index:0; pointer-events:none; background:#FBDCE6;"></div>
 
   <div ref="{{ boxRef }}" style="position:relative; z-index:1; flex:0 0 auto; width:1024px; height:768px; min-width:1024px; min-height:768px; overflow:hidden; box-shadow:0 0 0 1px rgba(0,0,0,0.15);">
 
@@ -573,7 +575,7 @@
     </div>
 
     <!-- build stamp: confirms which version the iPad is actually running -->
-    <div style="position:absolute; left:10px; bottom:96px; z-index:70; pointer-events:none; font-family:ui-monospace,monospace; font-size:11px; letter-spacing:0.02em; color:#4a2f44; opacity:0.3;">build 2026-08-30d · bleed</div>
+    <div style="position:absolute; left:10px; bottom:8px; z-index:70; pointer-events:none; font-family:ui-monospace,monospace; font-size:11px; letter-spacing:0.02em; color:#4a2f44; opacity:0.22;">build 2026-08-30f · framed</div>
 
     <!-- secret corner trigger: press &amp; hold bottom-left ~1.4s to toggle BRB -->
     <div onPointerDown="{{ brbDown }}" onPointerUp="{{ brbUp }}" onPointerLeave="{{ brbUp }}" onPointerCancel="{{ brbUp }}" style="position:absolute; left:0; bottom:0; width:84px; height:84px; z-index:60; cursor:default;"></div>
@@ -707,34 +709,47 @@ class Component extends DCLogic {
     if (!standalone) { this.fitStage(); return; }
     const root = this.rootRef.current;
     const box = this.boxRef.current;
-    // iOS standalone can report a viewport a few px shorter than the real window;
-    // whatever sliver the fixed layer misses shows html/body, so make those pink too.
+    // iOS paints below the document with the html/body color, and page content can't
+    // reach there — so that strip is mint on purpose, matching the frame.
     document.documentElement.style.background = '#9FECC4';
     document.body.style.background = '#9FECC4';
     if (root) {
-      // Plain inset:0 — no measuring. The bleed layer covers whatever iOS leaves over.
-      root.style.background = 'transparent';
+      root.style.background = '#9FECC4';
       root.style.top = '0';
       root.style.bottom = '0';
       root.style.height = 'auto';
       root.style.minHeight = '0';
-      root.style.overflow = 'visible';
+      root.style.overflow = 'hidden';
     }
-    if (this.bleedRef.current) this.bleedRef.current.style.display = 'block';
+    if (this.bleedRef.current) this.bleedRef.current.style.display = 'none';
     if (box) {
+      // Keep the true 1024x768 stage — all UI lives inside it — and scale it to fit the
+      // paintable area, centered so the mint reads as an even top/bottom frame.
       box.style.flex = '0 0 auto';
-      // Size from the visual viewport in real px — html/body 100% can overshoot in
-      // a home-screen app (translucent status bar / home indicator), which is what
-      // was clipping the bottom edge.
-      // No pixel measurement — just fill the parent, which is now 100lvh tall.
-      box.style.width = '100%';
-      box.style.height = '100%';
+      box.style.width = '1024px';
+      box.style.height = '768px';
       box.style.maxWidth = 'none';
-      box.style.minWidth = '0';
-      box.style.minHeight = '0';
+      box.style.minWidth = '1024px';
+      box.style.minHeight = '768px';
       box.style.boxShadow = 'none';
-      box.style.transform = 'none';
       box.style.clipPath = 'none';
+
+      const vv = window.visualViewport;
+      const vw = Math.round(Math.min(vv ? vv.width : Infinity, window.innerWidth || Infinity,
+                                     document.documentElement.clientWidth || Infinity)) || 1024;
+      const vh = Math.round(Math.min(vv ? vv.height : Infinity, window.innerHeight || Infinity,
+                                     document.documentElement.clientHeight || Infinity)) || 768;
+      const landscape = vw >= vh;
+      const sw = (window.screen && window.screen.width) || 0;
+      const sh = (window.screen && window.screen.height) || 0;
+      const screenH = landscape ? Math.min(sw, sh) : Math.max(sw, sh);
+      // Reserve the unreachable strip below the document as part of the frame.
+      const strip = Math.max(0, Math.min(200, (screenH || vh) - vh));
+      const avail = Math.max(200, vh - strip);
+      const scale = Math.min(vw / 1024, avail / 768);
+      box.style.transformOrigin = 'center center';
+      // Nudge down by half the strip so the two visible mint bands look even.
+      box.style.transform = 'translateY(' + Math.round(strip / 2) + 'px) scale(' + scale + ')';
     }
   }
   componentDidUpdate() { this.applyViewportMode(); this.applyScreens(); this.updateSelUI(); }
