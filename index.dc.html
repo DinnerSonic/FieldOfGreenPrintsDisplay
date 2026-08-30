@@ -41,7 +41,11 @@
 
 <div ref="{{ rootRef }}" style="position:fixed; inset:0; overflow:hidden; background:#9FECC4; display:flex; align-items:center; justify-content:center;">
   <!-- On PC: fixed 1024x768 iPad frame, mint = off-screen. On the iPad home-screen app: JS fills the viewport (see applyViewportMode). -->
-  <div ref="{{ boxRef }}" style="position:relative; flex:0 0 auto; width:1024px; height:768px; min-width:1024px; min-height:768px; overflow:hidden; box-shadow:0 0 0 1px rgba(0,0,0,0.15);">
+  <!-- bleed layer: paints the wallpaper past every edge, so any strip iOS leaves outside
+       the layout viewport shows the design's background instead of the page default -->
+  <div ref="{{ bleedRef }}" style="display:none; position:fixed; left:-240px; right:-240px; top:-240px; bottom:-240px; z-index:0; pointer-events:none; background:#FFD9E3;"></div>
+
+  <div ref="{{ boxRef }}" style="position:relative; z-index:1; flex:0 0 auto; width:1024px; height:768px; min-width:1024px; min-height:768px; overflow:hidden; box-shadow:0 0 0 1px rgba(0,0,0,0.15);">
 
     <!-- wallpaper -->
     <div style="position:absolute; inset:0; background:radial-gradient(circle at 20% 90%, rgba(255,255,255,0.55) 0, transparent 40%), radial-gradient(circle at 80% 10%, rgba(52,211,116,0.18) 0, transparent 42%), #FFD9E3;" style-after="content:''; position:absolute; inset:0; background-image:radial-gradient(circle, rgba(255,255,255,0.45) 1.5px, transparent 2px); background-size:40px 40px; opacity:0.55; mix-blend-mode:overlay;"></div>
@@ -569,7 +573,7 @@
     </div>
 
     <!-- build stamp: confirms which version the iPad is actually running -->
-    <div style="position:absolute; left:8px; bottom:10px; z-index:70; pointer-events:none; font-family:ui-monospace,monospace; font-size:11px; letter-spacing:0.02em; color:#4a2f44; opacity:0.28;">build 2026-08-30c · screen-fill</div>
+    <div style="position:absolute; left:10px; bottom:96px; z-index:70; pointer-events:none; font-family:ui-monospace,monospace; font-size:11px; letter-spacing:0.02em; color:#4a2f44; opacity:0.3;">build 2026-08-30d · bleed</div>
 
     <!-- secret corner trigger: press &amp; hold bottom-left ~1.4s to toggle BRB -->
     <div onPointerDown="{{ brbDown }}" onPointerUp="{{ brbUp }}" onPointerLeave="{{ brbUp }}" onPointerCancel="{{ brbUp }}" style="position:absolute; left:0; bottom:0; width:84px; height:84px; z-index:60; cursor:default;"></div>
@@ -585,6 +589,7 @@ class Component extends DCLogic {
     super(props);
     this.rootRef = React.createRef();
     this.boxRef = React.createRef();
+    this.bleedRef = React.createRef();
     this.infoRef = React.createRef();
     this.payRef = React.createRef();
     this.brbRef = React.createRef();
@@ -707,26 +712,15 @@ class Component extends DCLogic {
     document.documentElement.style.background = '#9FECC4';
     document.body.style.background = '#9FECC4';
     if (root) {
-      root.style.background = '#9FECC4';
-      // Every height the browser reports can be a few px short, so take the largest of
-      // them AND the physical screen height, then overshoot by 4px. Overflow is hidden,
-      // so the surplus crops harmlessly off the bottom instead of leaving a gap.
-      const vv = window.visualViewport;
-      const landscape = (window.innerWidth || 0) >= (window.innerHeight || 0);
-      const sw = (window.screen && window.screen.width) || 0;
-      const sh = (window.screen && window.screen.height) || 0;
-      const screenH = landscape ? Math.min(sw, sh) : Math.max(sw, sh);
-      const h = Math.round(Math.max(
-        vv ? vv.height : 0,
-        window.innerHeight || 0,
-        document.documentElement.clientHeight || 0,
-        screenH || 0
-      )) + 4;
+      // Plain inset:0 — no measuring. The bleed layer covers whatever iOS leaves over.
+      root.style.background = 'transparent';
       root.style.top = '0';
-      root.style.bottom = 'auto';
+      root.style.bottom = '0';
+      root.style.height = 'auto';
       root.style.minHeight = '0';
-      root.style.height = h + 'px';
+      root.style.overflow = 'visible';
     }
+    if (this.bleedRef.current) this.bleedRef.current.style.display = 'block';
     if (box) {
       box.style.flex = '0 0 auto';
       // Size from the visual viewport in real px — html/body 100% can overshoot in
@@ -1048,6 +1042,7 @@ class Component extends DCLogic {
       brbRef: this.brbRef,
       creditsRef: this.creditsRef,
       boxRef: this.boxRef,
+      bleedRef: this.bleedRef,
       prideRef: this.prideRef,
       prideBtnRef: this.prideBtnRef,
       infoQrRef: this.infoQrRef,
