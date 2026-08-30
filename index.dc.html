@@ -569,7 +569,7 @@
     </div>
 
     <!-- build stamp: confirms which version the iPad is actually running -->
-    <div style="position:absolute; left:8px; bottom:5px; z-index:70; pointer-events:none; font-family:ui-monospace,monospace; font-size:11px; letter-spacing:0.02em; color:#4a2f44; opacity:0.28;">build 2026-08-30b · lvh</div>
+    <div style="position:absolute; left:8px; bottom:10px; z-index:70; pointer-events:none; font-family:ui-monospace,monospace; font-size:11px; letter-spacing:0.02em; color:#4a2f44; opacity:0.28;">build 2026-08-30c · screen-fill</div>
 
     <!-- secret corner trigger: press &amp; hold bottom-left ~1.4s to toggle BRB -->
     <div onPointerDown="{{ brbDown }}" onPointerUp="{{ brbUp }}" onPointerLeave="{{ brbUp }}" onPointerCancel="{{ brbUp }}" style="position:absolute; left:0; bottom:0; width:84px; height:84px; z-index:60; cursor:default;"></div>
@@ -646,6 +646,9 @@ class Component extends DCLogic {
     this._onOnline = () => this.flushQueue();
     window.addEventListener('online', this._onOnline);
     this._onResize = () => this.fitStage();
+    window.addEventListener('load', this._onResize);
+    // Re-apply once things settle: fonts/images can change what the browser reports.
+    [120, 500, 1500].forEach((t) => setTimeout(() => this.fitStage(), t));
     window.addEventListener('resize', this._onResize);
     window.addEventListener('orientationchange', this._onResize);
     if (window.visualViewport) window.visualViewport.addEventListener('resize', this._onResize);
@@ -705,15 +708,24 @@ class Component extends DCLogic {
     document.body.style.background = '#9FECC4';
     if (root) {
       root.style.background = '#9FECC4';
-      // Fallback chain — the last unit the browser understands wins. lvh is the full
-      // window height, so it ignores the short numbers iOS reports.
-      root.style.height = '100%';
-      root.style.height = '100vh';
-      root.style.height = '100dvh';
-      root.style.height = '100lvh';
-      root.style.minHeight = '0';
+      // Every height the browser reports can be a few px short, so take the largest of
+      // them AND the physical screen height, then overshoot by 4px. Overflow is hidden,
+      // so the surplus crops harmlessly off the bottom instead of leaving a gap.
+      const vv = window.visualViewport;
+      const landscape = (window.innerWidth || 0) >= (window.innerHeight || 0);
+      const sw = (window.screen && window.screen.width) || 0;
+      const sh = (window.screen && window.screen.height) || 0;
+      const screenH = landscape ? Math.min(sw, sh) : Math.max(sw, sh);
+      const h = Math.round(Math.max(
+        vv ? vv.height : 0,
+        window.innerHeight || 0,
+        document.documentElement.clientHeight || 0,
+        screenH || 0
+      )) + 4;
       root.style.top = '0';
       root.style.bottom = 'auto';
+      root.style.minHeight = '0';
+      root.style.height = h + 'px';
     }
     if (box) {
       box.style.flex = '0 0 auto';
