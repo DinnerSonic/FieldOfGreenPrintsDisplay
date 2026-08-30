@@ -25,7 +25,7 @@
   html, body {
     margin: 0; height: 100%; overflow: hidden;
     font-family: 'Fredoka', system-ui, sans-serif;
-    background: #FFD9E3;
+    background: #9FECC4;
     -webkit-font-smoothing: antialiased;
     user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
     -webkit-text-size-adjust: 100%;
@@ -39,7 +39,7 @@
 </style>
 </helmet>
 
-<div ref="{{ rootRef }}" style="position:fixed; inset:0; overflow:hidden; background:#FFD9E3; display:flex; align-items:center; justify-content:center;">
+<div ref="{{ rootRef }}" style="position:fixed; inset:0; overflow:hidden; background:#9FECC4; display:flex; align-items:center; justify-content:center;">
   <!-- On PC: fixed 1024x768 iPad frame, mint = off-screen. On the iPad home-screen app: JS fills the viewport (see applyViewportMode). -->
   <div ref="{{ boxRef }}" style="position:relative; flex:0 0 auto; width:1024px; height:768px; min-width:1024px; min-height:768px; overflow:hidden; box-shadow:0 0 0 1px rgba(0,0,0,0.15);">
 
@@ -698,10 +698,10 @@ class Component extends DCLogic {
     const box = this.boxRef.current;
     // iOS standalone can report a viewport a few px shorter than the real window;
     // whatever sliver the fixed layer misses shows html/body, so make those pink too.
-    document.documentElement.style.background = '#FFD9E3';
-    document.body.style.background = '#FFD9E3';
+    document.documentElement.style.background = '#9FECC4';
+    document.body.style.background = '#9FECC4';
     if (root) {
-      root.style.background = '#FFD9E3';
+      root.style.background = '#9FECC4';
       root.style.height = '100dvh';
       root.style.minHeight = '100vh';
       root.style.bottom = 'auto';
