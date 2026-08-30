@@ -574,7 +574,7 @@
   </div>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1024,&quot;height&quot;:768},&quot;simulateCutoff&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:0,&quot;min&quot;:0,&quot;max&quot;:80,&quot;step&quot;:1,&quot;unit&quot;:&quot;px&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;iPad preview&quot;},&quot;fitToScreen&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;iPad preview&quot;}}">
 class Component extends DCLogic {
   state = { screen: 'home', brb: false, infoSel: 'instagram', paySel: 'zelle', cameraOpen: false };
 
@@ -642,11 +642,45 @@ class Component extends DCLogic {
     this.applyViewportMode(); this.applyScreens(); this.generateAll(); this.updateSelUI();
     this._onOnline = () => this.flushQueue();
     window.addEventListener('online', this._onOnline);
+    this._onResize = () => this.fitStage();
+    window.addEventListener('resize', this._onResize);
+    window.addEventListener('orientationchange', this._onResize);
+    if (window.visualViewport) window.visualViewport.addEventListener('resize', this._onResize);
     this.flushQueue();
   }
   componentWillUnmount() {
     window.removeEventListener('online', this._onOnline);
+    window.removeEventListener('resize', this._onResize);
+    window.removeEventListener('orientationchange', this._onResize);
+    if (window.visualViewport) window.visualViewport.removeEventListener('resize', this._onResize);
     this.stopStream();
+  }
+
+  isStandalone() {
+    return (window.navigator.standalone === true) ||
+      (window.matchMedia && (window.matchMedia('(display-mode: standalone)').matches ||
+                             window.matchMedia('(display-mode: fullscreen)').matches));
+  }
+
+  // Scale the 1024x768 stage down so it always fits the real viewport — no clipped
+  // bottom edge on the iPad, whatever the browser chrome / home indicator eats.
+  fitStage() {
+    const box = this.boxRef.current;
+    if (!box) return;
+    if (this.isStandalone()) { this.applyViewportMode(); return; }
+    const crop = Math.max(0, Math.min(200, Number(this.props.simulateCutoff ?? 0)));
+    if (this.props.fitToScreen === false) {
+      box.style.transform = 'none';
+    } else {
+      const vv = window.visualViewport;
+      const vw = (vv ? vv.width : window.innerWidth) || 1024;
+      const vh = (vv ? vv.height : window.innerHeight) || 768;
+      const scale = Math.min(1, vw / 1024, (vh - (this.isStandalone() ? 0 : crop)) / 768);
+      box.style.transformOrigin = 'center center';
+      box.style.transform = scale < 0.999 ? 'scale(' + scale + ')' : 'none';
+    }
+    // Preview-only: simulate the iPad's clipped bottom edge (green shows through).
+    box.style.clipPath = (!this.isStandalone() && crop) ? 'inset(0 0 ' + crop + 'px 0)' : 'none';
   }
 
   // On PC/browser: keep the fixed 1024x768 iPad frame (mint shows the off-screen area).
@@ -655,21 +689,27 @@ class Component extends DCLogic {
     const standalone = (window.navigator.standalone === true) ||
       (window.matchMedia && (window.matchMedia('(display-mode: standalone)').matches ||
                              window.matchMedia('(display-mode: fullscreen)').matches));
-    if (!standalone) return;
+    if (!standalone) { this.fitStage(); return; }
     const root = this.rootRef.current;
     const box = this.boxRef.current;
     if (root) root.style.background = '#FFD9E3';
     if (box) {
-      box.style.flex = '1 1 auto';
-      box.style.width = '100%';
-      box.style.height = '100%';
+      box.style.flex = '0 0 auto';
+      // Size from the visual viewport in real px — html/body 100% can overshoot in
+      // a home-screen app (translucent status bar / home indicator), which is what
+      // was clipping the bottom edge.
+      const vv = window.visualViewport;
+      box.style.width = Math.round(vv ? vv.width : window.innerWidth) + 'px';
+      box.style.height = Math.round(vv ? vv.height : window.innerHeight) + 'px';
       box.style.maxWidth = 'none';
       box.style.minWidth = '0';
       box.style.minHeight = '0';
       box.style.boxShadow = 'none';
+      box.style.transform = 'none';
+      box.style.clipPath = 'none';
     }
   }
-  componentDidUpdate() { this.applyScreens(); this.updateSelUI(); }
+  componentDidUpdate() { this.applyViewportMode(); this.applyScreens(); this.updateSelUI(); }
 
   applyScreens() {
     const s = this.state.screen;
