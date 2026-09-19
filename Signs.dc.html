@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&amp;family=Bagel+Fat+One&amp;display=swap">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Field of Green Signs">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    margin: 0; height: 100%; overflow: hidden;
+    font-family: 'Fredoka', system-ui, sans-serif;
+    background: #9FECC4;
+    -webkit-font-smoothing: antialiased;
+    user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
+    -webkit-text-size-adjust: 100%;
+  }
+  img { -webkit-user-drag: none; user-drag: none; pointer-events: none; }
+  a { color: #FF6FA3; text-decoration: none; }
+  a:hover { color: #c14275; }
+  @keyframes drift { 0% { transform: translate(-3px,-4px); } 100% { transform: translate(3px,4px); } }
+  @keyframes floaty { 0% { transform: translateY(0); } 100% { transform: translateY(-22px); } }
+  @keyframes floaty2 { 0% { transform: translateY(0); } 100% { transform: translateY(18px); } }
+</style>
+</helmet>
+
+<div ref="{{ rootRef }}" onClick="{{ onRootClick }}" style="position:fixed; inset:0; overflow:hidden; background:#9FECC4; display:flex; align-items:center; justify-content:center;">
+  <div ref="{{ boxRef }}" style="position:relative; flex:0 0 auto; width:1024px; height:768px; min-width:1024px; min-height:768px; overflow:hidden; box-shadow:0 0 0 1px rgba(0,0,0,0.15); background:radial-gradient(circle at 20% 90%, rgba(255,255,255,0.55) 0, transparent 40%), radial-gradient(circle at 80% 10%, rgba(52,211,116,0.18) 0, transparent 42%), #FFD9E3;">
+
+    <!-- floating candy dots (burn-in guard) -->
+    <div style="position:absolute; width:80px; height:80px; border-radius:50%; left:7%; top:20%; background:radial-gradient(circle at 35% 30%, #fff, #9FECC4); opacity:0.5; animation:floaty 11s ease-in-out infinite alternate;"></div>
+    <div style="position:absolute; width:52px; height:52px; border-radius:50%; right:9%; top:24%; background:radial-gradient(circle at 35% 30%, #fff, #FFD45B); opacity:0.5; animation:floaty2 9.5s ease-in-out infinite alternate;"></div>
+    <div style="position:absolute; width:44px; height:44px; border-radius:50%; left:13%; bottom:12%; background:radial-gradient(circle at 35% 30%, #fff, #C8B4F2); opacity:0.5; animation:floaty 12.5s ease-in-out infinite alternate;"></div>
+
+    <!-- ═══════════ SIGN PICKER GRID ═══════════ -->
+    <div style="position:absolute; inset:0; display:flex; flex-direction:column; padding:44px 56px 40px;">
+      <div style="flex:0 0 auto; text-align:center;">
+        <div style="font-family:'Bagel Fat One',cursive; font-size:48px; color:#2a1a2e; line-height:1;">Booth signs</div>
+        <div style="margin-top:8px; font-weight:500; font-size:22px; color:#4a2f44; opacity:0.8;">Tap a sign to show it. Press &amp; hold the bottom-left corner to come back here.</div>
+      </div>
+
+      <div style="flex:1; min-height:0; margin-top:28px; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:4px;">
+        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:24px;">
+
+          <!-- card: be right back -->
+          <div data-goto="brb" style="display:flex; flex-direction:column; gap:14px; padding:18px; border-radius:30px; cursor:pointer; background:#fff; border:3px solid rgba(0,0,0,0.05); box-shadow:0 8px 0 rgba(0,0,0,0.06), 0 16px 26px rgba(60,20,40,0.12); transition:transform 130ms cubic-bezier(.3,.7,.4,1);" style-active="transform:scale(0.97)">
+            <div style="height:150px; border-radius:20px; overflow:hidden; display:flex; align-items:center; justify-content:center; text-align:center; padding:14px; background:radial-gradient(circle at 50% 30%, #FFE4EC 0, #FFC9DB 70%, #FFB8CE 100%);">
+              <div style="font-family:'Bagel Fat One',cursive; font-size:32px; line-height:1; color:#FF6FA3; text-shadow:0 2px 0 rgba(255,255,255,0.6);">Be right back!</div>
+            </div>
+            <div style="font-weight:700; font-size:24px; color:#2a1a2e;">Be right back</div>
+            <div style="font-weight:500; font-size:18px; line-height:1.3; color:#4a2f44; opacity:0.75;">Stepping away for a moment.</div>
+          </div>
+
+          <!-- card: back at 5:30 -->
+          <div data-goto="at530" style="display:flex; flex-direction:column; gap:14px; padding:18px; border-radius:30px; cursor:pointer; background:#fff; border:3px solid rgba(0,0,0,0.05); box-shadow:0 8px 0 rgba(0,0,0,0.06), 0 16px 26px rgba(60,20,40,0.12); transition:transform 130ms cubic-bezier(.3,.7,.4,1);" style-active="transform:scale(0.97)">
+            <div style="height:150px; border-radius:20px; overflow:hidden; display:flex; align-items:center; justify-content:center; text-align:center; padding:14px; background:radial-gradient(circle at 50% 30%, #FFE4EC 0, #FFC9DB 70%, #FFB8CE 100%);">
+              <div style="font-family:'Bagel Fat One',cursive; font-size:32px; line-height:1.05; color:#FF6FA3; text-shadow:0 2px 0 rgba(255,255,255,0.6);">We’ll be back<br>at 5:30 PM!</div>
+            </div>
+            <div style="font-weight:700; font-size:24px; color:#2a1a2e;">Back at 5:30 PM</div>
+            <div style="font-weight:500; font-size:18px; line-height:1.3; color:#4a2f44; opacity:0.75;">Away until a set time.</div>
+          </div>
+
+          <!-- card: helping another booth -->
+          <div data-goto="otherbooth" style="display:flex; flex-direction:column; gap:14px; padding:18px; border-radius:30px; cursor:pointer; background:#fff; border:3px solid rgba(0,0,0,0.05); box-shadow:0 8px 0 rgba(0,0,0,0.06), 0 16px 26px rgba(60,20,40,0.12); transition:transform 130ms cubic-bezier(.3,.7,.4,1);" style-active="transform:scale(0.97)">
+            <div style="height:150px; border-radius:20px; overflow:hidden; display:flex; align-items:center; justify-content:center; text-align:center; padding:14px; background:radial-gradient(circle at 50% 30%, #FFF3D6 0, #FFE3A8 70%, #FFD98C 100%);">
+              <div style="font-family:'Bagel Fat One',cursive; font-size:27px; line-height:1.08; color:#c98a1a; text-shadow:0 2px 0 rgba(255,255,255,0.6);">Helping at<br>another booth</div>
+            </div>
+            <div style="font-weight:700; font-size:24px; color:#2a1a2e;">Helping another booth</div>
+            <div style="font-weight:500; font-size:18px; line-height:1.3; color:#4a2f44; opacity:0.75;">Nearby — come find me.</div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════ SIGN: BE RIGHT BACK ═══════════ -->
+    <div data-sign="brb" style="position:absolute; inset:0; z-index:20; opacity:0; pointer-events:none; transition:opacity 400ms ease; background:radial-gradient(circle at 50% 30%, #FFE4EC 0, #FFC9DB 70%, #FFB8CE 100%); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:30px;">
+      <div style="position:absolute; width:120px; height:120px; border-radius:50%; left:14%; top:24%; background:radial-gradient(circle at 35% 30%, #fff, #9FECC4); opacity:0.55; animation:floaty 10s ease-in-out infinite alternate;"></div>
+      <div style="position:absolute; width:70px; height:70px; border-radius:50%; right:16%; top:30%; background:radial-gradient(circle at 35% 30%, #fff, #FFD45B); opacity:0.55; animation:floaty2 8.5s ease-in-out infinite alternate;"></div>
+      <div style="position:absolute; width:56px; height:56px; border-radius:50%; right:24%; bottom:20%; background:radial-gradient(circle at 35% 30%, #fff, #C8B4F2); opacity:0.5; animation:floaty 12s ease-in-out infinite alternate;"></div>
+      <div style="display:flex; flex-direction:column; align-items:center; gap:22px; animation:drift 30s ease-in-out infinite alternate;">
+        <img src="assets/logo.png" alt="Field of Green Prints" style="width:880px; height:auto; filter:drop-shadow(0 6px 0 rgba(0,0,0,0.08)) drop-shadow(0 14px 20px rgba(60,20,40,0.2));">
+        <div style="font-family:'Bagel Fat One',cursive; font-size:88px; color:#FF6FA3; line-height:0.95; text-align:center; text-shadow:0 3px 0 rgba(255,255,255,0.6), 0 8px 16px rgba(193,66,117,0.25);">Be right back!</div>
+        <div style="font-weight:500; font-size:30px; color:#7a4a5e;">Back at the counter in a moment</div>
+      </div>
+    </div>
+
+    <!-- ═══════════ SIGN: BACK AT 5:30 ═══════════ -->
+    <div data-sign="at530" style="position:absolute; inset:0; z-index:20; opacity:0; pointer-events:none; transition:opacity 400ms ease; background:radial-gradient(circle at 50% 30%, #FFE4EC 0, #FFC9DB 70%, #FFB8CE 100%); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:30px;">
+      <div style="position:absolute; width:120px; height:120px; border-radius:50%; left:14%; top:24%; background:radial-gradient(circle at 35% 30%, #fff, #9FECC4); opacity:0.55; animation:floaty 10s ease-in-out infinite alternate;"></div>
+      <div style="position:absolute; width:70px; height:70px; border-radius:50%; right:16%; top:30%; background:radial-gradient(circle at 35% 30%, #fff, #FFD45B); opacity:0.55; animation:floaty2 8.5s ease-in-out infinite alternate;"></div>
+      <div style="position:absolute; width:56px; height:56px; border-radius:50%; right:24%; bottom:20%; background:radial-gradient(circle at 35% 30%, #fff, #C8B4F2); opacity:0.5; animation:floaty 12s ease-in-out infinite alternate;"></div>
+      <div style="display:flex; flex-direction:column; align-items:center; gap:22px; animation:drift 30s ease-in-out infinite alternate;">
+        <img src="assets/logo.png" alt="Field of Green Prints" style="width:880px; height:auto; filter:drop-shadow(0 6px 0 rgba(0,0,0,0.08)) drop-shadow(0 14px 20px rgba(60,20,40,0.2));">
+        <div style="font-family:'Bagel Fat One',cursive; font-size:88px; color:#FF6FA3; line-height:0.95; text-align:center; text-shadow:0 3px 0 rgba(255,255,255,0.6), 0 8px 16px rgba(193,66,117,0.25);">We’ll be back<br>at 5:30 PM!</div>
+        <div style="font-weight:500; font-size:30px; color:#7a4a5e;">Thanks for your patience 💚</div>
+      </div>
+    </div>
+
+    <!-- ═══════════ SIGN: HELPING ANOTHER BOOTH ═══════════ -->
+    <div data-sign="otherbooth" style="position:absolute; inset:0; z-index:20; opacity:0; pointer-events:none; transition:opacity 400ms ease; background:radial-gradient(circle at 50% 30%, #FFF6E2 0, #FFE3A8 70%, #FFD98C 100%); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:30px;">
+      <div style="position:absolute; width:120px; height:120px; border-radius:50%; left:14%; top:24%; background:radial-gradient(circle at 35% 30%, #fff, #9FECC4); opacity:0.5; animation:floaty 10s ease-in-out infinite alternate;"></div>
+      <div style="position:absolute; width:70px; height:70px; border-radius:50%; right:16%; top:30%; background:radial-gradient(circle at 35% 30%, #fff, #FF6FA3); opacity:0.45; animation:floaty2 8.5s ease-in-out infinite alternate;"></div>
+      <div style="position:absolute; width:56px; height:56px; border-radius:50%; right:24%; bottom:20%; background:radial-gradient(circle at 35% 30%, #fff, #C8B4F2); opacity:0.45; animation:floaty 12s ease-in-out infinite alternate;"></div>
+      <div style="display:flex; flex-direction:column; align-items:center; gap:22px; padding:0 70px; animation:drift 30s ease-in-out infinite alternate;">
+        <img src="assets/logo.png" alt="Field of Green Prints" style="width:780px; height:auto; filter:drop-shadow(0 6px 0 rgba(0,0,0,0.08)) drop-shadow(0 14px 20px rgba(60,20,40,0.2));">
+        <div style="font-family:'Bagel Fat One',cursive; font-size:72px; color:#c07a12; line-height:1.0; text-align:center; text-wrap:pretty; text-shadow:0 3px 0 rgba(255,255,255,0.6), 0 8px 16px rgba(160,110,20,0.22);">Helping with<br>another booth</div>
+        <div style="font-weight:500; font-size:32px; color:#6b5230; text-align:center;">If you need anything, hit me up!</div>
+      </div>
+    </div>
+
+    <!-- secret corner trigger: press &amp; hold bottom-left to return to the grid -->
+    <div onPointerDown="{{ holdDown }}" onPointerUp="{{ holdUp }}" onPointerLeave="{{ holdUp }}" onPointerCancel="{{ holdUp }}" style="position:absolute; left:0; bottom:0; width:84px; height:84px; z-index:60; cursor:default;"></div>
+
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1024,&quot;height&quot;:768},&quot;holdMs&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:1400,&quot;min&quot;:400,&quot;max&quot;:4000,&quot;step&quot;:100,&quot;unit&quot;:&quot;ms&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Behavior&quot;}}">
+class Component extends DCLogic {
+  state = { sign: null };
+
+  constructor(props) {
+    super(props);
+    this.rootRef = React.createRef();
+    this.boxRef = React.createRef();
+    this._pressTimer = null;
+  }
+
+  componentDidMount() {
+    this.applyScreens();
+    this._onResize = () => this.fitStage();
+    window.addEventListener('resize', this._onResize);
+    window.addEventListener('orientationchange', this._onResize);
+    if (window.visualViewport) window.visualViewport.addEventListener('resize', this._onResize);
+    [0, 120, 500, 1500].forEach((t) => setTimeout(() => this.fitStage(), t));
+  }
+  componentWillUnmount() {
+    clearTimeout(this._pressTimer);
+    window.removeEventListener('resize', this._onResize);
+    window.removeEventListener('orientationchange', this._onResize);
+    if (window.visualViewport) window.visualViewport.removeEventListener('resize', this._onResize);
+  }
+  componentDidUpdate() { this.applyScreens(); }
+
+  isStandalone() {
+    const mm = window.matchMedia;
+    return (window.navigator.standalone === true) ||
+      (mm && (mm('(display-mode: standalone)').matches ||
+              mm('(display-mode: fullscreen)').matches ||
+              (mm('(pointer: coarse)').matches && mm('(hover: none)').matches)));
+  }
+
+  // Scale the 1024x768 stage to fit whatever viewport we're in (same approach as the main page).
+  fitStage() {
+    const box = this.boxRef.current;
+    if (!box) return;
+    const standalone = this.isStandalone();
+    if (standalone) {
+      document.documentElement.style.background = '#9FECC4';
+      document.body.style.background = '#9FECC4';
+      box.style.boxShadow = 'none';
+    }
+    const vv = window.visualViewport;
+    const vw = (vv ? vv.width : window.innerWidth) || 1024;
+    const vh = (vv ? vv.height : window.innerHeight) || 768;
+    let strip = 0;
+    if (standalone) {
+      const sw = (window.screen && window.screen.width) || 0;
+      const sh = (window.screen && window.screen.height) || 0;
+      const screenH = vw >= vh ? Math.min(sw, sh) : Math.max(sw, sh);
+      strip = Math.max(0, Math.min(200, (screenH || vh) - vh));
+    }
+    const avail = Math.max(200, vh - strip);
+    const scale = Math.min(standalone ? Infinity : 1, vw / 1024, avail / 768);
+    box.style.transformOrigin = 'center center';
+    box.style.transform = 'translateY(' + Math.round(strip / 2) + 'px)' + (scale < 0.999 || standalone ? ' scale(' + scale + ')' : '');
+  }
+
+  applyScreens() {
+    const root = this.rootRef.current;
+    if (!root) return;
+    root.querySelectorAll('[data-sign]').forEach((el) => {
+      const on = el.getAttribute('data-sign') === this.state.sign;
+      el.style.opacity = on ? '1' : '0';
+      el.style.pointerEvents = on ? 'auto' : 'none';
+    });
+  }
+
+  onRootClick(e) {
+    if (this.state.sign) return;
+    const card = e.target.closest && e.target.closest('[data-goto]');
+    if (card) this.setState({ sign: card.getAttribute('data-goto') });
+  }
+
+  holdDown() {
+    clearTimeout(this._pressTimer);
+    const ms = Math.max(300, Number(this.props.holdMs ?? 1400));
+    this._pressTimer = setTimeout(() => this.setState({ sign: null }), ms);
+  }
+  holdUp() { clearTimeout(this._pressTimer); }
+
+  renderVals() {
+    return {
+      rootRef: this.rootRef,
+      boxRef: this.boxRef,
+      onRootClick: (e) => this.onRootClick(e),
+      holdDown: () => this.holdDown(),
+      holdUp: () => this.holdUp()
+    };
+  }
+}
+</script>
+</body>
+</html>
