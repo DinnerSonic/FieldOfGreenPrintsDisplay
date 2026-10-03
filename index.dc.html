@@ -37,6 +37,8 @@
   @keyframes drift { 0% { transform: translate(-3px,-4px); } 100% { transform: translate(3px,4px); } }
   @keyframes floaty { 0% { transform: translateY(0); } 100% { transform: translateY(-22px); } }
   @keyframes floaty2 { 0% { transform: translateY(0); } 100% { transform: translateY(18px); } }
+  @keyframes tapPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+  @keyframes wiggle { 0%, 80%, 100% { transform: rotate(0); } 85% { transform: rotate(-4deg); } 90% { transform: rotate(4deg); } 95% { transform: rotate(-2deg); } }
 </style>
 </helmet>
 
@@ -58,9 +60,23 @@
     <div style="position:absolute; width:44px; height:44px; border-radius:50%; left:16%; bottom:14%; background:radial-gradient(circle at 35% 30%, #fff, #C8B4F2); box-shadow:0 8px 18px rgba(60,20,40,0.14); opacity:0.6; animation:floaty 12.5s ease-in-out infinite alternate;"></div>
 
     <!-- ═══════════ HOME ═══════════ -->
-    <div style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:72px; padding:40px; animation:drift 34s ease-in-out infinite alternate;">
-      <img src="assets/logo.png" alt="Field of Green Prints" style="width:680px; height:auto; filter:drop-shadow(0 8px 0 rgba(0,0,0,0.10)) drop-shadow(0 18px 24px rgba(60,20,40,0.22));">
+    <div onClick="{{ enter }}" style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:56px; padding:40px; animation:drift 34s ease-in-out infinite alternate;">
+      <img src="assets/logo.png" alt="Field of Green Prints" style="width:800px; height:auto; filter:drop-shadow(0 8px 0 rgba(0,0,0,0.10)) drop-shadow(0 18px 24px rgba(60,20,40,0.22));">
 
+      <div style="position:relative; width:100%; height:320px;">
+      <!-- Welcome layer (kiosk attract) -->
+      <div ref="{{ welcomeRef }}" style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; gap:56px; transition:opacity 320ms ease, transform 320ms ease;">
+        <div style="font-family:'Bagel Fat One',cursive; font-size:124px; line-height:1; color:#9FECC4; -webkit-text-stroke:12px #1f6b3c; paint-order:stroke fill; text-shadow:0 7px 0 #1f6b3c, 0 14px 22px rgba(31,107,60,0.3); animation:wiggle 6s ease-in-out infinite;">Come on in!</div>
+        <div style="animation:tapPulse 2.2s ease-in-out infinite;">
+          <div style="display:flex; align-items:center; gap:16px; padding:22px 48px; border-radius:999px; cursor:pointer; color:#fff; background-color:#FF6FA3; background-image:url('aesthetic-kit/assets/button-texture.png'); background-size:180px; background-position:center; background-blend-mode:overlay; border:3px solid rgba(0,0,0,0.08); text-shadow:0 1px 0 rgba(0,0,0,0.15); font-weight:700; font-size:38px; box-shadow:inset 0 -6px 0 rgba(0,0,0,0.16), inset 0 4px 0 rgba(255,255,255,0.4), 0 9px 0 #c14275, 0 16px 26px rgba(193,66,117,0.32); transition:transform 120ms;" style-active="transform:scale(0.95)">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11V5.5a1.5 1.5 0 0 1 3 0V11"></path><path d="M12 10.5V9.5a1.5 1.5 0 0 1 3 0v2"></path><path d="M15 11a1.5 1.5 0 0 1 3 0v3.5a6 6 0 0 1-6 6h-1a6 6 0 0 1-4.6-2.2L4 15.5a1.5 1.5 0 0 1 2.3-1.9L9 16.5"></path></svg>
+            Tap to start
+          </div>
+        </div>
+      </div>
+
+      <!-- Buttons layer -->
+      <div ref="{{ buttonsRef }}" style="position:absolute; inset:0; display:flex; justify-content:center; align-items:flex-start; opacity:0; pointer-events:none; transform:translateY(16px); transition:opacity 320ms ease, transform 320ms ease;">
       <div style="display:flex; gap:64px;">
         <!-- Information -->
         <div onClick="{{ goInfo }}" style="display:flex; flex-direction:column; align-items:center; gap:26px; cursor:pointer; transition:transform 130ms cubic-bezier(.3,.7,.4,1);" style-active="transform:scale(0.95)">
@@ -85,6 +101,8 @@
           </div>
           <div style="padding:14px 34px; border-radius:999px; background:#fff; border:2.5px solid rgba(0,0,0,0.08); box-shadow:0 4px 0 rgba(0,0,0,0.08), 0 8px 14px rgba(60,20,40,0.1); font-weight:700; font-size:32px; color:#2a1a2e;">Credits</div>
         </div>
+      </div>
+      </div>
       </div>
     </div>
 
@@ -706,14 +724,14 @@
     <div style="position:absolute; left:10px; bottom:8px; z-index:70; pointer-events:none; font-family:ui-monospace,monospace; font-size:11px; letter-spacing:0.02em; color:#4a2f44; opacity:0.22;">build 2026-10-03a · signs</div>
 
     <!-- secret corner trigger: press &amp; hold bottom-left ~1.4s to open/close signs -->
-    <div onPointerDown="{{ brbDown }}" onPointerUp="{{ brbUp }}" onPointerLeave="{{ brbUp }}" onPointerCancel="{{ brbUp }}" style="position:absolute; left:0; bottom:0; width:84px; height:84px; z-index:60; cursor:default;"></div>
+    <!-- secret corners (handled in JS by touch position): hold top-right + bottom-left 0.5s = signs; hold bottom-left alone 0.5s = back to welcome -->
 
   </div>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1024,&quot;height&quot;:768},&quot;simulateCutoff&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:0,&quot;min&quot;:0,&quot;max&quot;:80,&quot;step&quot;:1,&quot;unit&quot;:&quot;px&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;iPad preview&quot;},&quot;fitToScreen&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;iPad preview&quot;}}">
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1024,&quot;height&quot;:768},&quot;simulateCutoff&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:0,&quot;min&quot;:0,&quot;max&quot;:80,&quot;step&quot;:1,&quot;unit&quot;:&quot;px&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;iPad preview&quot;},&quot;fitToScreen&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;iPad preview&quot;},&quot;showWelcome&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Kiosk&quot;},&quot;idleSeconds&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:60,&quot;min&quot;:0,&quot;max&quot;:300,&quot;step&quot;:5,&quot;unit&quot;:&quot;s&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Kiosk&quot;}}">
 class Component extends DCLogic {
-  state = { screen: 'home', signs: null, foodIdx: 0, infoSel: 'instagram', paySel: 'zelle', cameraOpen: false };
+  state = { screen: 'home', signs: null, foodIdx: 0, infoSel: 'instagram', paySel: 'zelle', cameraOpen: false, entered: false };
 
   static FOODS = ['🍇','🍈','🍉','🍊','🍋','🍋‍🟩','🍌','🍍','🥭','🍎','🍏','🍐','🍑','🍒','🍓','🫐','🥝','🍅','🫒','🥥','🥑','🍆','🥔','🥕','🌽','🌶️','🫑','🥒','🥬','🥦','🧄','🧅','🥜','🫘','🌰','🫚','🫛','🍄‍🟫','🫜','🍞','🥐','🥖','🫓','🥨','🥯','🥞','🧇','🧀','🍖','🍗','🥩','🥓','🍔','🍟','🍕','🌭','🥪','🌮','🌯','🫔','🥙','🧆','🥚','🍳','🥘','🍲','🫕','🥣','🥗','🍿','🧈','🧂','🥫','🍝','🍱','🍘','🍙','🍚','🍛','🍜','🍠','🍢','🍣','🍤','🍥','🥮','🍡','🥟','🥠','🥡','🍦','🍧','🍨','🍩','🍪','🎂','🍰','🧁','🥧','🍫','🍬','🍭','🍮','🍯','🍼','🥛','☕','🫖','🍵','🍶','🍾','🍷','🍸','🍹','🍺','🍻','🥂','🥃','🫗','🥤','🧋','🧃','🧉','🥢','🍽️','🍴','🥄','🔪','🫙','🤠'];
 
@@ -729,6 +747,8 @@ class Component extends DCLogic {
     this.creditsSoonRef = React.createRef();
     this.prideRef = React.createRef();
     this.prideBtnRef = React.createRef();
+    this.welcomeRef = React.createRef();
+    this.buttonsRef = React.createRef();
     this.infoQrRef = React.createRef();
     this.payQrRef = React.createRef();
     this.infoCardRef = React.createRef();
@@ -791,6 +811,21 @@ class Component extends DCLogic {
     window.addEventListener('orientationchange', this._onResize);
     if (window.visualViewport) window.visualViewport.addEventListener('resize', this._onResize);
     this.flushQueue();
+    this._onActivity = () => this.resetIdle();
+    window.addEventListener('pointerdown', this._onActivity, true);
+    this._pts = new Map();
+    this._onCornerDown = (e) => this.cornerDown(e);
+    this._onCornerUp = (e) => this.cornerUp(e);
+    // Touch events on the iPad (pointer events get cancelled by multi-finger gestures); pointer events on PC.
+    this._onTouchDown = (e) => [...e.changedTouches].forEach((t) => this.cornerDown({ pointerId: 't' + t.identifier, clientX: t.clientX, clientY: t.clientY }));
+    this._onTouchUp = (e) => [...e.changedTouches].forEach((t) => this.cornerUp({ pointerId: 't' + t.identifier }));
+    window.addEventListener('touchstart', this._onTouchDown, true);
+    window.addEventListener('touchend', this._onTouchUp, true);
+    window.addEventListener('touchcancel', this._onTouchUp, true);
+    window.addEventListener('pointerdown', this._onCornerDown, true);
+    window.addEventListener('pointerup', this._onCornerUp, true);
+    window.addEventListener('pointercancel', this._onCornerUp, true);
+    this.resetIdle();
     this.foods = Component.filterSupported(Component.FOODS);
     const n = this.foods.length;
     this.setState({ foodIdx: Math.floor(Math.random() * n) });
@@ -829,6 +864,14 @@ class Component extends DCLogic {
 
   componentWillUnmount() {
     clearInterval(this._foodTimer);
+    clearTimeout(this._idleTimer);
+    window.removeEventListener('pointerdown', this._onActivity, true);
+    window.removeEventListener('touchstart', this._onTouchDown, true);
+    window.removeEventListener('touchend', this._onTouchUp, true);
+    window.removeEventListener('touchcancel', this._onTouchUp, true);
+    window.removeEventListener('pointerdown', this._onCornerDown, true);
+    window.removeEventListener('pointerup', this._onCornerUp, true);
+    window.removeEventListener('pointercancel', this._onCornerUp, true);
     window.removeEventListener('online', this._onOnline);
     window.removeEventListener('resize', this._onResize);
     window.removeEventListener('orientationchange', this._onResize);
@@ -944,9 +987,13 @@ class Component extends DCLogic {
       cam.style.opacity = this.state.cameraOpen ? '1' : '0';
       cam.style.pointerEvents = this.state.cameraOpen ? 'auto' : 'none';
     }
+    const welcomeOn = this.props.showWelcome !== false && !this.state.entered;
+    const wl = this.welcomeRef.current, bl = this.buttonsRef.current;
+    if (wl) { wl.style.opacity = welcomeOn ? '1' : '0'; wl.style.pointerEvents = welcomeOn ? 'auto' : 'none'; wl.style.transform = welcomeOn ? 'scale(1)' : 'scale(0.94)'; }
+    if (bl) { bl.style.opacity = welcomeOn ? '0' : '1'; bl.style.pointerEvents = welcomeOn ? 'none' : 'auto'; bl.style.transform = welcomeOn ? 'translateY(16px)' : 'translateY(0)'; }
     const pb = this.prideBtnRef.current;
     if (pb) {
-      const showBtn = s === 'home' && !this.state.signs;
+      const showBtn = s === 'home' && !this.state.signs && !welcomeOn;
       pb.style.opacity = showBtn ? '1' : '0';
       pb.style.pointerEvents = showBtn ? 'auto' : 'none';
     }
@@ -960,6 +1007,20 @@ class Component extends DCLogic {
   }
 
   goto(screen) { this.setState({ screen }); }
+  enter() { if (!this.state.entered) this.setState({ entered: true }); }
+  // Kiosk: after a quiet spell, fall back to the welcome screen. Never interrupts the commission flow.
+  resetIdle() {
+    clearTimeout(this._idleTimer);
+    const secs = Number(this.props.idleSeconds ?? 60);
+    if (!secs || this.props.showWelcome === false) return;
+    this._idleTimer = setTimeout(() => {
+      const safe = ['home', 'info', 'payment', 'credits', 'creditsSoon', 'pride'];
+      if (!safe.includes(this.state.screen) || this.state.signs || this.state.cameraOpen) { this.resetIdle(); return; }
+      const box = this.boxRef.current;
+      if (box) box.querySelectorAll('[style*="overflow-y"]').forEach((el) => { el.scrollTop = 0; });
+      this.setState({ screen: 'home', entered: false });
+    }, secs * 1000);
+  }
   select(side, key) { this.setState(side === 'info' ? { infoSel: key } : { paySel: key }); }
 
   styleBtn(btn, active, brand) {
@@ -1035,14 +1096,47 @@ class Component extends DCLogic {
     });
   }
 
-  brbDown() {
-    clearTimeout(this._pressTimer);
-    this._pressTimer = setTimeout(() => {
-      // closed → picker; picker → closed; showing a sign → back to picker
-      this.setState((s) => ({ signs: s.signs === 'picker' ? null : 'picker' }));
-    }, 1400);
+  // Secret corners: track every finger by where it lands on the 1024x768 stage.
+  cornerOf(e) {
+    const box = this.boxRef.current;
+    if (!box) return null;
+    const r = box.getBoundingClientRect();
+    const k = r.width / 1024 || 1;
+    const x = (e.clientX - r.left) / k, y = (e.clientY - r.top) / k;
+    const Z = 100;
+    if (y < Z && x > 1024 - Z) return 'tr';
+    if (y > 768 - Z && x < Z) return 'bl';
+    return null;
   }
-  brbUp() { clearTimeout(this._pressTimer); }
+  cornerDown(e) {
+    if (e.pointerType === 'touch') return; // handled by touch listeners
+    const z = this.cornerOf(e);
+    if (z) this._pts.set(e.pointerId, z); else this._pts.delete(e.pointerId);
+    this.evalCorners();
+  }
+  cornerUp(e) { if (e.pointerType === 'touch') return; if (this._pts.delete(e.pointerId)) this.evalCorners(); }
+  evalCorners() {
+    const zs = [...this._pts.values()];
+    const has = (z) => zs.includes(z);
+    let want = null;
+    if (zs.length === 2 && has('tr') && has('bl')) want = 'signs';
+    else if (zs.length === 1 && has('bl')) want = 'reset';
+    if (want === this._cornerAction) return;
+    clearTimeout(this._pressTimer);
+    this._cornerAction = want;
+    if (!want) return;
+    this._pressTimer = setTimeout(() => {
+      this._cornerAction = null;
+      if (want === 'signs') {
+        // closed → picker; picker → closed; showing a sign → back to picker
+        this.setState((s) => ({ signs: s.signs === 'picker' ? null : 'picker' }));
+      } else {
+        this.stopStream();
+        this._photo = null; this.draft = null;
+        this.setState({ screen: 'home', entered: false, signs: null, cameraOpen: false });
+      }
+    }, 500);
+  }
 
   // ─────────── Commission flow ───────────
   openCommission() {
@@ -1281,13 +1375,14 @@ class Component extends DCLogic {
       goCredits: () => this.goto('creditsSoon'), // TEMP: switch back to 'credits' when ready
       goPride: () => this.goto('pride'),
       goHome: () => this.goto('home'),
+      enter: () => this.enter(),
+      welcomeRef: this.welcomeRef,
+      buttonsRef: this.buttonsRef,
       selInstagram: () => this.select('info', 'instagram'),
       selEtsy: () => this.select('info', 'etsy'),
       selZelle: () => this.select('pay', 'zelle'),
       selVenmo: () => this.select('pay', 'venmo'),
-      selPaypal: () => this.select('pay', 'paypal'),
-      brbDown: () => this.brbDown(),
-      brbUp: () => this.brbUp()
+      selPaypal: () => this.select('pay', 'paypal')
     };
   }
 }
