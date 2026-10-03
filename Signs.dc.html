@@ -85,11 +85,20 @@
           <!-- card: got bulk -->
           <div data-goto="bulk" style="display:flex; flex-direction:column; gap:14px; padding:18px; border-radius:30px; cursor:pointer; background:#fff; border:3px solid rgba(0,0,0,0.05); box-shadow:0 8px 0 rgba(0,0,0,0.06), 0 16px 26px rgba(60,20,40,0.12); transition:transform 130ms cubic-bezier(.3,.7,.4,1);" style-active="transform:scale(0.97)">
             <div style="height:150px; border-radius:20px; overflow:hidden; display:flex; align-items:center; gap:8px; padding:14px; background:radial-gradient(circle at 30% 30%, #E6FBEF 0, #C6F3DC 70%, #AEEBCB 100%);">
-              <div style="flex:1; font-family:'Bagel Fat One',cursive; font-size:30px; line-height:1; color:#2f9c66; text-shadow:0 2px 0 rgba(255,255,255,0.6);">Got Bulk?</div>
-              <img src="assets/bulk-cards.jpg" alt="" style="flex:0 0 auto; height:100%; width:64px; object-fit:cover; object-position:60% 30%; border-radius:12px;">
+              <div style="flex:1; text-align:center; font-family:'Bagel Fat One',cursive; font-size:34px; line-height:1; color:#2f9c66; text-shadow:0 2px 0 rgba(255,255,255,0.6);">Got Bulk?</div>
             </div>
             <div style="font-weight:700; font-size:24px; color:#2a1a2e;">Got Bulk?</div>
             <div style="font-weight:500; font-size:18px; line-height:1.3; color:#4a2f44; opacity:0.75;">Buying bulk cards, any game.</div>
+          </div>
+
+          <!-- card: out for lunch -->
+          <div data-goto="lunch" style="display:flex; flex-direction:column; gap:14px; padding:18px; border-radius:30px; cursor:pointer; background:#fff; border:3px solid rgba(0,0,0,0.05); box-shadow:0 8px 0 rgba(0,0,0,0.06), 0 16px 26px rgba(60,20,40,0.12); transition:transform 130ms cubic-bezier(.3,.7,.4,1);" style-active="transform:scale(0.97)">
+            <div style="height:150px; border-radius:20px; overflow:hidden; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; text-align:center; padding:14px; background:radial-gradient(circle at 50% 30%, #FFE4EC 0, #FFC9DB 70%, #FFB8CE 100%);">
+              <div style="font-size:48px; line-height:1;">{{ lunchEmoji }}</div>
+              <div style="font-family:'Bagel Fat One',cursive; font-size:30px; line-height:1; color:#FF6FA3; text-shadow:0 2px 0 rgba(255,255,255,0.6);">Lunch break!</div>
+            </div>
+            <div style="font-weight:700; font-size:24px; color:#2a1a2e;">Lunch break</div>
+            <div style="font-weight:500; font-size:18px; line-height:1.3; color:#4a2f44; opacity:0.75;">Rotating food emoji.</div>
           </div>
 
         </div>
@@ -97,18 +106,29 @@
     </div>
 
     <!-- ═══════════ SIGN: GOT BULK ═══════════ -->
-    <div data-sign="bulk" style="position:absolute; inset:0; z-index:20; opacity:0; pointer-events:none; transition:opacity 400ms ease; background:radial-gradient(circle at 30% 40%, #F2FFF8 0, #D6F7E6 65%, #B7EFD1 100%); display:flex; align-items:stretch;">
-      <div style="flex:1 1 56%; min-width:0; display:flex; flex-direction:column; justify-content:center; gap:26px; padding:56px 30px 56px 72px;">
-        <img src="assets/logo.png" alt="Field of Green Prints" style="width:min(100%, 420px); height:auto; filter:drop-shadow(0 6px 0 rgba(0,0,0,0.06)) drop-shadow(0 12px 18px rgba(30,80,55,0.18));">
-        <div style="font-family:'Bagel Fat One',cursive; font-size:112px; line-height:0.95; color:#2f9c66; text-shadow:0 3px 0 rgba(255,255,255,0.7), 0 10px 18px rgba(30,110,70,0.22);">Got Bulk?</div>
-        <div style="display:flex; flex-direction:column; gap:14px;">
-          <div style="font-weight:600; font-size:34px; line-height:1.25; color:#2a4b3b; text-wrap:pretty;">Don’t just throw them away… I’ll take them off your hands for you!</div>
-          <div style="font-weight:500; font-size:29px; line-height:1.3; color:#4c6b5c; text-wrap:pretty;">Pokémon, One Piece, Lorcana, Magic, doesn’t matter</div>
+    <div data-sign="bulk" style="position:absolute; inset:0; z-index:20; opacity:0; pointer-events:none; transition:opacity 400ms ease; background:radial-gradient(circle at 50% 35%, #F2FFF8 0, #D6F7E6 65%, #B7EFD1 100%); display:flex; align-items:center; justify-content:center;">
+      <div style="position:absolute; width:110px; height:110px; border-radius:50%; left:9%; top:18%; background:radial-gradient(circle at 35% 30%, #fff, #FFC9DB); opacity:0.55; animation:floaty 10s ease-in-out infinite alternate;"></div>
+      <div style="position:absolute; width:64px; height:64px; border-radius:50%; right:11%; top:26%; background:radial-gradient(circle at 35% 30%, #fff, #FFD45B); opacity:0.55; animation:floaty2 8.5s ease-in-out infinite alternate;"></div>
+      <div style="position:absolute; width:52px; height:52px; border-radius:50%; right:20%; bottom:14%; background:radial-gradient(circle at 35% 30%, #fff, #C8B4F2); opacity:0.5; animation:floaty 12s ease-in-out infinite alternate;"></div>
+      <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:24px; padding:0 80px; animation:drift 30s ease-in-out infinite alternate;">
+        <img src="assets/logo.png" alt="Field of Green Prints" style="width:560px; height:auto; filter:drop-shadow(0 6px 0 rgba(0,0,0,0.06)) drop-shadow(0 12px 18px rgba(30,80,55,0.18));">
+        <div style="font-family:'Bagel Fat One',cursive; font-size:124px; line-height:0.95; color:#2f9c66; text-shadow:0 3px 0 rgba(255,255,255,0.7), 0 10px 18px rgba(30,110,70,0.22);">Got Bulk?</div>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:14px;">
+          <div style="font-weight:600; font-size:36px; line-height:1.25; color:#2a4b3b; text-wrap:balance;">Don’t just throw them away… I’ll take them off your hands for you!</div>
+          <div style="font-weight:500; font-size:30px; line-height:1.3; color:#4c6b5c; text-wrap:balance;">Pokémon, One Piece, Lorcana, Magic, doesn’t matter</div>
         </div>
       </div>
-      <div style="flex:1 1 44%; min-width:0; position:relative; overflow:hidden;">
-        <img src="assets/bulk-cards.jpg" alt="Trainer tossing cards in a bin" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:50% 38%;">
-        <div style="position:absolute; inset:0; background:linear-gradient(to right, #D6F7E6 0%, rgba(214,247,230,0.55) 9%, rgba(214,247,230,0) 22%);"></div>
+    </div>
+
+    <!-- ═══════════ SIGN: OUT FOR LUNCH ═══════════ -->
+    <div data-sign="lunch" style="position:absolute; inset:0; z-index:20; opacity:0; pointer-events:none; transition:opacity 400ms ease; background:radial-gradient(circle at 50% 30%, #FFE4EC 0, #FFC9DB 70%, #FFB8CE 100%); display:flex; align-items:center; justify-content:center;">
+      <div style="position:absolute; width:120px; height:120px; border-radius:50%; left:12%; top:22%; background:radial-gradient(circle at 35% 30%, #fff, #9FECC4); opacity:0.55; animation:floaty 10s ease-in-out infinite alternate;"></div>
+      <div style="position:absolute; width:70px; height:70px; border-radius:50%; right:14%; top:28%; background:radial-gradient(circle at 35% 30%, #fff, #FFD45B); opacity:0.55; animation:floaty2 8.5s ease-in-out infinite alternate;"></div>
+      <div style="position:absolute; width:56px; height:56px; border-radius:50%; right:24%; bottom:16%; background:radial-gradient(circle at 35% 30%, #fff, #C8B4F2); opacity:0.5; animation:floaty 12s ease-in-out infinite alternate;"></div>
+      <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:18px; animation:drift 30s ease-in-out infinite alternate;">
+        <div style="font-size:200px; line-height:1; height:220px; display:flex; align-items:center; justify-content:center; filter:drop-shadow(0 12px 18px rgba(60,20,40,0.2)); transition:opacity 300ms ease, transform 300ms cubic-bezier(.3,.7,.4,1);" style-hover="transform:scale(1.04)">{{ lunchEmoji }}</div>
+        <div style="font-family:'Bagel Fat One',cursive; font-size:112px; color:#FF6FA3; line-height:0.95; text-shadow:0 3px 0 rgba(255,255,255,0.6), 0 8px 16px rgba(193,66,117,0.25);">Lunch break!</div>
+        <div style="font-weight:500; font-size:34px; color:#7a4a5e;">I’ll be right back</div>
       </div>
     </div>
 
@@ -156,7 +176,8 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1024,&quot;height&quot;:768},&quot;holdMs&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:1400,&quot;min&quot;:400,&quot;max&quot;:4000,&quot;step&quot;:100,&quot;unit&quot;:&quot;ms&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Behavior&quot;}}">
 class Component extends DCLogic {
-  state = { sign: null };
+  state = { sign: null, foodIdx: 0 };
+  static FOODS = ['🍇','🍈','🍉','🍊','🍋','🍋‍🟩','🍌','🍍','🥭','🍎','🍏','🍐','🍑','🍒','🍓','🫐','🥝','🍅','🫒','🥥','🥑','🍆','🥔','🥕','🌽','🌶️','🫑','🥒','🥬','🥦','🧄','🧅','🥜','🫘','🌰','🫚','🫛','🍄‍🟫','🫜','🍞','🥐','🥖','🫓','🥨','🥯','🥞','🧇','🧀','🍖','🍗','🥩','🥓','🍔','🍟','🍕','🌭','🥪','🌮','🌯','🫔','🥙','🧆','🥚','🍳','🥘','🍲','🫕','🥣','🥗','🍿','🧈','🧂','🥫','🍝','🍱','🍘','🍙','🍚','🍛','🍜','🍠','🍢','🍣','🍤','🍥','🥮','🍡','🥟','🥠','🥡','🍦','🍧','🍨','🍩','🍪','🎂','🍰','🧁','🥧','🍫','🍬','🍭','🍮','🍯','🍼','🥛','☕','🫖','🍵','🍶','🍾','🍷','🍸','🍹','🍺','🍻','🥂','🥃','🫗','🥤','🧋','🧃','🧉','🥢','🍽️','🍴','🥄','🔪','🫙','🤠'];
 
   constructor(props) {
     super(props);
@@ -167,6 +188,16 @@ class Component extends DCLogic {
 
   componentDidMount() {
     this.applyScreens();
+    this.foods = Component.filterSupported(Component.FOODS);
+    const n = this.foods.length;
+    this.setState({ foodIdx: Math.floor(Math.random() * n) });
+    this._foodTimer = setInterval(() => {
+      this.setState((s) => {
+        let i = Math.floor(Math.random() * (n - 1));
+        if (i >= s.foodIdx) i++;
+        return { foodIdx: i };
+      });
+    }, 5000);
     this._onResize = () => this.fitStage();
     window.addEventListener('resize', this._onResize);
     window.addEventListener('orientationchange', this._onResize);
@@ -175,11 +206,37 @@ class Component extends DCLogic {
   }
   componentWillUnmount() {
     clearTimeout(this._pressTimer);
+    clearInterval(this._foodTimer);
     window.removeEventListener('resize', this._onResize);
     window.removeEventListener('orientationchange', this._onResize);
     if (window.visualViewport) window.visualViewport.removeEventListener('resize', this._onResize);
   }
   componentDidUpdate() { this.applyScreens(); }
+
+  // Draw each emoji off-screen; keep it only if it renders in color and as a single glyph.
+  static filterSupported(list) {
+    try {
+      const size = 32;
+      const c = document.createElement('canvas');
+      c.width = size * 3; c.height = size * 1.5;
+      const ctx = c.getContext('2d', { willReadFrequently: true });
+      ctx.font = size + 'px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
+      ctx.textBaseline = 'top';
+      const refW = ctx.measureText('🍔').width || size;
+      const ok = list.filter((e) => {
+        if (ctx.measureText(e).width > refW * 1.4) return false; // ZWJ sequence split into pieces
+        ctx.clearRect(0, 0, c.width, c.height);
+        ctx.fillStyle = '#000';
+        ctx.fillText(e, 0, 4);
+        const d = ctx.getImageData(0, 0, c.width, c.height).data;
+        for (let i = 0; i < d.length; i += 4) {
+          if (d[i + 3] > 0 && (Math.abs(d[i] - d[i + 1]) > 20 || Math.abs(d[i + 1] - d[i + 2]) > 20)) return true;
+        }
+        return false; // no color pixels → tofu box
+      });
+      return ok.length ? ok : list;
+    } catch (err) { return list; }
+  }
 
   isStandalone() {
     const mm = window.matchMedia;
@@ -240,6 +297,7 @@ class Component extends DCLogic {
 
   renderVals() {
     return {
+      lunchEmoji: (this.foods || Component.FOODS)[this.state.foodIdx] || '🍔',
       rootRef: this.rootRef,
       boxRef: this.boxRef,
       onRootClick: (e) => this.onRootClick(e),
