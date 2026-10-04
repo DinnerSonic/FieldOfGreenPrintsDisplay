@@ -1,0 +1,59 @@
+[
+  {
+    "name": "Parra Printing Company",
+    "description": "Certain prints provided on consignment by my buddy at Parra Printing Company.",
+    "logo": "assets/CreditsIcons/ParraPrinting.webp"
+  },
+  {
+    "name": "Pawpular Prints",
+    "logo": "assets/CreditsIcons/PawpularPrints.png"
+  },
+  {
+    "name": "Cinderwing 3D",
+    "logo": "assets/CreditsIcons/Cinderwing.png"
+  },
+  {
+    "name": "N3D Melborne",
+    "logo": "assets/CreditsIcons/n3d.webp"
+  },
+  {
+    "name": "Maple 3D Printing",
+    "logo": "assets/CreditsIcons/Maple3DPrinting.webp"
+  },
+  {
+    "name": "Whale 3D Studio",
+    "logo": "assets/CreditsIcons/Whale3DStudio.jpg"
+  },
+  {
+    "name": "Cutie3D",
+    "logo": "assets/CreditsIcons/Cutie3D.png"
+  },
+  {
+    "name": "Clickify3d",
+    "logo": "assets/CreditsIcons/"
+  },
+  {
+    "name": "ForgeCore",
+    "logo": "assets/CreditsIcons/ForgeCore.webp"
+  },
+  {
+    "name": "STLFlix",
+    "logo": "assets/CreditsIcons/STLFlix.jpg"
+  },
+  {
+    "name": "Jambaby Designs",
+    "logo": "assets/CreditsIcons/JambabyDesigns.png"
+  },
+  {
+    "name": "ZOU3D",
+    "logo": "assets/CreditsIcons/Zou3D.png"
+  },
+  {
+    "name": "Mochi Makes",
+    "logo": "assets/CreditsIcons/MochiMakes.png"
+  },
+  {
+    "name": "Poke Prints",
+    "logo": "assets/CreditsIcons/PokePrints.webp"
+  }
+]
