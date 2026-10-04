@@ -19,7 +19,6 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
-<script src="image-slot.js"></script>
 <style>
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body {
@@ -232,8 +231,8 @@
 
           <sc-for list="{{ credits }}" as="c" hint-placeholder-count="6">
             <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:16px; padding:32px 24px; border-radius:30px; background:#fff; border:3px solid rgba(0,0,0,0.05); box-shadow:0 8px 0 rgba(0,0,0,0.05), 0 16px 26px rgba(60,20,40,0.1);">
-              <sc-if value="{{ c.hasLogo }}" hint-placeholder-val="{{ true }}">
-                <image-slot id="{{ c.id }}" src="{{ c.logo }}" shape="circle" style="width:150px; height:150px; flex:0 0 auto;" placeholder="Logo"></image-slot>
+              <sc-if value="{{ c.hasLogo }}" hint-placeholder-val="{{ false }}">
+                <img data-src="{{ c.logo }}" alt="{{ c.name }}" draggable="false" style="width:150px; height:150px; flex:0 0 auto; border-radius:50%; object-fit:cover; display:block; -webkit-user-drag:none; user-select:none;">
                 <div style="font-weight:700; font-size:31px; color:#2a1a2e;">{{ c.name }}</div>
                 <sc-if value="{{ c.hasDesc }}" hint-placeholder-val="{{ true }}">
                   <div style="font-weight:500; font-size:21px; line-height:1.35; color:#4a2f44; opacity:0.75;">{{ c.description }}</div>
@@ -715,7 +714,13 @@ class Component extends DCLogic {
     };
   }
 
+  syncCreditImgs() {
+    const root = this.creditsRef.current; if (!root) return;
+    root.querySelectorAll('img[data-src]').forEach(img => { const s = img.getAttribute('data-src'); if (s && !s.includes('{{') && img.getAttribute('src') !== s) img.setAttribute('src', s); });
+  }
+
   componentDidMount() {
+    this.syncCreditImgs();
     fetch('credits.json', { cache: 'no-cache' }).then(r => r.json()).then(credits => this.setState({ credits })).catch(e => console.warn('credits.json failed to load', e));
     this.applyViewportMode(); this.applyScreens(); this.generateAll(); this.updateSelUI();
     this._onOnline = () => this.flushQueue();
@@ -879,7 +884,8 @@ class Component extends DCLogic {
       box.style.transform = 'translateY(' + Math.round(strip / 2) + 'px) scale(' + scale + ')';
     }
   }
-  componentDidUpdate() { this.applyViewportMode(); this.applyScreens(); this.updateSelUI(); }
+  componentDidUpdate() {
+    this.syncCreditImgs(); this.applyViewportMode(); this.applyScreens(); this.updateSelUI(); }
 
   applyScreens() {
     const s = this.state.screen;
@@ -1247,7 +1253,7 @@ class Component extends DCLogic {
       credits: (this.state.credits || []).map(c => {
         const logo = (c.logo || '').trim();
         const hasLogo = !!logo && !logo.endsWith('/');
-        return { ...c, id: 'credit-' + String(c.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-'), logo: hasLogo ? logo : undefined, hasLogo, noLogo: !hasLogo, hasDesc: !!(c.description || '').trim() };
+        return { ...c, logo: hasLogo ? logo : undefined, hasLogo, noLogo: !hasLogo, hasDesc: !!(c.description || '').trim() };
       }),
       creditsSoonRef: this.creditsSoonRef,
       boxRef: this.boxRef,
