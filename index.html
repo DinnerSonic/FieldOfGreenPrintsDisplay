@@ -237,47 +237,6 @@
       </div>
     </div>
 
-    <!-- ═══════════ REVIEW (artist) ═══════════ -->
-    <div class="panel center" data-screen="review" style="z-index:24; padding:34px; background:radial-gradient(circle at 82% 12%, rgba(193,166,242,.22) 0, transparent 46%), #FFD9E3;">
-      <div class="sheet" style="max-width:820px; padding:32px 40px 30px; --ledge:rgba(120,60,210,.22);">
-        <div class="display h-title" style="font-size:40px;">Review &amp; finalize</div>
-        <div class="head-sub" style="margin-top:5px; font-size:19px;">Artist only — add price and notes, then save the request.</div>
-
-        <div class="summary">
-          <div class="sum-row"><div class="sum-k">Name</div><div id="revName" class="sum-v"></div></div>
-          <div class="sum-row"><div class="sum-k">Contact</div><div id="revContact" class="sum-v"></div></div>
-          <div class="sum-row"><div class="sum-k">Request</div><div id="revRequest" class="sum-v" style="line-height:1.4; white-space:pre-wrap;"></div></div>
-          <div id="revPhotoWrap" class="sum-row" style="display:none; align-items:center;"><div class="sum-k">Photo</div><img id="revPhotoImg" alt="photo" class="thumb" style="width:130px; height:130px;"></div>
-        </div>
-
-        <div class="fields lavender" style="margin-top:20px; gap:18px;">
-          <label class="field">Price
-            <input id="revPrice" data-label="Price" readonly type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00">
-          </label>
-          <label class="field">Notes
-            <textarea id="revNotes" data-label="Notes" readonly rows="3" placeholder="Private notes for this request"></textarea>
-          </label>
-        </div>
-
-        <div class="btn-row" style="margin-top:26px;">
-          <div class="btn btn-green press" style="flex:1; gap:12px;" data-action="submitFinal">
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4z"/></svg>
-            Save &amp; send
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ═══════════ SEND STATUS ═══════════ -->
-    <div class="panel center" data-screen="status" style="z-index:26; padding:40px; background:radial-gradient(circle at 50% 30%, #FFF0F5 0, #FFD9E3 72%);">
-      <div class="sheet" style="max-width:640px; text-align:center; border-radius:40px; padding:52px 46px 44px; --ledge:rgba(255,111,163,.24);">
-        <div id="statusIcon" class="status-icon">✓</div>
-        <div id="statusTitle" class="display h-title" style="margin-top:14px; font-size:46px; line-height:1.05;">Saved!</div>
-        <div id="statusSub" class="blurb" style="margin-top:12px; font-size:23px;"></div>
-        <div class="btn btn-green press" style="display:inline-flex; margin-top:36px; padding:17px 40px; border-radius:999px;" data-action="returnMenu">Return to main menu</div>
-      </div>
-    </div>
-
     <!-- ═══════════ SIGNS PICKER ═══════════ -->
     <div id="signsPicker" class="panel col wall-bg" style="z-index:40; padding:98px 56px 40px;">
       <div class="home-btn tex press" data-action="closeSigns">

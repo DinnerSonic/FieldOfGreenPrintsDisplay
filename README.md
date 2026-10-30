@@ -32,13 +32,15 @@ prototype URL keeps working.
 
 ## Commissions
 
-Requests are saved on the iPad first (IndexedDB, photos included), then uploaded to the
-Apps Script in `apps-script/`, which files them in Google Drive. Until `APPS_SCRIPT_URL` is
-set they stay on the iPad and upload automatically once it is. The build stamp in the
-bottom-left shows `· N waiting to upload` while anything is pending.
+When a customer taps **Submit request**, the request (and selfie, if taken) is saved on the
+iPad (IndexedDB) and sent straight to the Apps Script in `apps-script/`, which files it in
+Google Drive and adds a row to the "Commission log" sheet. "Thank you!" shows for 3 seconds,
+then the kiosk goes back to the welcome screen. Price, status and notes are handled in the sheet.
+
+If the iPad is offline, requests wait on the iPad and upload automatically later. The build
+stamp in the bottom-left shows `· N waiting to upload` while anything is pending.
 
 ## Hidden gestures
 
 - Hold **top-right + bottom-left** corners together 0.5 s → booth signs picker.
 - Hold **bottom-left** alone 0.5 s → reset to the welcome screen.
-- On "Thank you!", press and hold anywhere 3 s → artist review (price + notes).

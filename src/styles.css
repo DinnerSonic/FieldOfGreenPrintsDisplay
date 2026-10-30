@@ -218,7 +218,6 @@ img { -webkit-user-drag: none; user-drag: none; pointer-events: none; }
 }
 .field textarea { line-height: 1.4; }
 .field input:focus, .field textarea:focus { border-color: var(--pink); }
-.lavender .field input:focus, .lavender .field textarea:focus { border-color: var(--lavender-ledge); }
 .field .invalid, .field .invalid:focus { border-color: var(--error); }
 .photo-field { display: flex; flex-direction: column; gap: 10px; }
 .photo-row { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
@@ -238,14 +237,7 @@ img { -webkit-user-drag: none; user-drag: none; pointer-events: none; }
 .btn.is-pressed { transform: scale(.98); }
 .btn-ghost { color: var(--mauve); background: #fff; box-shadow: var(--card-shadow); }
 .btn-pink { color: #fff; background: var(--pink); box-shadow: inset 0 -5px 0 rgba(0,0,0,.16), inset 0 4px 0 rgba(255,255,255,.4), 0 6px 0 var(--pink-ledge), 0 12px 20px rgba(193,66,117,.3); }
-.btn-green { color: #fff; background: var(--green); text-shadow: 0 1px 0 rgba(0,0,0,.15); box-shadow: inset 0 -5px 0 rgba(0,0,0,.18), inset 0 4px 0 rgba(255,255,255,.35), 0 6px 0 var(--green-ledge), 0 12px 20px rgba(31,138,71,.3); }
-.btn.busy { opacity: .6; pointer-events: none; }
 
-.summary { display: flex; flex-direction: column; gap: 12px; margin-top: 20px; padding: 20px 22px; border-radius: 22px; background: #FFF4F8; border: 2px solid rgba(0,0,0,.05); }
-.sum-row { display: flex; gap: 14px; }
-.sum-k { width: 110px; flex: 0 0 auto; font-weight: 700; font-size: 19px; color: var(--body); opacity: .85; }
-.sum-v { flex: 1; font-weight: 500; font-size: 20px; color: var(--ink); overflow-wrap: anywhere; }
-.status-icon { font-size: 96px; line-height: 1; color: var(--green-ledge); }
 
 /* ── camera ── */
 .camera {

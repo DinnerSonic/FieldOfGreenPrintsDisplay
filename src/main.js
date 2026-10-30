@@ -24,7 +24,7 @@ const state = {
   screen: 'home', entered: false, signs: null,
   infoSel: 'instagram', paySel: 'zelle', cameraOpen: false,
 };
-let draft = null;   // { name, contact, request, photo }
+
 let photo = null;   // JPEG data URL of the current capture
 
 function set(patch) { Object.assign(state, patch); render(); }
@@ -264,7 +264,7 @@ function evalCorners() {
     } else {
       stopStream();
       closeEditor();
-      photo = null; draft = null;
+      clearForm();
       set({ screen: 'home', entered: false, signs: null, cameraOpen: false });
     }
   }, 500);
@@ -287,16 +287,21 @@ function bindCorners() {
 // ─────────── Commission form ───────────
 const fName = $('#fName'), fContact = $('#fContact'), fRequest = $('#fRequest');
 
-function openCommission() {
-  photo = null; draft = null;
+function clearForm() {
+  photo = null;
   [fName, fContact, fRequest].forEach((f) => { f.value = ''; f.classList.remove('invalid'); });
   $('#photoWrap').classList.remove('on');
+  $('#photoImg').removeAttribute('src');
+}
+
+function openCommission() {
+  clearForm();
   set({ screen: 'commission' });
 }
 
 function cancelCommission() {
   stopStream();
-  photo = null; draft = null;
+  clearForm();
   set({ cameraOpen: false, screen: 'info' });
 }
 
@@ -306,8 +311,12 @@ function submitStep1() {
   fRequest.classList.toggle('invalid', !request);
   // Runs inside the Submit tap, so iOS will open the keyboard for the missing field.
   if (!contact || !request) { openEditor(!contact ? fContact : fRequest); return; }
-  draft = { name, contact, request, photo: photo || '' };
-  set({ screen: 'thanks' });
+  submitRequest({
+    id: newId(), name, contact, request, photo: photo || '',
+    timestamp: new Date().toISOString(),
+  });
+  clearForm(); // don't leave one customer's details behind for the next
+  showThanks();
 }
 
 // ─────────── Typing panel ───────────
@@ -364,22 +373,50 @@ const video = $('#video');
 const cameraMsg = $('#cameraMsg');
 let stream = null;
 
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+async function attachStream(constraints) {
+  const s = await navigator.mediaDevices.getUserMedia({ video: constraints, audio: false });
+  // The overlay may have been closed while iOS showed the permission prompt.
+  if (!state.cameraOpen) { s.getTracks().forEach((t) => t.stop()); return false; }
+  stream = s;
+  video.muted = true;
+  video.playsInline = true;
+  video.srcObject = s;
+  await video.play().catch(() => {});
+  return true;
+}
+
+// True once the preview shows an actual picture (not zero-sized or solid black).
+async function previewHasPicture(timeoutMs) {
+  const c = document.createElement('canvas');
+  c.width = 32; c.height = 24;
+  const ctx = c.getContext('2d', { willReadFrequently: true });
+  for (let waited = 0; waited < timeoutMs; waited += 150) {
+    if (video.videoWidth) {
+      ctx.drawImage(video, 0, 0, 32, 24);
+      const d = ctx.getImageData(0, 0, 32, 24).data;
+      for (let i = 0; i < d.length; i += 4) if (d[i] + d[i + 1] + d[i + 2] > 30) return true;
+    }
+    await sleep(150);
+  }
+  return false;
+}
+
 // Front (selfie) camera only: it's the only camera exposed in the kiosk enclosure.
+// Ask for a sharp picture first; some iPads give a black feed at high resolutions, so if
+// nothing shows up, fall back to the camera's default settings.
 async function startCamera() {
   set({ cameraOpen: true });
   stopStream();
   cameraMsg.style.display = 'none';
   video.style.display = '';
   try {
-    const s = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: 'user', width: { ideal: 1920 }, height: { ideal: 1440 } },
-      audio: false,
-    });
-    // The overlay may have been closed while iOS showed the permission prompt.
-    if (!state.cameraOpen) { s.getTracks().forEach((t) => t.stop()); return; }
-    stream = s;
-    video.srcObject = s;
-    await video.play().catch(() => {});
+    if (!await attachStream({ facingMode: 'user', width: { ideal: 1920 }, height: { ideal: 1440 } })) return;
+    if (await previewHasPicture(1500)) return;
+    stopStream();
+    if (!state.cameraOpen) return;
+    await attachStream({ facingMode: 'user' });
   } catch (e) {
     video.style.display = 'none';
     cameraMsg.style.display = 'block';
@@ -416,81 +453,32 @@ function removePhoto() {
   $('#photoWrap').classList.remove('on');
 }
 
-// ─────────── Thank you → hidden review ───────────
-// Press and hold anywhere on the thank-you screen for 3 s to open the artist review.
-function bindThanksHold() {
-  const thanks = $('#thanks');
-  let t = null;
-  thanks.addEventListener('pointerdown', () => {
-    clearTimeout(t);
-    t = setTimeout(() => { fillReview(); set({ screen: 'review' }); }, 3000);
-  });
-  ['pointerup', 'pointerleave', 'pointercancel'].forEach((ev) => thanks.addEventListener(ev, () => clearTimeout(t)));
-}
+// ─────────── Thank you ───────────
+// The request is saved and sent the moment it's submitted. "Thank you!" shows for a few
+// seconds, then the kiosk resets for the next customer. Pricing happens later, in the sheet.
+const THANKS_SECONDS = 3;
+let thanksTimer = null;
 
-function fillReview() {
-  const d = draft || {};
-  const put = (id, v) => { $(id).textContent = (v && String(v).trim()) ? v : '—'; };
-  put('#revName', d.name);
-  put('#revContact', d.contact);
-  put('#revRequest', d.request);
-  const wrap = $('#revPhotoWrap');
-  wrap.style.display = d.photo ? 'flex' : 'none';
-  if (d.photo) $('#revPhotoImg').src = d.photo;
-  $('#revPrice').value = '';
-  $('#revNotes').value = '';
-}
-
-// ─────────── Save & send ───────────
-const STATUS = {
-  sending: { icon: '⏳', title: 'Saving…', sub: 'Sending your request…', color: '#4a2f44' },
-  sent: { icon: '✓', title: 'Sent!', sub: 'The request was delivered successfully.', color: '#1f8a47' },
-  queued: { icon: '☁', title: 'Saved — will send when online', sub: "There's no connection right now. It will upload automatically once the iPad is back online.", color: '#c98a1a' },
-  local: { icon: '✓', title: 'Saved on this device', sub: 'No online destination is set yet, so the request is stored locally as a backup.', color: '#1f8a47' },
-};
-
-function setStatus(kind) {
-  const m = STATUS[kind] || STATUS.sending;
-  const icon = $('#statusIcon');
-  icon.textContent = m.icon; icon.style.color = m.color;
-  $('#statusTitle').textContent = m.title;
-  $('#statusSub').textContent = m.sub;
-}
-
-let saving = false;
-async function submitFinal() {
-  if (saving) return;
-  saving = true;
-  document.activeElement && document.activeElement.blur();
-  const d = draft || {};
-  const record = {
-    id: newId(),
-    name: d.name || '', contact: d.contact || '', request: d.request || '',
-    price: $('#revPrice').value.trim(),
-    notes: $('#revNotes').value.trim(),
-    photo: d.photo || '',
-    timestamp: new Date().toISOString(),
-  };
+async function submitRequest(record) {
   appendLog(record);
-  setStatus('sending');
-  set({ screen: 'status' });
-  try {
-    try { await saveRecord({ ...record, status: 'pending' }); }
-    catch (e) { console.warn('could not save commission locally', e); }
-    if (!APPS_SCRIPT_URL) { setStatus('local'); return; }
-    const res = await sendRecord(record);
-    setStatus(res.ok ? 'sent' : 'queued');
-  } finally {
-    saving = false;
-    updateStamp();
-  }
+  try { await saveRecord({ ...record, status: 'pending' }); }
+  catch (e) { console.warn('could not save commission locally', e); }
+  // Uploads in the background; anything that fails is retried later (see flushQueue).
+  if (APPS_SCRIPT_URL) await sendRecord(record);
+  updateStamp();
 }
 
-function returnMenu() { photo = null; draft = null; set({ screen: 'home' }); }
+function showThanks() {
+  clearTimeout(thanksTimer);
+  set({ screen: 'thanks' });
+  thanksTimer = setTimeout(() => {
+    if (state.screen === 'thanks') set({ screen: 'home', entered: false });
+  }, THANKS_SECONDS * 1000);
+}
 
 // ─────────── Build stamp ───────────
 async function updateStamp() {
-  let text = __BUILD_STAMP__;
+  let text = typeof __BUILD_STAMP__ === 'string' ? __BUILD_STAMP__ : 'build dev';
   try {
     const n = await countPending();
     if (n) text += ` · ${n} waiting to upload`;
@@ -503,7 +491,6 @@ const ACTIONS = {
   enter: () => { if (!state.entered) set({ entered: true }); },
   openCommission, cancelCommission, submitStep1,
   startCamera, closeCamera, capturePhoto, removePhoto,
-  submitFinal, returnMenu,
   closeSigns: () => set({ signs: null, screen: 'home' }),
   closeEditor,
 };
@@ -547,7 +534,6 @@ setInterval(flush, 60000);
 fitStage();
 render();
 bindCorners();
-bindThanksHold();
 generateQrs();
 loadCredits();
 renderFlags();

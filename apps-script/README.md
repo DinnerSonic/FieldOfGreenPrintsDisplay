@@ -1,18 +1,18 @@
 # Commission backend: iPad → Google Drive → your PC
 
-When a request is saved on the kiosk, the iPad sends it (with the photo) to a small Google
+When a customer submits a request on the kiosk, the iPad sends it (with the photo) to a small Google
 Apps Script that you own. The script puts each request in its own folder in your Google Drive:
 
 ```
 My Drive/
   Field of Green Prints Commissions/
-    Commission log            ← spreadsheet, one row per request
+    Commission log            ← spreadsheet: one row per request (Status, Price, Notes are yours)
     2026-11-02 1432 - Sam/
       photo.jpg
       request.txt
 ```
 
-New requests appear a few seconds after you hit **Save & send**. You can browse them at
+New requests appear a few seconds after the customer taps **Submit request**. You can browse them at
 <https://drive.google.com>, or keep the "Commission log" sheet open in a tab. Optionally,
 install **Google Drive for desktop** on the booth PC to get the folder in File Explorer, so
 photos open straight in other apps and synced files stay available if the internet drops.
@@ -40,9 +40,18 @@ own once it's back online. The tiny build stamp in the bottom-left corner shows
 6. Paste the URL into `APPS_SCRIPT_URL` in [`src/config.js`](../src/config.js), commit and push.
    Anything already saved on the iPad uploads automatically the next time the app opens.
 
+## Handling requests
+
+Work from the **Commission log** sheet. Each new request arrives with Status **New**. Use the
+Status dropdown (New, Quoted, Accepted, Printing, Done, Declined), type the Price, and add
+Notes. **Open photo** and **Open folder** jump to the files. Sort and filter freely. You can
+also reorder columns or add your own: the script finds its columns by header name, so just
+don't rename the existing headers.
+
 ## Changing the script later
 
-Edit the code, then **Deploy → Manage deployments → ✏️ → Version: New version → Deploy**.
+Paste in the new code and save, run **`setup`** once (it upgrades the sheet's columns and
+formatting), then **Deploy → Manage deployments → ✏️ → Version: New version → Deploy**.
 That keeps the same URL, so the kiosk doesn't need to change.
 
 ## Notes
