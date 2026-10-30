@@ -376,8 +376,8 @@ let stream = null;
 let cameraCheck = null;
 
 // Front (selfie) camera only: it's the only camera exposed in the kiosk enclosure.
-// Same request as the original prototype, which is known to work on the kiosk iPad.
-// (Asking for a specific resolution gave a black preview there.)
+// Ask for a sharp picture (the camera picks the closest size it supports). If the preview ever
+// goes black, iOS's camera service is usually stuck: restarting the iPad fixes it.
 async function startCamera() {
   set({ cameraOpen: true });
   stopStream();
@@ -385,7 +385,10 @@ async function startCamera() {
   cameraMsg.style.display = 'none';
   video.style.display = '';
   try {
-    const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
+    const s = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'user', width: { ideal: 1920 }, height: { ideal: 1440 } },
+      audio: false,
+    });
     // The overlay may have been closed while iOS showed the permission prompt.
     if (!state.cameraOpen) { s.getTracks().forEach((t) => t.stop()); return; }
     stream = s;
@@ -401,7 +404,7 @@ async function startCamera() {
       const t = s.getVideoTracks()[0];
       const set_ = t && t.getSettings ? t.getSettings() : {};
       cameraMsg.style.display = 'block';
-      cameraMsg.textContent = 'Camera preview not showing. Details: ' + [
+      cameraMsg.textContent = 'Camera preview not showing. Restarting the iPad usually fixes this. Details: ' + [
         'track ' + (t ? t.readyState + (t.muted ? '/muted' : '') : 'none'),
         'size ' + (set_.width || '?') + 'x' + (set_.height || '?'),
         'video ' + video.readyState + (video.paused ? '/paused' : '/playing'),
