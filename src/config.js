@@ -3,7 +3,7 @@
 // See apps-script/README.md for the one-time setup.
 // Leave it empty to run in local-backup mode: requests (with photos) stay on the iPad
 // and upload automatically once a URL is set.
-export const APPS_SCRIPT_URL = '';
+export const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM3YADUHeXK_yaw1uQRFVEXA_c84_Lcds26h8FVoVWFArO68XbiPmJpJNFCZplNTf2CA/exec';
 
 // Must match SHARED_KEY in apps-script/Code.gs. This ships in the public page, so it only
 // keeps casual junk out; it is not a password.
