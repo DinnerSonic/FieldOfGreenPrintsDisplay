@@ -182,15 +182,15 @@
 
         <div class="fields" style="margin-top:18px; gap:14px;">
           <label class="field">Name
-            <input id="fName" type="text" placeholder="Your name" autocomplete="off">
+            <input id="fName" data-label="Name" readonly type="text" placeholder="Your name" autocomplete="off">
           </label>
           <label class="field">
             <span>Contact <span class="req">*</span></span>
-            <input id="fContact" type="text" placeholder="Email, phone, or @handle" autocomplete="off">
+            <input id="fContact" data-label="Contact" readonly type="text" placeholder="Email, phone, or @handle" autocomplete="off">
           </label>
           <label class="field">
             <span>What would you like? <span class="req">*</span></span>
-            <textarea id="fRequest" rows="3" placeholder="Describe your commission — subject, style, size, anything helpful."></textarea>
+            <textarea id="fRequest" data-label="What would you like?" readonly rows="3" placeholder="Describe your commission — subject, style, size, anything helpful."></textarea>
           </label>
 
           <div class="photo-field">
@@ -252,10 +252,10 @@
 
         <div class="fields lavender" style="margin-top:20px; gap:18px;">
           <label class="field">Price
-            <input id="revPrice" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00">
+            <input id="revPrice" data-label="Price" readonly type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00">
           </label>
           <label class="field">Notes
-            <textarea id="revNotes" rows="3" placeholder="Private notes for this request"></textarea>
+            <textarea id="revNotes" data-label="Notes" readonly rows="3" placeholder="Private notes for this request"></textarea>
           </label>
         </div>
 
@@ -382,6 +382,18 @@
         <img src="assets/logo.png" alt="Field of Green Prints" class="sign-logo" style="width:780px;">
         <div class="display" style="font-size:72px; color:#c07a12; line-height:1; text-align:center; text-wrap:pretty; text-shadow:0 3px 0 rgba(255,255,255,.6), 0 8px 16px rgba(160,110,20,.22);">Helping with<br>another booth</div>
         <div style="font-weight:500; font-size:32px; color:#6b5230; text-align:center;">If you need anything, look for the guy in the pink cowboy hat!</div>
+      </div>
+    </div>
+
+    <!-- Typing panel: pinned to the top so it stays above the iPad keyboard -->
+    <div id="editor" class="editor">
+      <div class="editor-card">
+        <div class="editor-head">
+          <div id="editorLabel" class="editor-label"></div>
+          <div class="editor-done press" data-action="closeEditor">Done</div>
+        </div>
+        <input id="editorInput" class="editor-field" type="text" autocomplete="off">
+        <textarea id="editorText" class="editor-field" rows="3"></textarea>
       </div>
     </div>
 

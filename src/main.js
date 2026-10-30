@@ -52,6 +52,9 @@ function isStandalone() {
 // iOS home-screen app: iOS paints a strip below the document that page content can't reach,
 // so scale the stage to fit above it and nudge it down by half, making the mint frame even.
 function fitStage() {
+  // While typing, the keyboard shrinks the visible area; keep the stage as it was instead
+  // of shrinking everything (the typing panel sits above the keyboard).
+  if (editing) return;
   const vv = window.visualViewport;
   if (!isStandalone()) {
     document.documentElement.classList.remove('standalone');
@@ -260,6 +263,7 @@ function evalCorners() {
       set({ signs: state.signs === 'picker' ? null : 'picker' });
     } else {
       stopStream();
+      closeEditor();
       photo = null; draft = null;
       set({ screen: 'home', entered: false, signs: null, cameraOpen: false });
     }
@@ -268,10 +272,12 @@ function evalCorners() {
 
 function bindCorners() {
   // Touch events on the iPad (pointer events get cancelled by multi-finger gestures); pointer events for a mouse.
-  addEventListener('touchstart', (e) => [...e.changedTouches].forEach((t) => cornerDown('t' + t.identifier, t.clientX, t.clientY)), true);
+  // Passive, so the browser never waits on these before handling a tap.
+  const opts = { capture: true, passive: true };
+  addEventListener('touchstart', (e) => [...e.changedTouches].forEach((t) => cornerDown('t' + t.identifier, t.clientX, t.clientY)), opts);
   const up = (e) => [...e.changedTouches].forEach((t) => cornerUp('t' + t.identifier));
-  addEventListener('touchend', up, true);
-  addEventListener('touchcancel', up, true);
+  addEventListener('touchend', up, opts);
+  addEventListener('touchcancel', up, opts);
   addEventListener('pointerdown', (e) => { if (e.pointerType !== 'touch') cornerDown(e.pointerId, e.clientX, e.clientY); }, true);
   const pup = (e) => { if (e.pointerType !== 'touch') cornerUp(e.pointerId); };
   addEventListener('pointerup', pup, true);
@@ -298,11 +304,60 @@ function submitStep1() {
   const name = fName.value.trim(), contact = fContact.value.trim(), request = fRequest.value.trim();
   fContact.classList.toggle('invalid', !contact);
   fRequest.classList.toggle('invalid', !request);
-  if (!contact || !request) { (!contact ? fContact : fRequest).focus(); return; }
-  document.activeElement && document.activeElement.blur();
+  // Runs inside the Submit tap, so iOS will open the keyboard for the missing field.
+  if (!contact || !request) { openEditor(!contact ? fContact : fRequest); return; }
   draft = { name, contact, request, photo: photo || '' };
   set({ screen: 'thanks' });
 }
+
+// ─────────── Typing panel ───────────
+// The form fields are read-only stand-ins. Tapping one opens a panel pinned to the top of
+// the screen with the real text box, so what's being typed stays above the iPad keyboard.
+const editor = $('#editor');
+const edInput = $('#editorInput'), edText = $('#editorText');
+let editing = null;  // the form field being edited
+let edField = null;  // the panel's input or textarea standing in for it
+
+function openEditor(field) {
+  if (editing === field) return;
+  editing = field;
+  const multi = field.tagName === 'TEXTAREA';
+  edField = multi ? edText : edInput;
+  edInput.style.display = multi ? 'none' : '';
+  edText.style.display = multi ? '' : 'none';
+  if (!multi) {
+    edInput.type = field.type;
+    edInput.inputMode = field.inputMode || '';
+    ['min', 'step'].forEach((a) => (field.hasAttribute(a) ? edInput.setAttribute(a, field.getAttribute(a)) : edInput.removeAttribute(a)));
+  }
+  edField.placeholder = field.placeholder;
+  edField.value = field.value;
+  $('#editorLabel').textContent = field.dataset.label;
+  editor.classList.add('on');
+  edField.focus(); // must happen during the tap, or iOS won't show the keyboard
+  const end = edField.value.length;
+  try { edField.setSelectionRange(end, end); } catch (e) {} // number inputs don't support it
+}
+
+function closeEditor() {
+  if (!editing) return;
+  editing.value = edField.value;
+  if (edField.value.trim()) editing.classList.remove('invalid');
+  editing = null;
+  editor.classList.remove('on');
+  edField.blur();
+  scrollTo(0, 0);
+  // Re-fit once the keyboard has finished sliding away.
+  [100, 400, 800].forEach((t) => setTimeout(fitStage, t));
+}
+
+[edInput, edText].forEach((f) => {
+  f.addEventListener('input', () => { if (editing) editing.value = f.value; });
+  // The keyboard's own hide key blurs the field: treat that as Done.
+  f.addEventListener('blur', () => setTimeout(() => { if (editing && document.activeElement !== edField) closeEditor(); }, 50));
+});
+edInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); closeEditor(); } });
+editor.addEventListener('click', (e) => { if (e.target === editor) closeEditor(); });
 
 // ─────────── Camera ───────────
 const video = $('#video');
@@ -450,9 +505,12 @@ const ACTIONS = {
   startCamera, closeCamera, capturePhoto, removePhoto,
   submitFinal, returnMenu,
   closeSigns: () => set({ signs: null, screen: 'home' }),
+  closeEditor,
 };
 
 stage.addEventListener('click', (e) => {
+  const field = e.target.closest('.field');
+  if (field && !editor.contains(field)) { openEditor($('input, textarea', field)); return; }
   const t = e.target.closest('[data-action],[data-goto],[data-sel],[data-sign-pick]');
   if (!t) return;
   if (t.dataset.action) ACTIONS[t.dataset.action]();
@@ -461,8 +519,17 @@ stage.addEventListener('click', (e) => {
   else if (t.dataset.signPick) set({ signs: t.dataset.signPick });
 });
 
-// Lets iOS Safari apply :active press styles.
-document.addEventListener('touchstart', () => {}, { passive: true });
+// Press feedback is applied the instant a finger lands. (CSS :active on iOS waits until
+// Safari has decided the touch isn't a scroll, which makes buttons feel laggy.)
+const PRESSABLE = '.press, .menu-item, .pride-btn, .sign-card';
+let pressed = null;
+const release = () => { if (pressed) { pressed.classList.remove('is-pressed'); pressed = null; } };
+stage.addEventListener('pointerdown', (e) => {
+  release();
+  pressed = e.target.closest(PRESSABLE);
+  if (pressed) pressed.classList.add('is-pressed');
+});
+['pointerup', 'pointercancel'].forEach((ev) => addEventListener(ev, release, true));
 addEventListener('pointerdown', resetIdle, true);
 
 addEventListener('load', fitStage);
