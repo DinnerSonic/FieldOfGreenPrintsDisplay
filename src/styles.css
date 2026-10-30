@@ -246,7 +246,7 @@ img { -webkit-user-drag: none; user-drag: none; pointer-events: none; }
 }
 .camera.on { opacity: 1; pointer-events: auto; }
 .camera-msg { display: none; color: #fff; font-size: 24px; font-weight: 600; text-align: center; padding: 0 40px; max-width: 600px; line-height: 1.4; }
-.camera-video { width: 620px; max-width: 84%; max-height: 560px; height: auto; border-radius: 28px; background: #000; box-shadow: 0 20px 44px rgba(0,0,0,.5); object-fit: cover; }
+.camera-video { width: 620px; max-width: 84%; height: auto; border-radius: 28px; background: #000; box-shadow: 0 20px 44px rgba(0,0,0,.5); }
 .camera-video.mirror { transform: scaleX(-1); }
 .camera-controls { display: flex; align-items: center; justify-content: center; gap: 34px; }
 .pill-btn { display: inline-flex; align-items: center; justify-content: center; padding: 15px 28px; border-radius: 999px; color: var(--ink); background: #fff; border: 3px solid rgba(0,0,0,.08); box-shadow: 0 5px 0 rgba(0,0,0,.12); font-weight: 700; font-size: 22px; }

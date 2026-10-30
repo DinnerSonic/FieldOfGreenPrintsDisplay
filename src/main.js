@@ -373,50 +373,42 @@ const video = $('#video');
 const cameraMsg = $('#cameraMsg');
 let stream = null;
 
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-
-async function attachStream(constraints) {
-  const s = await navigator.mediaDevices.getUserMedia({ video: constraints, audio: false });
-  // The overlay may have been closed while iOS showed the permission prompt.
-  if (!state.cameraOpen) { s.getTracks().forEach((t) => t.stop()); return false; }
-  stream = s;
-  video.muted = true;
-  video.playsInline = true;
-  video.srcObject = s;
-  await video.play().catch(() => {});
-  return true;
-}
-
-// True once the preview shows an actual picture (not zero-sized or solid black).
-async function previewHasPicture(timeoutMs) {
-  const c = document.createElement('canvas');
-  c.width = 32; c.height = 24;
-  const ctx = c.getContext('2d', { willReadFrequently: true });
-  for (let waited = 0; waited < timeoutMs; waited += 150) {
-    if (video.videoWidth) {
-      ctx.drawImage(video, 0, 0, 32, 24);
-      const d = ctx.getImageData(0, 0, 32, 24).data;
-      for (let i = 0; i < d.length; i += 4) if (d[i] + d[i + 1] + d[i + 2] > 30) return true;
-    }
-    await sleep(150);
-  }
-  return false;
-}
+let cameraCheck = null;
 
 // Front (selfie) camera only: it's the only camera exposed in the kiosk enclosure.
-// Ask for a sharp picture first; some iPads give a black feed at high resolutions, so if
-// nothing shows up, fall back to the camera's default settings.
+// Same request as the original prototype, which is known to work on the kiosk iPad.
+// (Asking for a specific resolution gave a black preview there.)
 async function startCamera() {
   set({ cameraOpen: true });
   stopStream();
+  clearTimeout(cameraCheck);
   cameraMsg.style.display = 'none';
   video.style.display = '';
   try {
-    if (!await attachStream({ facingMode: 'user', width: { ideal: 1920 }, height: { ideal: 1440 } })) return;
-    if (await previewHasPicture(1500)) return;
-    stopStream();
-    if (!state.cameraOpen) return;
-    await attachStream({ facingMode: 'user' });
+    const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
+    // The overlay may have been closed while iOS showed the permission prompt.
+    if (!state.cameraOpen) { s.getTracks().forEach((t) => t.stop()); return; }
+    stream = s;
+    video.srcObject = s;
+    video.muted = true;
+    video.playsInline = true;
+    video.setAttribute('playsinline', '');
+    let playError = '';
+    // If no picture has arrived after a few seconds, say why on screen (for troubleshooting).
+    // Set up before play(), which never settles when the camera sends no frames.
+    cameraCheck = setTimeout(() => {
+      if (!state.cameraOpen || video.videoWidth) return;
+      const t = s.getVideoTracks()[0];
+      const set_ = t && t.getSettings ? t.getSettings() : {};
+      cameraMsg.style.display = 'block';
+      cameraMsg.textContent = 'Camera preview not showing. Details: ' + [
+        'track ' + (t ? t.readyState + (t.muted ? '/muted' : '') : 'none'),
+        'size ' + (set_.width || '?') + 'x' + (set_.height || '?'),
+        'video ' + video.readyState + (video.paused ? '/paused' : '/playing'),
+        playError && 'play ' + playError,
+      ].filter(Boolean).join(' · ');
+    }, 3000);
+    video.play().catch((e) => { playError = e.name; });
   } catch (e) {
     video.style.display = 'none';
     cameraMsg.style.display = 'block';
