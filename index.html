@@ -217,15 +217,11 @@
       <!-- CAMERA OVERLAY -->
       <div id="camera" class="camera">
         <div id="cameraMsg" class="camera-msg"></div>
-        <video id="video" class="camera-video" muted playsinline></video>
+        <video id="video" class="camera-video mirror" muted playsinline></video>
         <div class="camera-controls">
           <div class="pill-btn press" data-action="closeCamera">Cancel</div>
           <div class="shutter press" data-action="capturePhoto"><div></div></div>
-          <div class="camera-flip-slot">
-            <div id="flipBtn" class="flip-btn press" data-action="flipCamera" aria-label="Switch camera">
-              <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#2a1a2e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-2.5h6L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><path d="M9.2 12.2a3 3 0 0 1 5.3-1.4"/><polyline points="14.9 9.2 14.6 10.9 12.9 10.6"/><path d="M14.8 13.8a3 3 0 0 1-5.3 1.4"/><polyline points="9.1 16.8 9.4 15.1 11.1 15.4"/></svg>
-            </div>
-          </div>
+          <div style="width:120px;"></div>
         </div>
       </div>
     </div>

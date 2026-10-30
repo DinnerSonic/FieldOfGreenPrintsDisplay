@@ -12,8 +12,10 @@ My Drive/
       request.txt
 ```
 
-Install **Google Drive for desktop** on the PC next to the booth and that folder shows up in
-File Explorer, with new requests appearing a few seconds after you hit **Save & send**.
+New requests appear a few seconds after you hit **Save & send**. You can browse them at
+<https://drive.google.com>, or keep the "Commission log" sheet open in a tab. Optionally,
+install **Google Drive for desktop** on the booth PC to get the folder in File Explorer, so
+photos open straight in other apps and synced files stay available if the internet drops.
 
 If the iPad has no internet, requests (photos included) wait on the iPad and upload on their
 own once it's back online. The tiny build stamp in the bottom-left corner shows

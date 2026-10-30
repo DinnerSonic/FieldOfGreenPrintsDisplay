@@ -308,30 +308,23 @@ function submitStep1() {
 const video = $('#video');
 const cameraMsg = $('#cameraMsg');
 let stream = null;
-let facing = 'user';
 
+// Front (selfie) camera only: it's the only camera exposed in the kiosk enclosure.
 async function startCamera() {
   set({ cameraOpen: true });
-  await openStream();
-}
-
-async function openStream() {
   stopStream();
   cameraMsg.style.display = 'none';
   video.style.display = '';
   try {
     const s = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: facing, width: { ideal: 1920 }, height: { ideal: 1440 } },
+      video: { facingMode: 'user', width: { ideal: 1920 }, height: { ideal: 1440 } },
       audio: false,
     });
     // The overlay may have been closed while iOS showed the permission prompt.
     if (!state.cameraOpen) { s.getTracks().forEach((t) => t.stop()); return; }
     stream = s;
     video.srcObject = s;
-    video.classList.toggle('mirror', facing === 'user');
     await video.play().catch(() => {});
-    const cams = (await navigator.mediaDevices.enumerateDevices()).filter((d) => d.kind === 'videoinput');
-    $('#flipBtn').classList.toggle('on', cams.length > 1);
   } catch (e) {
     video.style.display = 'none';
     cameraMsg.style.display = 'block';
@@ -346,11 +339,6 @@ function stopStream() {
 
 function closeCamera() { stopStream(); set({ cameraOpen: false }); }
 
-function flipCamera() {
-  facing = facing === 'user' ? 'environment' : 'user';
-  openStream();
-}
-
 function capturePhoto() {
   if (!video.videoWidth) return;
   const scale = Math.min(1, PHOTO_MAX_EDGE / Math.max(video.videoWidth, video.videoHeight));
@@ -359,7 +347,7 @@ function capturePhoto() {
   c.width = w; c.height = h;
   const ctx = c.getContext('2d');
   // The selfie preview is mirrored, so save what the customer saw.
-  if (facing === 'user') { ctx.translate(w, 0); ctx.scale(-1, 1); }
+  ctx.translate(w, 0); ctx.scale(-1, 1);
   ctx.drawImage(video, 0, 0, w, h);
   photo = c.toDataURL('image/jpeg', PHOTO_JPEG_QUALITY);
   $('#photoImg').src = photo;
@@ -459,7 +447,7 @@ async function updateStamp() {
 const ACTIONS = {
   enter: () => { if (!state.entered) set({ entered: true }); },
   openCommission, cancelCommission, submitStep1,
-  startCamera, closeCamera, capturePhoto, removePhoto, flipCamera,
+  startCamera, closeCamera, capturePhoto, removePhoto,
   submitFinal, returnMenu,
   closeSigns: () => set({ signs: null, screen: 'home' }),
 };

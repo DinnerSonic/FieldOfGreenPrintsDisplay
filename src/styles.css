@@ -260,9 +260,6 @@ img { -webkit-user-drag: none; user-drag: none; pointer-events: none; }
 .shutter { width: 96px; height: 96px; border-radius: 50%; background: #fff; border: 5px solid rgba(255,255,255,.55); display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(0,0,0,.4); }
 .shutter:active { transform: scale(.92); }
 .shutter div { width: 66px; height: 66px; border-radius: 50%; background: var(--pink); box-shadow: inset 0 -4px 0 rgba(0,0,0,.15); }
-.camera-flip-slot { width: 120px; display: flex; justify-content: center; }
-.flip-btn { width: 68px; height: 68px; border-radius: 50%; background: #fff; display: none; align-items: center; justify-content: center; box-shadow: 0 5px 0 rgba(0,0,0,.12); }
-.flip-btn.on { display: flex; }
 
 /* ── signs ── */
 .sign-body { display: flex; flex-direction: column; align-items: center; text-align: center; animation: drift 30s ease-in-out infinite alternate; }
