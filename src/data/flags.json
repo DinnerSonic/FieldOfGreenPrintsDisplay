@@ -1,0 +1,22 @@
+[
+  { "image": "LGBT Rainbow Flag.png", "name": "Rainbow", "description": "The classic LGBTQ+ flag — each stripe a facet of community." },
+  { "image": "Philadelphia Pride.png", "name": "Philadelphia Pride", "description": "Adds black and brown stripes for LGBTQ+ people of color." },
+  { "image": "Progress Pride.png", "name": "Progress", "description": "Adds trans and BIPOC stripes as a forward-pushing chevron." },
+  { "image": "Transgender.png", "name": "Transgender", "description": "Light blue, pink and white for trans identities." },
+  { "image": "bisexual.png", "name": "Bisexual", "description": "Pink, purple and blue for attraction across genders." },
+  { "image": "Lesbian.png", "name": "Lesbian", "description": "Shades of orange to pink for love between women." },
+  { "image": "Pan.png", "name": "Pansexual", "description": "Pink, yellow and blue for attraction regardless of gender." },
+  { "image": "Asexual.png", "name": "Asexual", "description": "Black, grey, white and purple across the ace spectrum." },
+  { "image": "Nonbinary.png", "name": "Non-binary", "description": "Yellow, white, purple and black beyond the binary." },
+  { "image": "genderfluid.png", "name": "Genderfluid", "description": "Colors for a gender that shifts over time." },
+  { "image": "Genderqueer.png", "name": "Genderqueer", "description": "Lavender, white and green for queer genders." },
+  { "image": "Agender.png", "name": "Agender", "description": "Black, grey, white and green for having no gender." },
+  { "image": "intersex.png", "name": "Intersex", "description": "Yellow with a purple circle for wholeness and autonomy." },
+  { "image": "Aromantic.png", "name": "Aromantic", "description": "Greens and greys for little or no romantic attraction." },
+  { "image": "Gay Man.png", "name": "Gay Man", "description": "Teals, white and blues for gay and MLM identities." },
+  { "image": "Black Trans Pride.png", "name": "Black Trans Pride", "description": "Trans colors with a black stripe for Black trans lives." },
+  { "image": "Gray Aromantic.png", "name": "Gray-Aromantic", "description": "For romantic attraction felt rarely or faintly." },
+  { "image": "Gray Asexual.png", "name": "Gray-Asexual", "description": "For sexual attraction felt rarely or faintly." },
+  { "image": "Maverique.png", "name": "Maverique", "description": "Yellow, white and orange for a gender apart from the binary." },
+  { "image": "Neutrois.png", "name": "Neutrois", "description": "White, green and black for a neutral or null gender." }
+]

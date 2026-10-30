@@ -1,0 +1,7 @@
+{
+  "instagram": { "color": "#FF6FA3", "shadow": "rgba(255,111,163,0.28)", "dark": "#c14275", "label": "Instagram", "sub": "@fieldofgreenprints", "url": "https://www.instagram.com/fieldofgreenprints/" },
+  "etsy": { "color": "#F1641E", "shadow": "rgba(241,100,30,0.28)", "dark": "#bd4610", "label": "Etsy", "sub": "fieldofgreenprints.etsy.com", "url": "https://fieldofgreenprints.etsy.com" },
+  "zelle": { "color": "#6D1ED4", "shadow": "rgba(109,30,212,0.26)", "dark": "#4e14a0", "label": "Zelle", "sub": "Scan with your banking app", "url": "https://enroll.zellepay.com/qr-codes?data=eyJuYW1lIjoiTUFUVEhFVyIsInRva2VuIjoiMjQwNzIyMjc1NyIsImFjdGlvbiI6InBheW1lbnQifQ==" },
+  "venmo": { "color": "#3D95CE", "shadow": "rgba(61,149,206,0.28)", "dark": "#2c6f9c", "label": "Venmo", "sub": "Scan in the Venmo app", "url": "https://venmo.com/code?user_id=2222016857899008071&created=1756528263" },
+  "paypal": { "color": "#003087", "shadow": "rgba(0,48,135,0.26)", "dark": "#001d55", "label": "PayPal", "sub": "Scan with your camera or PayPal app", "url": "https://www.paypal.com/qrcodes/managed/15aa2e26-0853-41d1-b75b-e7816938c23d?utm_source=consapp_onscreen" }
+}
