@@ -10,6 +10,9 @@ import {
   newId, saveRecord, sendRecord, flushQueue, countPending, appendLog,
   migrateLegacyQueue, requestPersistence,
 } from './commissions.js';
+import {
+  PHONE_MAX_PHOTOS, phoneUploadsAvailable, newPhoneCode, startPhoneSession, pollPhonePhotos, phoneUploadUrl,
+} from './phone.js';
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -22,7 +25,7 @@ const stage = $('#stage');
 // signs:  null | 'picker' | brb | at530 | otherbooth | bulk | lunch
 const state = {
   screen: 'home', entered: false, signs: null,
-  infoSel: 'instagram', paySel: 'zelle', cameraOpen: false,
+  infoSel: 'instagram', paySel: 'zelle', cameraOpen: false, phoneOpen: false,
 };
 
 let photo = null;   // JPEG data URL of the current capture
@@ -38,6 +41,7 @@ function render() {
   $('#signsPicker').classList.toggle('on', s.signs === 'picker');
   $$('[data-sign]').forEach((el) => el.classList.toggle('on', el.dataset.sign === s.signs));
   $('#camera').classList.toggle('on', s.cameraOpen);
+  $('#phone').classList.toggle('on', s.phoneOpen);
   renderSelection();
   paintFrame();
 }
@@ -117,6 +121,24 @@ function renderSelection() {
   }
 }
 
+// Candy-styled QR code as a PNG data URL.
+async function qrDataUrl(data, ecLevel = 'H') {
+  const qr = new QRCodeStyling({
+    width: 480, height: 480, type: 'canvas', data, margin: 6,
+    qrOptions: { errorCorrectionLevel: ecLevel },
+    dotsOptions: { color: '#2a1a2e', type: 'rounded' },
+    backgroundOptions: { color: '#ffffff' },
+    cornersSquareOptions: { type: 'extra-rounded', color: '#FF6FA3' },
+    cornersDotOptions: { type: 'dot', color: '#34D374' },
+  });
+  const blob = await qr.getRawData('png');
+  return new Promise((resolve) => {
+    const r = new FileReader();
+    r.onload = () => resolve(r.result);
+    r.readAsDataURL(blob);
+  });
+}
+
 function generateQrs() {
   for (const [key, b] of Object.entries(brands)) {
     // Cached PNGs are tagged with their URL so an edited link regenerates its code.
@@ -124,25 +146,13 @@ function generateQrs() {
       const cached = localStorage.getItem('fogp_qr_' + key);
       if (cached && localStorage.getItem('fogp_qr_' + key + '_src') === b.url) { qrCache[key] = cached; continue; }
     } catch (e) {}
-    const qr = new QRCodeStyling({
-      width: 480, height: 480, type: 'canvas', data: b.url, margin: 6,
-      qrOptions: { errorCorrectionLevel: 'H' },
-      dotsOptions: { color: '#2a1a2e', type: 'rounded' },
-      backgroundOptions: { color: '#ffffff' },
-      cornersSquareOptions: { type: 'extra-rounded', color: '#FF6FA3' },
-      cornersDotOptions: { type: 'dot', color: '#34D374' },
-    });
-    qr.getRawData('png').then((blob) => {
-      const r = new FileReader();
-      r.onload = () => {
-        qrCache[key] = r.result;
-        try {
-          localStorage.setItem('fogp_qr_' + key, r.result);
-          localStorage.setItem('fogp_qr_' + key + '_src', b.url);
-        } catch (e) {}
-        renderSelection();
-      };
-      r.readAsDataURL(blob);
+    qrDataUrl(b.url).then((png) => {
+      qrCache[key] = png;
+      try {
+        localStorage.setItem('fogp_qr_' + key, png);
+        localStorage.setItem('fogp_qr_' + key + '_src', b.url);
+      } catch (e) {}
+      renderSelection();
     });
   }
   renderSelection();
@@ -283,7 +293,7 @@ function evalCorners() {
       stopStream();
       closeEditor();
       clearForm();
-      set({ screen: 'home', entered: false, signs: null, cameraOpen: false });
+      set({ screen: 'home', entered: false, signs: null, cameraOpen: false, phoneOpen: false });
     }
   }, 500);
 }
@@ -306,21 +316,117 @@ function bindCorners() {
 const fName = $('#fName'), fContact = $('#fContact'), fRequest = $('#fRequest');
 
 function clearForm() {
-  photo = null;
   [fName, fContact, fRequest].forEach((f) => { f.value = ''; f.classList.remove('invalid'); });
-  $('#photoWrap').classList.remove('on');
-  $('#photoImg').removeAttribute('src');
+  clearPhotos();
+}
+
+// Selfie + phone photos, shown as small tiles next to the photo buttons.
+const STRIP_TILES = 3;
+function renderPhotos() {
+  const tiles = [];
+  if (photo) tiles.push({ src: photo, selfie: true });
+  phonePhotos.forEach((p) => tiles.push({ src: p.preview }));
+  const strip = $('#photoStrip');
+  const shown = tiles.length > STRIP_TILES ? tiles.slice(0, STRIP_TILES - 1) : tiles;
+  const nodes = shown.map((t) => photoTile(t.src, t.selfie));
+  if (tiles.length > shown.length) nodes.push(el('div', 'photo-tile', '+' + (tiles.length - shown.length)));
+  if (tiles.length) {
+    const clear = el('div', 'photo-clear press', 'Clear');
+    clear.dataset.action = 'clearPhotos';
+    nodes.push(clear);
+  }
+  strip.replaceChildren(...nodes);
+  // The phone overlay shows everything that's arrived so far.
+  const n = phonePhotos.length;
+  $('#phoneThumbs').replaceChildren(...phonePhotos.map((p) => photoTile(p.preview)));
+  if (!phoneError) {
+    $('#phoneStatus').textContent = n ? `Got ${n} photo${n === 1 ? '' : 's'}! Send more, or tap Done.` : 'Waiting for photos…';
+  }
+}
+
+function photoTile(src, selfie) {
+  const t = el('div', 'photo-tile' + (selfie ? ' selfie' : ''));
+  if (src) { const img = el('img'); img.src = src; img.alt = ''; t.append(img); }
+  else t.textContent = '📷'; // a format the phone couldn't preview; the original still arrives
+  return t;
+}
+
+function clearPhotos() {
+  photo = null;
+  endPhoneSession();
+  renderPhotos();
+}
+
+// ─────────── Photos from the customer's phone ───────────
+// "From your phone" shows a QR code with a one-time code. The phone page (upload.html) sends
+// full-size photos to the Apps Script under that code; the kiosk polls for small previews and,
+// on submit, passes the photo IDs along so the script files the originals with the request.
+let phoneCode = null;    // one-time code in the QR; null until the overlay is first opened
+let phonePhotos = [];    // [{ id, preview }] arrived so far
+let phoneError = false;
+let phonePollTimer = null;
+
+async function openPhone() {
+  set({ phoneOpen: true });
+  if (phoneCode) { schedulePhonePoll(0); return; }
+  const code = phoneCode = newPhoneCode();
+  phoneError = false;
+  $('#phoneQr').removeAttribute('src');
+  $('#phoneStatus').classList.remove('err');
+  renderPhotos();
+  // 'M' error correction keeps the longer upload link easy to scan.
+  qrDataUrl(phoneUploadUrl(code), 'M').then((png) => { if (phoneCode === code) $('#phoneQr').src = png; });
+  let ok = false;
+  try { ok = phoneUploadsAvailable() && (await startPhoneSession(code)).ok; } catch (e) {}
+  if (phoneCode !== code) return;
+  if (!ok) {
+    phoneCode = null; // try again next time it's opened
+    phoneError = true;
+    $('#phoneStatus').textContent = 'Phone upload isn’t available right now, sorry! You can take a selfie instead.';
+    $('#phoneStatus').classList.add('err');
+    return;
+  }
+  schedulePhonePoll(1500);
+}
+
+function closePhone() { set({ phoneOpen: false }); }
+
+function endPhoneSession() {
+  clearTimeout(phonePollTimer);
+  phoneCode = null;
+  phonePhotos = [];
+  phoneError = false;
+}
+
+// Poll quickly while the QR is showing, slowly while the customer finishes the form.
+function schedulePhonePoll(delay) {
+  clearTimeout(phonePollTimer);
+  if (phoneCode) phonePollTimer = setTimeout(pollPhone, delay);
+}
+
+async function pollPhone() {
+  const code = phoneCode;
+  if (!code || state.screen !== 'commission') return;
+  try {
+    const res = await pollPhonePhotos(code);
+    if (code !== phoneCode) return;
+    if (res.ok && res.photos.length !== phonePhotos.length) {
+      phonePhotos = res.photos.slice(0, PHONE_MAX_PHOTOS);
+      renderPhotos();
+    }
+  } catch (e) {}
+  schedulePhonePoll(state.phoneOpen ? 2500 : 5000);
 }
 
 function openCommission() {
   clearForm();
-  set({ screen: 'commission' });
+  set({ screen: 'commission', cameraOpen: false, phoneOpen: false });
 }
 
 function cancelCommission() {
   stopStream();
   clearForm();
-  set({ cameraOpen: false, screen: 'info' });
+  set({ cameraOpen: false, phoneOpen: false, screen: 'info' });
 }
 
 function submitStep1() {
@@ -331,6 +437,7 @@ function submitStep1() {
   if (!contact || !request) { openEditor(!contact ? fContact : fRequest); return; }
   submitRequest({
     id: newId(), name, contact, request, photo: photo || '',
+    phonePhotos: phonePhotos.map((p) => p.id),
     timestamp: new Date().toISOString(),
   });
   clearForm(); // don't leave one customer's details behind for the next
@@ -455,15 +562,9 @@ function capturePhoto() {
   ctx.translate(w, 0); ctx.scale(-1, 1);
   ctx.drawImage(video, 0, 0, w, h);
   photo = c.toDataURL('image/jpeg', PHOTO_JPEG_QUALITY);
-  $('#photoImg').src = photo;
-  $('#photoWrap').classList.add('on');
+  renderPhotos();
   stopStream();
   set({ cameraOpen: false });
-}
-
-function removePhoto() {
-  photo = null;
-  $('#photoWrap').classList.remove('on');
 }
 
 // ─────────── Thank you ───────────
@@ -483,7 +584,7 @@ async function submitRequest(record) {
 
 function showThanks() {
   clearTimeout(thanksTimer);
-  set({ screen: 'thanks' });
+  set({ screen: 'thanks', phoneOpen: false });
   thanksTimer = setTimeout(() => {
     if (state.screen === 'thanks') set({ screen: 'home', entered: false });
   }, THANKS_SECONDS * 1000);
@@ -503,7 +604,8 @@ async function updateStamp() {
 const ACTIONS = {
   enter: () => { if (!state.entered) set({ entered: true }); },
   openCommission, cancelCommission, submitStep1,
-  startCamera, closeCamera, capturePhoto, removePhoto,
+  startCamera, closeCamera, capturePhoto,
+  openPhone, closePhone, clearPhotos,
   closeSigns: () => set({ signs: null, screen: 'home' }),
   closeEditor,
 };

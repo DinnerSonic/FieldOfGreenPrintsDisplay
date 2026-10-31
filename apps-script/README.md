@@ -1,16 +1,22 @@
 # Commission backend: iPad → Google Drive → your PC
 
-When a customer submits a request on the kiosk, the iPad sends it (with the photo) to a small Google
-Apps Script that you own. The script puts each request in its own folder in your Google Drive:
+When a customer submits a request on the kiosk, the iPad sends it to a small Google Apps
+Script that you own. The script puts each request in its own folder in your Google Drive:
 
 ```
 My Drive/
   Field of Green Prints Commissions/
     Commission log            ← spreadsheet: one row per request (Status, Price, Notes are yours)
+    _Phone uploads (temporary)/  ← phone photos wait here until their request is submitted
     2026-11-02 1432 - Sam/
-      photo.jpg
+      photo.jpg               ← selfie from the iPad, if they took one
+      phone-1.jpg, phone-2…   ← full-size photos sent from their phone
       request.txt
 ```
+
+Phone photos are sent by the customer's phone directly to this script (via the QR code on
+the kiosk), so they keep their original size. Ones that never get attached to a request
+are moved to the trash after a day.
 
 New requests appear a few seconds after the customer taps **Submit request**. You can browse them at
 <https://drive.google.com>, or keep the "Commission log" sheet open in a tab. Optionally,
@@ -51,7 +57,8 @@ don't rename the existing headers.
 ## Changing the script later
 
 Paste in the new code and save, run **`setup`** once (it upgrades the sheet's columns and
-formatting), then **Deploy → Manage deployments → ✏️ → Version: New version → Deploy**.
+formatting, installs the daily cleanup, and asks for any new permissions), then
+**Deploy → Manage deployments → ✏️ → Version: New version → Deploy**.
 That keeps the same URL, so the kiosk doesn't need to change.
 
 ## Notes

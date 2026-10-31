@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 import { execSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 
 // Build stamp shown bottom-left on the kiosk, so you can tell which version the iPad is running.
 function buildStamp() {
@@ -14,4 +15,13 @@ export default defineConfig({
   // Relative paths so the site works under https://dinnersonic.github.io/FieldOfGreenPrintsDisplay/
   base: './',
   define: { __BUILD_STAMP__: JSON.stringify(buildStamp()) },
+  build: {
+    rollupOptions: {
+      // The kiosk, plus the page customers open on their phone from the kiosk's QR code.
+      input: {
+        main: fileURLToPath(new URL('index.html', import.meta.url)),
+        upload: fileURLToPath(new URL('upload.html', import.meta.url)),
+      },
+    },
+  },
 });

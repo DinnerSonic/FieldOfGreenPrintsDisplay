@@ -194,16 +194,17 @@
           </label>
 
           <div class="photo-field">
-            <div class="field-label">Photo <span style="opacity:.6; font-weight:500;">(optional)</span></div>
+            <div class="field-label">Photos <span style="opacity:.6; font-weight:500;">(optional)</span></div>
             <div class="photo-row">
-              <div class="photo-btn press" data-action="startCamera">
+              <div id="phoneBtn" class="photo-btn press" data-action="openPhone">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2a1a2e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2.5" width="12" height="19" rx="2.6"/><line x1="10.5" y1="18.2" x2="13.5" y2="18.2"/></svg>
+                From your phone
+              </div>
+              <div class="photo-btn photo-btn-alt press" data-action="startCamera">
                 <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2a1a2e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-2.5h6L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.4"/></svg>
-                Take a photo
+                Selfie
               </div>
-              <div id="photoWrap" class="photo-wrap">
-                <img id="photoImg" alt="captured photo" class="thumb" style="width:84px; height:84px;">
-                <div class="small-btn press" data-action="removePhoto">Remove</div>
-              </div>
+              <div id="photoStrip" class="photo-strip"></div>
             </div>
           </div>
         </div>
@@ -222,6 +223,23 @@
           <div class="pill-btn press" data-action="closeCamera">Cancel</div>
           <div class="shutter press" data-action="capturePhoto"><div></div></div>
           <div style="width:120px;"></div>
+        </div>
+      </div>
+
+      <!-- PHONE UPLOAD OVERLAY: QR code the customer scans to send photos from their phone -->
+      <div id="phone" class="phone">
+        <div class="phone-card">
+          <div class="phone-qr"><img id="phoneQr" alt="QR code"></div>
+          <div class="phone-side">
+            <div class="display h-title" style="font-size:40px;">Send photos<br>from your phone</div>
+            <ol class="phone-steps">
+              <li>Point your phone’s camera at this code</li>
+              <li>Tap the link, pick your photos, and tap Send</li>
+            </ol>
+            <div id="phoneStatus" class="phone-status">Waiting for photos…</div>
+            <div id="phoneThumbs" class="phone-thumbs"></div>
+            <div class="btn btn-green press" style="margin-top:auto;" data-action="closePhone">Done</div>
+          </div>
         </div>
       </div>
     </div>

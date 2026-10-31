@@ -20,6 +20,8 @@ npm run build    # production build into dist/
 | Styles | `src/styles.css` |
 | Behaviour (navigation, secret corners, idle reset, camera, signs) | `src/main.js` |
 | Commission storage + upload | `src/commissions.js` |
+| "From your phone" photos: kiosk side + shared API | `src/main.js`, `src/phone.js` |
+| Phone page customers open from the QR code | `upload.html`, `src/upload.js`, `src/upload.css` |
 | Settings (backend URL, idle time, photo size) | `src/config.js` |
 | Instagram / Etsy / payment links | `src/data/brands.json` |
 | Pride flags | `src/data/flags.json` + `public/assets/PrideFlags/small/` |
@@ -36,6 +38,11 @@ When a customer taps **Submit request**, the request (and selfie, if taken) is s
 iPad (IndexedDB) and sent straight to the Apps Script in `apps-script/`, which files it in
 Google Drive and adds a row to the "Commission log" sheet. "Thank you!" shows for 3 seconds,
 then the kiosk goes back to the welcome screen. Price, status and notes are handled in the sheet.
+
+Photos: **From your phone** shows a QR code; the customer's phone opens `upload.html` and sends
+full-size photos straight to the Apps Script, and the kiosk shows small previews as they
+arrive. **Selfie** uses the iPad's front camera. Both end up in the request's Drive folder.
+Phone photos need internet on both the phone and the iPad.
 
 If the iPad is offline, requests wait on the iPad and upload automatically later. The build
 stamp in the bottom-left shows `· N waiting to upload` while anything is pending.
