@@ -55,10 +55,12 @@ function setStageSize(w, h) {
 }
 
 // Browser (PC preview): a fixed 1024x768 stage on the mint frame, scaled down if needed.
-// iOS home-screen app: fill the whole area the page is allowed to draw in. The design is
-// 1024x768; the stage is scaled to fit and then stretched (wider or taller) to cover any
-// leftover space. Any strip iOS keeps for itself shows the page background, which
-// paintFrame() keeps matched to the current screen.
+// iOS home-screen app: fill the whole screen. On iPads without a notch, iOS lets the page draw
+// under the status bar but still reports the page as status-bar-height shorter than the
+// screen, leaving a band at the bottom. So #root is extended down by that missing height and
+// the stage is laid out to the true screen size. The design is 1024x768; the stage is scaled
+// to fit and then stretched (wider or taller) to cover any leftover space. If iOS still keeps
+// a strip, it shows the page background, which paintFrame() matches to the current screen.
 function fitStage() {
   // While typing, the keyboard shrinks the visible area; keep the stage as it was instead
   // of shrinking everything (the typing panel sits above the keyboard).
@@ -66,6 +68,7 @@ function fitStage() {
   const vv = window.visualViewport;
   if (!isStandalone()) {
     document.documentElement.classList.remove('standalone');
+    root.style.bottom = '0';
     setStageSize(1024, 768);
     const vw = (vv ? vv.width : innerWidth) || 1024;
     const vh = (vv ? vv.height : innerHeight) || 768;
@@ -79,8 +82,13 @@ function fitStage() {
     document.documentElement.clientWidth || Infinity)) || 1024;
   const vh = Math.round(Math.min(vv ? vv.height : Infinity, innerHeight || Infinity,
     document.documentElement.clientHeight || Infinity)) || 768;
-  const scale = Math.min(vw / 1024, vh / 768);
-  setStageSize(Math.max(1024, Math.ceil(vw / scale)), Math.max(768, Math.ceil(vh / scale)));
+  const sw = (screen && screen.width) || 0, sh = (screen && screen.height) || 0;
+  const screenH = vw >= vh ? Math.min(sw, sh) : Math.max(sw, sh);
+  const missing = Math.max(0, Math.min(60, (screenH || vh) - vh));
+  root.style.bottom = -missing + 'px';
+  const h = vh + missing;
+  const scale = Math.min(vw / 1024, h / 768);
+  setStageSize(Math.max(1024, Math.ceil(vw / scale)), Math.max(768, Math.ceil(h / scale)));
   stage.style.transform = `scale(${scale})`;
   paintFrame();
 }
