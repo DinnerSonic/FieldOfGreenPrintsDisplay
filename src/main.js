@@ -4,11 +4,11 @@ import brands from './data/brands.json';
 import flags from './data/flags.json';
 import { FOODS } from './data/foods.js';
 import {
-  APPS_SCRIPT_URL, SHOW_WELCOME, IDLE_SECONDS, PHOTO_MAX_EDGE, PHOTO_JPEG_QUALITY,
+  APPS_SCRIPT_URL, SHOW_WELCOME, IDLE_SECONDS, PHOTO_MAX_EDGE, PHOTO_JPEG_QUALITY, KEEP_SENT_DAYS,
 } from './config.js';
 import {
   newId, saveRecord, sendRecord, flushQueue, countPending, appendLog,
-  migrateLegacyQueue, requestPersistence, pruneSent,
+  migrateLegacyQueue, requestPersistence, pruneSent, listRecords, deleteRecord,
 } from './commissions.js';
 import {
   PHONE_MAX_PHOTOS, phoneUploadsAvailable, newPhoneCode, startPhoneSession, pollPhonePhotos, phoneUploadUrl,
@@ -44,7 +44,11 @@ function render() {
   $('#phone').classList.toggle('on', s.phoneOpen);
   renderSelection();
   paintFrame();
+  // Refresh the saved-requests count/list whenever the artist screens open.
+  if (s.signs !== lastSigns && (s.signs === 'picker' || s.signs === 'saved')) renderSaved();
+  lastSigns = s.signs;
 }
+let lastSigns = null;
 
 // ─────────── Stage fit ───────────
 function isStandalone() {
@@ -590,6 +594,56 @@ function showThanks() {
   }, THANKS_SECONDS * 1000);
 }
 
+// ─────────── Artist: saved requests ───────────
+// Lists the requests kept on this iPad (newest first) with a two-tap Delete on each.
+async function renderSaved() {
+  let recs = [];
+  try { recs = await listRecords(); } catch (e) {}
+  recs.sort((a, b) => String(b.timestamp || '').localeCompare(String(a.timestamp || '')));
+  const waiting = recs.filter((r) => r.status === 'pending').length;
+  $('#savedCount').textContent = recs.length;
+  $('#savedSub').textContent = recs.length
+    ? `${recs.length} on this iPad${waiting ? ` · ${waiting} waiting to upload` : ''} · uploaded ones are removed after ${KEEP_SENT_DAYS} days`
+    : '';
+  $('#savedList').replaceChildren(...(recs.length ? recs.map(savedRow) : [el('div', 'saved-empty', 'Nothing saved on this iPad.')]));
+}
+
+function savedRow(r) {
+  const row = el('div', 'saved-row');
+  const thumb = el('div', 'saved-thumb');
+  if (r.photo) { const img = el('img'); img.src = r.photo; img.alt = ''; thumb.append(img); }
+  else thumb.textContent = '—';
+  const who = el('div', 'saved-who', r.name || 'No name');
+  if (r.contact) who.append(el('span', null, ' · ' + r.contact));
+  const meta = el('div', 'saved-meta');
+  const pending = r.status === 'pending';
+  meta.append(el('span', 'saved-badge ' + (pending ? 'pending' : 'sent'), pending ? 'Waiting to upload' : 'Uploaded'));
+  const when = new Date(r.timestamp);
+  if (!isNaN(when)) meta.append(el('span', null, when.toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })));
+  const phoneCount = (r.phonePhotos || []).length;
+  if (phoneCount) meta.append(el('span', null, `${phoneCount} phone photo${phoneCount === 1 ? '' : 's'}`));
+  const main = el('div', 'saved-main');
+  main.append(who, el('div', 'saved-text', r.request || ''), meta);
+  const del = el('div', 'saved-del press', 'Delete');
+  del.dataset.del = r.id;
+  del.dataset.pending = pending ? '1' : '';
+  row.append(thumb, main, del);
+  return row;
+}
+
+// First tap arms the button, second tap deletes. Unsent requests get a stronger warning.
+async function deleteSaved(btn) {
+  if (!btn.classList.contains('confirm')) {
+    btn.classList.add('confirm');
+    btn.textContent = btn.dataset.pending ? 'Not uploaded! Tap again to delete' : 'Tap again to delete';
+    setTimeout(() => { if (btn.isConnected) { btn.classList.remove('confirm'); btn.textContent = 'Delete'; } }, 3000);
+    return;
+  }
+  try { await deleteRecord(btn.dataset.del); } catch (e) {}
+  renderSaved();
+  updateStamp();
+}
+
 // ─────────── Build stamp ───────────
 async function updateStamp() {
   let text = typeof __BUILD_STAMP__ === 'string' ? __BUILD_STAMP__ : 'build dev';
@@ -611,6 +665,10 @@ const ACTIONS = {
 };
 
 stage.addEventListener('click', (e) => {
+  const del = e.target.closest('[data-del]');
+  if (del) { deleteSaved(del); return; }
+  const savedRowEl = e.target.closest('.saved-row');
+  if (savedRowEl) { savedRowEl.classList.toggle('open'); return; }
   const field = e.target.closest('.field');
   if (field && !editor.contains(field)) { openEditor($('input, textarea', field)); return; }
   const t = e.target.closest('[data-action],[data-goto],[data-sel],[data-sign-pick]');

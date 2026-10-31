@@ -51,5 +51,6 @@ then deletes it; requests that haven’t uploaded yet are never deleted.
 
 ## Hidden gestures
 
-- Hold **top-right + bottom-left** corners together 0.5 s → booth signs picker.
+- Hold **top-right + bottom-left** corners together 0.5 s → booth signs picker. Its last card,
+  **Saved requests**, lists the requests stored on the iPad, with a two-tap Delete on each.
 - Hold **bottom-left** alone 0.5 s → reset to the welcome screen.

@@ -45,6 +45,16 @@ export function newId() {
 }
 
 export const saveRecord = (rec) => tx('readwrite', (s) => s.put(rec));
+export const listRecords = () => tx('readonly', (s) => s.getAll());
+
+/** Artist screen: delete one request from the iPad (and from the text-only history). */
+export async function deleteRecord(id) {
+  await tx('readwrite', (s) => s.delete(id));
+  try {
+    const l = JSON.parse(localStorage.getItem(LOG_KEY) || '[]');
+    localStorage.setItem(LOG_KEY, JSON.stringify(l.filter((r) => r.id !== id)));
+  } catch (e) {}
+}
 const pendingRecords = () => tx('readonly', (s) => s.index('status').getAll('pending'));
 export const countPending = () => tx('readonly', (s) => s.index('status').count('pending'));
 
