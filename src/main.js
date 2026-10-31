@@ -39,6 +39,7 @@ function render() {
   $$('[data-sign]').forEach((el) => el.classList.toggle('on', el.dataset.sign === s.signs));
   $('#camera').classList.toggle('on', s.cameraOpen);
   renderSelection();
+  paintFrame();
 }
 
 // ─────────── Stage fit ───────────
@@ -48,9 +49,16 @@ function isStandalone() {
     matchMedia('(display-mode: fullscreen)').matches;
 }
 
-// Browser: center the 1024x768 stage, scaling down if the window is smaller.
-// iOS home-screen app: iOS paints a strip below the document that page content can't reach,
-// so scale the stage to fit above it and nudge it down by half, making the mint frame even.
+function setStageSize(w, h) {
+  stage.style.width = stage.style.minWidth = w + 'px';
+  stage.style.height = stage.style.minHeight = h + 'px';
+}
+
+// Browser (PC preview): a fixed 1024x768 stage on the mint frame, scaled down if needed.
+// iOS home-screen app: fill the whole area the page is allowed to draw in. The design is
+// 1024x768; the stage is scaled to fit and then stretched (wider or taller) to cover any
+// leftover space. Any strip iOS keeps for itself shows the page background, which
+// paintFrame() keeps matched to the current screen.
 function fitStage() {
   // While typing, the keyboard shrinks the visible area; keep the stage as it was instead
   // of shrinking everything (the typing panel sits above the keyboard).
@@ -58,10 +66,12 @@ function fitStage() {
   const vv = window.visualViewport;
   if (!isStandalone()) {
     document.documentElement.classList.remove('standalone');
+    setStageSize(1024, 768);
     const vw = (vv ? vv.width : innerWidth) || 1024;
     const vh = (vv ? vv.height : innerHeight) || 768;
     const scale = Math.min(1, vw / 1024, vh / 768);
     stage.style.transform = scale < 0.999 ? `scale(${scale})` : 'none';
+    paintFrame();
     return;
   }
   document.documentElement.classList.add('standalone');
@@ -69,14 +79,21 @@ function fitStage() {
     document.documentElement.clientWidth || Infinity)) || 1024;
   const vh = Math.round(Math.min(vv ? vv.height : Infinity, innerHeight || Infinity,
     document.documentElement.clientHeight || Infinity)) || 768;
-  const landscape = vw >= vh;
-  const sw = (screen && screen.width) || 0;
-  const sh = (screen && screen.height) || 0;
-  const screenH = landscape ? Math.min(sw, sh) : Math.max(sw, sh);
-  const strip = Math.max(0, Math.min(200, (screenH || vh) - vh));
-  const avail = Math.max(200, vh - strip);
-  const scale = Math.min(vw / 1024, avail / 768);
-  stage.style.transform = `translateY(${Math.round(strip / 2)}px) scale(${scale})`;
+  const scale = Math.min(vw / 1024, vh / 768);
+  setStageSize(Math.max(1024, Math.ceil(vw / scale)), Math.max(768, Math.ceil(vh / scale)));
+  stage.style.transform = `scale(${scale})`;
+  paintFrame();
+}
+
+// Edge color of each screen's background, used for anything outside the stage.
+const FRAME_COLORS = {
+  pride: '#FFF4F8', thanks: '#FFB8CE',
+  brb: '#FFB8CE', at530: '#FFB8CE', lunch: '#FFB8CE', otherbooth: '#FFD98C', bulk: '#B7EFD1',
+};
+function paintFrame() {
+  const color = !isStandalone() ? '#9FECC4'
+    : FRAME_COLORS[state.signs] || (state.signs ? '#FFD9E3' : FRAME_COLORS[state.screen] || '#FFD9E3');
+  for (const el of [document.documentElement, document.body, root]) el.style.background = color;
 }
 
 // ─────────── QR codes ───────────
@@ -232,11 +249,12 @@ let cornerTimer = null;
 
 function cornerOf(x0, y0) {
   const r = stage.getBoundingClientRect();
-  const k = r.width / 1024 || 1;
+  const w = stage.offsetWidth, h = stage.offsetHeight; // stage size before scaling
+  const k = r.width / w || 1;
   const x = (x0 - r.left) / k, y = (y0 - r.top) / k;
   const Z = 100;
-  if (y < Z && x > 1024 - Z) return 'tr';
-  if (y > 768 - Z && x < Z) return 'bl';
+  if (y < Z && x > w - Z) return 'tr';
+  if (y > h - Z && x < Z) return 'bl';
   return null;
 }
 
@@ -523,7 +541,12 @@ if (window.visualViewport) visualViewport.addEventListener('resize', fitStage);
 
 const flush = () => flushQueue().then(updateStamp);
 addEventListener('online', flush);
-document.addEventListener('visibilitychange', () => { if (!document.hidden) flush(); });
+document.addEventListener('visibilitychange', () => {
+  // Switching to another app (e.g. Square): let go of the camera, so iOS doesn't leave it
+  // stuck showing black when we come back.
+  if (document.hidden) { if (stream || state.cameraOpen) closeCamera(); }
+  else flush();
+});
 setInterval(flush, 60000);
 
 fitStage();
