@@ -5,11 +5,12 @@
 // on launch, when the iPad comes back online, and once a minute. localStorage only holds
 // ~5 MB, which is a handful of photos, so the full records live in IndexedDB instead.
 
-import { APPS_SCRIPT_URL, APPS_SCRIPT_KEY } from './config.js';
+import { APPS_SCRIPT_URL, APPS_SCRIPT_KEY, KEEP_SENT_DAYS } from './config.js';
 
 const DB_NAME = 'fogp';
 const STORE = 'commissions';
 const LOG_KEY = 'fogp_commission_log';          // metadata-only history (kept from the prototype)
+const LOG_MAX = 500;                            // newest entries kept in that history
 const LEGACY_QUEUE_KEY = 'fogp_commission_queue'; // prototype's localStorage queue, migrated on start
 
 let dbPromise = null;
@@ -55,8 +56,29 @@ export function appendLog(record) {
   try {
     const l = JSON.parse(localStorage.getItem(LOG_KEY) || '[]');
     l.push({ ...record, photo: record.photo ? '[photo attached]' : '' });
-    localStorage.setItem(LOG_KEY, JSON.stringify(l));
+    localStorage.setItem(LOG_KEY, JSON.stringify(l.slice(-LOG_MAX)));
   } catch (e) {}
+}
+
+// Keep the iPad from filling up: delete local copies of requests that reached Drive more than
+// KEEP_SENT_DAYS ago. Requests that haven't uploaded yet are never deleted.
+export async function pruneSent() {
+  const cutoff = Date.now() - KEEP_SENT_DAYS * 24 * 60 * 60 * 1000;
+  const d = await db();
+  return new Promise((resolve, reject) => {
+    const t = d.transaction(STORE, 'readwrite');
+    let removed = 0;
+    const req = t.objectStore(STORE).index('status').openCursor(IDBKeyRange.only('sent'));
+    req.onsuccess = () => {
+      const c = req.result;
+      if (!c) return;
+      const sentAt = Date.parse(c.value.sentAt || c.value.timestamp || '') || 0;
+      if (sentAt < cutoff) { c.delete(); removed++; }
+      c.continue();
+    };
+    t.oncomplete = () => resolve(removed);
+    t.onerror = () => reject(t.error);
+  });
 }
 
 // Move anything left in the prototype's localStorage queue into IndexedDB.

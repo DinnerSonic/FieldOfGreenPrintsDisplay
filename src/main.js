@@ -8,7 +8,7 @@ import {
 } from './config.js';
 import {
   newId, saveRecord, sendRecord, flushQueue, countPending, appendLog,
-  migrateLegacyQueue, requestPersistence,
+  migrateLegacyQueue, requestPersistence, pruneSent,
 } from './commissions.js';
 import {
   PHONE_MAX_PHOTOS, phoneUploadsAvailable, newPhoneCode, startPhoneSession, pollPhonePhotos, phoneUploadUrl,
@@ -641,7 +641,8 @@ if (window.visualViewport) visualViewport.addEventListener('resize', fitStage);
 // Re-apply once things settle: fonts/images can change what the browser reports.
 [120, 500, 1500].forEach((t) => setTimeout(fitStage, t));
 
-const flush = () => flushQueue().then(updateStamp);
+// Upload anything waiting, then tidy up old local copies.
+const flush = () => flushQueue().then(() => pruneSent().catch(() => {})).then(updateStamp);
 addEventListener('online', flush);
 document.addEventListener('visibilitychange', () => {
   // Switching to another app (e.g. Square): let go of the camera, so iOS doesn't leave it

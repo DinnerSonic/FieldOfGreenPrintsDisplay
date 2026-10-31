@@ -16,3 +16,8 @@ export const IDLE_SECONDS = 60;
 // ═══ Photos ═══
 export const PHOTO_MAX_EDGE = 1600;   // px, longest side
 export const PHOTO_JPEG_QUALITY = 0.85;
+
+// ═══ Storage on the iPad ═══
+// Requests are kept on the iPad as a backup after they upload; this many days later the
+// local copy is deleted. Requests that haven't uploaded yet are never deleted.
+export const KEEP_SENT_DAYS = 14;

@@ -45,7 +45,9 @@ arrive. **Selfie** uses the iPad's front camera. Both end up in the request's Dr
 Phone photos need internet on both the phone and the iPad.
 
 If the iPad is offline, requests wait on the iPad and upload automatically later. The build
-stamp in the bottom-left shows `· N waiting to upload` while anything is pending.
+stamp in the bottom-left shows `· N waiting to upload` while anything is pending. The iPad keeps
+a backup copy of each request for 14 days after it uploads (`KEEP_SENT_DAYS` in `src/config.js`),
+then deletes it; requests that haven’t uploaded yet are never deleted.
 
 ## Hidden gestures
 
