@@ -107,7 +107,7 @@ const FRAME_COLORS = {
 // Holiday: white where a snowbank meets the bottom edge, the night sky's bottom color elsewhere.
 const HOLIDAY_FRAME_COLORS = {
   home: '#FFFFFF', thanks: '#FFFFFF', brb: '#FFFFFF', at530: '#FFFFFF', lunch: '#FFFFFF',
-  picker: '#7d0a1c', otherbooth: '#e3f2fd', bulk: '#e3f2fd',
+  picker: '#7d0a1c', otherbooth: '#FFFFFF', bulk: '#FFFFFF',
 };
 function paintFrame() {
   const colors = isHoliday() ? HOLIDAY_FRAME_COLORS : FRAME_COLORS;

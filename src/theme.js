@@ -58,7 +58,8 @@ function snowbankSvg() {
 }
 
 const NIGHT = ['[data-sign="brb"]', '[data-sign="at530"]', '[data-sign="lunch"]', '#thanks'];
-const SNOWY = [...NIGHT, '#signsPicker', '[data-sign="otherbooth"]', '[data-sign="bulk"]'];
+const DAYTIME = ['[data-sign="otherbooth"]', '[data-sign="bulk"]'];
+const SNOWY = [...NIGHT, ...DAYTIME, '#signsPicker'];
 
 // Three layers of pre-drawn flakes (small, medium, large) slid downward by CSS transform
 // animations, like the pulsing button: cheap for an older iPad. Each snowy screen gets its own
@@ -77,10 +78,10 @@ function snowEl() {
  * covered by another screen.
  */
 export function addDecorations(stage) {
-  const deco = () => {
+  const deco = (lights = true) => {
     const d = document.createElement('div');
     d.className = 'holiday-deco';
-    d.innerHTML = `<div class="lights">${lightsSvg()}</div><div class="snowbank">${snowbankSvg()}</div>`;
+    d.innerHTML = (lights ? `<div class="lights">${lightsSvg()}</div>` : '') + `<div class="snowbank">${snowbankSvg()}</div>`;
     return d;
   };
   // Home: wallpaper, snow, lights + snowbank, then the content on top.
@@ -90,6 +91,7 @@ export function addDecorations(stage) {
   homeSnow.classList.add('home-snow');
   wall.after(homeSnow);
   for (const sel of NIGHT) stage.querySelector(sel)?.prepend(deco());
+  for (const sel of DAYTIME) stage.querySelector(sel)?.prepend(deco(false)); // snowbank only
   for (const sel of SNOWY) stage.querySelector(sel)?.prepend(snowEl());
   return { setHome: (on) => homeSnow.classList.toggle('on', on) };
 }
