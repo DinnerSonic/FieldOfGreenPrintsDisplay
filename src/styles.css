@@ -89,13 +89,23 @@ img { -webkit-user-drag: none; user-drag: none; pointer-events: none; }
 .menu { justify-content: center; align-items: flex-start; opacity: 0; pointer-events: none; transform: translateY(16px); }
 .entered .welcome { opacity: 0; pointer-events: none; transform: scale(.94); }
 .entered .menu { opacity: 1; pointer-events: auto; transform: translateY(0); }
+/* "Come on in!": the outline + shadow are a separate copy of the text drawn behind the mint
+   letters (::before), rather than relying on paint-order with text-stroke, which iOS Safari
+   draws inconsistently (thin/blurry outline, smudge behind the "!"). */
 .come-in {
+  position: relative; isolation: isolate;
   font-size: 124px; line-height: 1; color: var(--mint);
-  -webkit-text-stroke: 12px #1f6b3c; paint-order: stroke fill;
-  text-shadow: 0 7px 0 #1f6b3c, 0 14px 22px rgba(31,107,60,.3);
-  animation: wiggle 6s ease-in-out infinite;
+  animation: wiggle 6s ease-in-out .45s infinite;
 }
-.pulse { animation: tapPulse 2.2s ease-in-out infinite; }
+.come-in::before {
+  content: attr(data-text); position: absolute; inset: 0; z-index: -1;
+  color: #1f6b3c; -webkit-text-stroke: 12px #1f6b3c;
+  text-shadow: 0 7px 0 #1f6b3c, 0 14px 22px rgba(31,107,60,.3);
+}
+.pulse { animation: tapPulse 2.2s ease-in-out .45s infinite; }
+/* While the welcome is hidden, its animations stop; they restart just after it has fully
+   reappeared, so iOS redraws the text at full size instead of keeping a shrunken snapshot. */
+.entered .come-in, .entered .pulse { animation: none; }
 .tap-pill {
   display: flex; align-items: center; gap: 16px; padding: 22px 48px; border-radius: 999px;
   color: #fff; background-color: var(--pink); border: 3px solid rgba(0,0,0,.08);
