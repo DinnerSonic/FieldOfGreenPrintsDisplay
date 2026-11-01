@@ -21,6 +21,7 @@ npm run build    # production build into dist/
 | Behaviour (navigation, secret corners, idle reset, camera, signs) | `src/main.js` |
 | Commission storage + upload | `src/commissions.js` |
 | "From your phone" photos: kiosk side + shared API | `src/main.js`, `src/phone.js` |
+| Holiday theme (colors, lights, snowbank, snow) | `src/theme.css`, `src/theme.js` |
 | Phone page customers open from the QR code | `upload.html`, `src/upload.js`, `src/upload.css` |
 | Settings (backend URL, idle time, photo size) | `src/config.js` |
 | Instagram / Etsy / payment links | `src/data/brands.json` |
@@ -51,6 +52,7 @@ then deletes it; requests that haven’t uploaded yet are never deleted.
 
 ## Hidden gestures
 
-- Hold **top-right + bottom-left** corners together 0.5 s → booth signs picker. Its last card,
+- Hold **top-right + bottom-left** corners together 0.5 s → booth signs picker. At the end of it,
   **Saved requests**, lists the requests stored on the iPad, with a two-tap Delete on each.
+  **Theme** switches between Auto (holiday look in November and December), Holiday and Classic.
 - Hold **bottom-left** alone 0.5 s → reset to the welcome screen.

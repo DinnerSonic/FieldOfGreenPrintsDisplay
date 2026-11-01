@@ -303,6 +303,11 @@
             <div class="sign-card-title">Saved requests</div>
             <div class="sign-card-desc">See and delete requests stored here.</div>
           </div>
+          <div class="sign-card" data-action="cycleTheme">
+            <div class="theme-prev"><div class="classic">Classic</div><div class="holiday">Holiday</div></div>
+            <div id="themeTitle" class="sign-card-title">Theme: Auto</div>
+            <div class="sign-card-desc">Tap to switch: Auto (holiday in Nov–Dec), Holiday, Classic.</div>
+          </div>
         </div>
       </div>
     </div>
@@ -396,6 +401,9 @@
         <textarea id="editorText" class="editor-field" rows="3"></textarea>
       </div>
     </div>
+
+    <!-- holiday theme: falling snow over the home, signs and thank-you screens -->
+    <canvas id="snow"></canvas>
 
     <!-- build stamp: confirms which version the iPad is actually running -->
     <div id="buildStamp" class="build-stamp"></div>

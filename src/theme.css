@@ -1,0 +1,132 @@
+/* ═══ Holiday theme (November + December, or forced from the booth signs screen) ═══
+   Everything here only applies under <html data-theme="holiday">; the classic look is
+   untouched. Inline colors in index.html are overridden with !important where needed. */
+
+.holiday-deco, #snow { display: none; }
+
+[data-theme="holiday"] {
+  --wall: #FFF6EC;          /* sub-screens: warm cream instead of pink */
+  --xmas-red: #c8102e;
+  --xmas-red-deep: #7d0a1c;
+  --xmas-green: #1f9d55;
+  --xmas-green-ledge: #13683a;
+  --xmas-gold: #f4c542;
+  --xmas-gold-ledge: #b8901f;
+  --night: #0b1a3a;
+}
+
+/* ── Home + signs picker: Christmas red with candy-cane stripes ── */
+[data-theme="holiday"] .wall,
+[data-theme="holiday"] .wall-bg {
+  background:
+    repeating-linear-gradient(-45deg, rgba(255,255,255,.07) 0 26px, transparent 26px 52px),
+    radial-gradient(circle at 20% 90%, rgba(255,255,255,.18) 0, transparent 40%),
+    radial-gradient(circle at 80% 10%, rgba(255,210,63,.18) 0, transparent 42%),
+    radial-gradient(ellipse at 50% 40%, #d7263d 0, #a3172a 60%, var(--xmas-red-deep) 100%);
+}
+[data-theme="holiday"] #signsPicker .h-title,
+[data-theme="holiday"] #signsPicker .head-sub { color: #fff; opacity: 1; text-shadow: 0 2px 0 rgba(0,0,0,.25); }
+
+/* Floating dots on the home screen become ornaments (with a little cap). */
+[data-theme="holiday"] #stage > .candy { opacity: .95 !important; }
+[data-theme="holiday"] #stage > .candy:nth-child(1 of .candy) { --c: var(--xmas-gold) !important; }
+[data-theme="holiday"] #stage > .candy:nth-child(2 of .candy) { --c: #39d97a !important; }
+[data-theme="holiday"] #stage > .candy:nth-child(3 of .candy) { --c: #f3f6ff !important; }
+[data-theme="holiday"] #stage > .candy::before {
+  content: ''; position: absolute; left: 50%; top: -7px; width: 30%; height: 9px; margin-left: -15%;
+  border-radius: 3px; background: linear-gradient(#e9e2c4, #a99c6a);
+}
+
+[data-theme="holiday"] .come-in { color: #fff; }
+
+/* Main menu: Information green, Payment stays brand pink, Credits gold. */
+[data-theme="holiday"] .menu-item[data-goto="info"] .round-btn {
+  --bg: var(--xmas-green) !important; --ledge: var(--xmas-green-ledge) !important; --soft: rgba(10,60,30,.35) !important;
+}
+[data-theme="holiday"] .menu-item[data-goto="info"] svg { stroke: #fff; }
+[data-theme="holiday"] .menu-item[data-goto="info"] svg circle[fill] { fill: #fff; }
+[data-theme="holiday"] .menu-item[data-goto="credits"] .round-btn {
+  --bg: var(--xmas-gold) !important; --ledge: var(--xmas-gold-ledge) !important; --soft: rgba(90,60,0,.3) !important;
+}
+
+/* ── Sub-screens: cream with soft red/green glows (no snow, stays readable) ── */
+[data-theme="holiday"] .pink-bg,
+[data-theme="holiday"] [data-screen="credits"],
+[data-theme="holiday"] [data-screen="pride"],
+[data-theme="holiday"] [data-sign="saved"],
+[data-theme="holiday"] .phone {
+  background:
+    radial-gradient(circle at 12% 88%, rgba(31,157,85,.12) 0, transparent 42%),
+    radial-gradient(circle at 88% 10%, rgba(200,16,46,.12) 0, transparent 42%),
+    var(--wall) !important;
+}
+[data-theme="holiday"] .commission-btn,
+[data-theme="holiday"] .photo-btn:not(.photo-btn-alt) {
+  background-color: var(--xmas-gold);
+  box-shadow: inset 0 -5px 0 rgba(0,0,0,.12), inset 0 4px 0 rgba(255,255,255,.5), 0 6px 0 var(--xmas-gold-ledge), 0 12px 20px rgba(60,20,40,.16);
+}
+[data-theme="holiday"] .home-btn { --green: var(--xmas-green); --green-ledge: var(--xmas-green-ledge); }
+
+/* ── Night sky: Be right back, Back at 5:30, Lunch, Thank you (+ their picker previews) ── */
+[data-theme="holiday"] :is([data-sign="brb"], [data-sign="at530"], [data-sign="lunch"], #thanks),
+[data-theme="holiday"] .sign-prev.sign-bg-pink {
+  background:
+    radial-gradient(1.5px 1.5px at 12% 18%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 27% 8%, #fff 50%, transparent 51%),
+    radial-gradient(2px 2px at 43% 22%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 58% 12%, #fff 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 71% 27%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 86% 9%, #fff 50%, transparent 51%),
+    radial-gradient(2px 2px at 93% 33%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 6% 41%, #fff 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 35% 45%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 64% 48%, #fff 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 18% 63%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 80% 60%, #fff 50%, transparent 51%),
+    radial-gradient(ellipse at 50% 115%, #24467e 0, #12285a 45%, var(--night) 100%);
+}
+/* A second, twinkling star layer. */
+[data-theme="holiday"] :is([data-sign="brb"], [data-sign="at530"], [data-sign="lunch"], #thanks) { isolation: isolate; }
+[data-theme="holiday"] :is([data-sign="brb"], [data-sign="at530"], [data-sign="lunch"], #thanks)::before {
+  content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(2px 2px at 20% 30%, #fff 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 52% 6%, #fff 50%, transparent 51%),
+    radial-gradient(2px 2px at 77% 19%, #fff 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 9% 74%, #fff 50%, transparent 51%),
+    radial-gradient(2px 2px at 90% 70%, #fff 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 40% 66%, #fff 50%, transparent 51%);
+  animation: twinkle 3.2s ease-in-out infinite alternate;
+}
+[data-theme="holiday"] :is([data-sign="brb"], [data-sign="at530"], [data-sign="lunch"], #thanks) .sign-title {
+  text-shadow: 0 0 22px rgba(255,111,163,.65), 0 4px 0 rgba(0,0,0,.35);
+}
+[data-theme="holiday"] :is([data-sign="brb"], [data-sign="at530"], [data-sign="lunch"], #thanks) .sign-sub { color: #f1e8ff; }
+[data-theme="holiday"] .sign-prev.sign-bg-pink .prev-title { text-shadow: 0 0 12px rgba(255,111,163,.6); }
+/* Floating dots on the night screens become glowing light bulbs. */
+[data-theme="holiday"] :is([data-sign="brb"], [data-sign="at530"], [data-sign="lunch"], #thanks) .candy { opacity: .85 !important; }
+[data-theme="holiday"] :is([data-sign="brb"], [data-sign="at530"], [data-sign="lunch"], #thanks) .candy:nth-child(1 of .candy) { --c: #ff3b4e !important; box-shadow: 0 0 34px 10px rgba(255,59,78,.55); }
+[data-theme="holiday"] :is([data-sign="brb"], [data-sign="at530"], [data-sign="lunch"], #thanks) .candy:nth-child(2 of .candy) { --c: #ffd23f !important; box-shadow: 0 0 30px 8px rgba(255,210,63,.55); }
+[data-theme="holiday"] :is([data-sign="brb"], [data-sign="at530"], [data-sign="lunch"], #thanks) .candy:nth-child(3 of .candy) { --c: #39d97a !important; box-shadow: 0 0 30px 8px rgba(57,217,122,.5); }
+
+/* ── Lights, snowbank, snow ── */
+[data-theme="holiday"] .holiday-deco { display: block; }
+.holiday-deco .lights { position: absolute; left: 0; right: 0; top: 0; height: 90px; pointer-events: none; }
+.holiday-deco .lights svg, .holiday-deco .snowbank svg { width: 100%; height: 100%; display: block; }
+.holiday-deco .bulb { filter: drop-shadow(0 0 6px var(--glow)); animation: bulb 2.4s ease-in-out infinite alternate; }
+.holiday-deco .snowbank { position: absolute; left: 0; right: 0; bottom: 0; height: 70px; pointer-events: none; }
+[data-theme="holiday"] #snow {
+  display: block; position: absolute; inset: 0; width: 100%; height: 100%; z-index: 50; pointer-events: none;
+  opacity: 0; transition: opacity 500ms ease;
+}
+[data-theme="holiday"] #snow.on { opacity: 1; }
+
+@keyframes twinkle { 0% { opacity: .2; } 100% { opacity: 1; } }
+@keyframes bulb { 0% { opacity: .55; } 100% { opacity: 1; } }
+
+/* ── Theme card on the signs screen ── */
+.theme-prev { height: 150px; border-radius: 20px; overflow: hidden; display: flex; }
+.theme-prev > div { flex: 1; display: flex; align-items: center; justify-content: center; font-family: 'Bagel Fat One', cursive; font-size: 22px; color: #fff; text-shadow: 0 2px 0 rgba(0,0,0,.25); }
+.theme-prev .classic { background: radial-gradient(circle at 50% 30%, #FFE4EC 0, #FFC9DB 70%, #FFB8CE 100%); color: #FF6FA3; text-shadow: 0 2px 0 rgba(255,255,255,.6); }
+.theme-prev .holiday { background: radial-gradient(ellipse at 50% 40%, #d7263d 0, #a3172a 60%, #7d0a1c 100%); }
+.theme-prev .dim { filter: grayscale(.7) opacity(.45); }

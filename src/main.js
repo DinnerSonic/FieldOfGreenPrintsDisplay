@@ -1,8 +1,10 @@
 import './styles.css';
+import './theme.css';
 import QRCodeStyling from 'qr-code-styling';
 import brands from './data/brands.json';
 import flags from './data/flags.json';
 import { FOODS } from './data/foods.js';
+import { THEME_SETTINGS, themeSetting, setThemeSetting, activeTheme, addDecorations, createSnow } from './theme.js';
 import {
   APPS_SCRIPT_URL, SHOW_WELCOME, IDLE_SECONDS, PHOTO_MAX_EDGE, PHOTO_JPEG_QUALITY, KEEP_SENT_DAYS,
 } from './config.js';
@@ -29,6 +31,7 @@ const state = {
 };
 
 let photo = null;   // JPEG data URL of the current capture
+let snow = null;    // holiday snowfall (src/theme.js)
 
 function set(patch) { Object.assign(state, patch); render(); }
 
@@ -44,6 +47,9 @@ function render() {
   $('#phone').classList.toggle('on', s.phoneOpen);
   renderSelection();
   paintFrame();
+  // Holiday snow: home, the signs and thank-you, never over forms or QR codes.
+  const snowy = s.signs ? s.signs !== 'saved' : (s.screen === 'home' || s.screen === 'thanks');
+  if (snow) snow.set(isHoliday() && snowy && !document.hidden);
   // Refresh the saved-requests count/list whenever the artist screens open.
   if (s.signs !== lastSigns && (s.signs === 'picker' || s.signs === 'saved')) renderSaved();
   lastSigns = s.signs;
@@ -91,6 +97,7 @@ function fitStage() {
   setStageSize(Math.max(1024, Math.ceil(vw / scale)), Math.max(768, Math.ceil(vh / scale)));
   stage.style.transform = `scale(${scale})`;
   paintFrame();
+  if (snow) snow.fit();
 }
 
 // Edge color of each screen's background, used for anything outside the stage.
@@ -98,9 +105,16 @@ const FRAME_COLORS = {
   pride: '#FFF4F8', thanks: '#FFB8CE',
   brb: '#FFB8CE', at530: '#FFB8CE', lunch: '#FFB8CE', otherbooth: '#FFD98C', bulk: '#B7EFD1',
 };
+// Holiday: white where a snowbank meets the bottom edge, cream elsewhere.
+const HOLIDAY_FRAME_COLORS = {
+  home: '#FFFFFF', thanks: '#FFFFFF', brb: '#FFFFFF', at530: '#FFFFFF', lunch: '#FFFFFF',
+  picker: '#7d0a1c', otherbooth: '#FFD98C', bulk: '#B7EFD1',
+};
 function paintFrame() {
+  const colors = isHoliday() ? HOLIDAY_FRAME_COLORS : FRAME_COLORS;
+  const fallback = isHoliday() ? '#FFF6EC' : '#FFD9E3';
   const color = !isStandalone() ? '#9FECC4'
-    : FRAME_COLORS[state.signs] || (state.signs ? '#FFD9E3' : FRAME_COLORS[state.screen] || '#FFD9E3');
+    : colors[state.signs] || (state.signs ? fallback : colors[state.screen] || fallback);
   for (const el of [document.documentElement, document.body, root]) el.style.background = color;
 }
 
@@ -662,6 +676,7 @@ const ACTIONS = {
   openPhone, closePhone, clearPhotos,
   closeSigns: () => set({ signs: null, screen: 'home' }),
   closeEditor,
+  cycleTheme,
 };
 
 stage.addEventListener('click', (e) => {
@@ -709,6 +724,33 @@ document.addEventListener('visibilitychange', () => {
   else flush();
 });
 setInterval(flush, 60000);
+
+// ─────────── Theme ───────────
+const isHoliday = () => document.documentElement.dataset.theme === 'holiday';
+const THEME_LABELS = { auto: 'Auto', holiday: 'Holiday', classic: 'Classic' };
+
+function applyTheme() {
+  const active = activeTheme();
+  document.documentElement.dataset.theme = active;
+  const setting = themeSetting();
+  $('#themeTitle').textContent = 'Theme: ' + THEME_LABELS[setting] + (setting === 'auto' ? ` (${THEME_LABELS[active]} now)` : '');
+  $('.theme-prev .classic').classList.toggle('dim', active !== 'classic');
+  $('.theme-prev .holiday').classList.toggle('dim', active !== 'holiday');
+}
+
+function cycleTheme() {
+  const i = THEME_SETTINGS.indexOf(themeSetting());
+  setThemeSetting(THEME_SETTINGS[(i + 1) % THEME_SETTINGS.length]);
+  applyTheme();
+  render();
+}
+
+addDecorations(stage);
+snow = createSnow($('#snow'));
+applyTheme();
+// In Auto, pick up the change of season without a restart.
+setInterval(() => { const before = document.documentElement.dataset.theme; applyTheme(); if (before !== document.documentElement.dataset.theme) render(); }, 10 * 60 * 1000);
+document.addEventListener('visibilitychange', () => render());
 
 fitStage();
 render();
