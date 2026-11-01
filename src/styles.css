@@ -100,7 +100,7 @@ img { -webkit-user-drag: none; user-drag: none; pointer-events: none; }
 .come-in::before {
   content: attr(data-text); position: absolute; inset: 0; z-index: -1;
   color: #1f6b3c; -webkit-text-stroke: 12px #1f6b3c;
-  text-shadow: 0 7px 0 #1f6b3c, 0 14px 22px rgba(31,107,60,.3);
+  text-shadow: 0 7px 0 #1f6b3c; /* solid 3D edge only: the blurred shadow smudged the "!" on iPad */
 }
 .pulse { animation: tapPulse 2.2s ease-in-out .45s infinite; }
 /* While the welcome is hidden, its animations stop; they restart just after it has fully
