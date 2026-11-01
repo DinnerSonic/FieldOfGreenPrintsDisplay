@@ -21,7 +21,8 @@ npm run build    # production build into dist/
 | Behaviour (navigation, secret corners, idle reset, camera, signs) | `src/main.js` |
 | Commission storage + upload | `src/commissions.js` |
 | "From your phone" photos: kiosk side + shared API | `src/main.js`, `src/phone.js` |
-| Holiday theme (colors, lights, snowbank, snow) | `src/theme.css`, `src/theme.js` |
+| Seasonal themes (list, Auto months, runtime) | `src/themes/index.js`, `src/themes/runtime.js` |
+| Each theme's colours + decorations | `src/themes/<name>/` (`holiday`, `halloween`, `valentines`) |
 | Phone page customers open from the QR code | `upload.html`, `src/upload.js`, `src/upload.css` |
 | Settings (backend URL, idle time, photo size) | `src/config.js` |
 | Instagram / Etsy / payment links | `src/data/brands.json` |
@@ -54,5 +55,14 @@ then deletes it; requests that haven’t uploaded yet are never deleted.
 
 - Hold **top-right + bottom-left** corners together 0.5 s → booth signs picker. At the end of it,
   **Saved requests**, lists the requests stored on the iPad, with a two-tap Delete on each.
-  **Theme** switches between Classic (the default), Holiday, and Auto (holiday look in November and December).
+  **Theme** cycles Classic (the default), Auto (Halloween in October, Holiday in November and
+  December, Valentine's in February), Halloween, Holiday and Valentine's.
 - Hold **bottom-left** alone 0.5 s → reset to the welcome screen.
+
+## Seasonal themes
+
+Each theme lives in `src/themes/<name>/` (its CSS plus a small config: garland, ground,
+falling/rising particles, bottom-strip colours) and is listed in `src/themes/index.js` with
+the months Auto uses it. Only the selected theme is downloaded. There is only ever one set of
+decorations, moved onto whichever screen is showing, so hidden screens hold no decoration
+layers and run no decoration animations.

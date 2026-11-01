@@ -1,0 +1,85 @@
+/* ═══ Valentine's (February) ═══
+   Only applies under <html data-theme="valentines">. Screen groups (.scr-night/.scr-day/.scr-sub)
+   are tagged by src/themes/runtime.js. Inline colours in index.html need !important. */
+
+[data-theme="valentines"] {
+  --vd-red: #e8304f;
+  --vd-red-ledge: #a3122f;
+  --vd-lilac: #d9a7ff;
+  --vd-lilac-ledge: #9b5fd1;
+  --vd-rose-deep: #7a0f3a;
+}
+
+/* ── Home + signs picker: deep rose with a faint heart pattern ── */
+[data-theme="valentines"] .wall,
+[data-theme="valentines"] .wall-bg {
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cpath transform='translate(30 34) scale(1.6)' d='M0 7C-9 1-10-6-5-8-2-9 0-7 0-5 0-7 2-9 5-8 10-6 9 1 0 7Z' fill='%23fff' fill-opacity='.07'/%3E%3Cpath transform='translate(90 92) scale(1.2)' d='M0 7C-9 1-10-6-5-8-2-9 0-7 0-5 0-7 2-9 5-8 10-6 9 1 0 7Z' fill='%23fff' fill-opacity='.06'/%3E%3C/svg%3E"),
+    radial-gradient(circle at 20% 90%, rgba(255,255,255,.16) 0, transparent 40%),
+    radial-gradient(circle at 80% 10%, rgba(255,179,207,.2) 0, transparent 42%),
+    radial-gradient(ellipse at 50% 40%, #e0457b 0, #b3205a 55%, var(--vd-rose-deep) 100%);
+}
+[data-theme="valentines"] #signsPicker .h-title,
+[data-theme="valentines"] #signsPicker .head-sub { color: #fff; opacity: 1; text-shadow: 0 2px 0 rgba(0,0,0,.25); }
+
+/* Floating dots: blush, white, red. */
+[data-theme="valentines"] #stage > .candy { opacity: .9 !important; }
+[data-theme="valentines"] #stage > .candy:nth-child(1 of .candy) { --c: #ffb3cf !important; }
+[data-theme="valentines"] #stage > .candy:nth-child(2 of .candy) { --c: #ffffff !important; }
+[data-theme="valentines"] #stage > .candy:nth-child(3 of .candy) { --c: #ff3b5c !important; }
+
+/* Main menu: Information red, Payment stays brand pink, Credits lilac. */
+[data-theme="valentines"] .menu-item[data-goto="info"] .round-btn {
+  --bg: var(--vd-red) !important; --ledge: var(--vd-red-ledge) !important; --soft: rgba(90,0,20,.4) !important;
+}
+[data-theme="valentines"] .menu-item[data-goto="info"] svg { stroke: #fff; }
+[data-theme="valentines"] .menu-item[data-goto="info"] svg circle[fill] { fill: #fff; }
+[data-theme="valentines"] .menu-item[data-goto="credits"] .round-btn {
+  --bg: var(--vd-lilac) !important; --ledge: var(--vd-lilac-ledge) !important; --soft: rgba(60,20,90,.35) !important;
+}
+
+/* ── Sub-screens: soft blush (normal dark text), no hearts ── */
+[data-theme="valentines"] .scr-sub {
+  background:
+    radial-gradient(circle at 12% 88%, rgba(255,111,163,.18) 0, transparent 45%),
+    radial-gradient(circle at 88% 10%, rgba(232,48,79,.12) 0, transparent 45%),
+    #fff0f5 !important;
+}
+
+/* ── Night: Be right back, Back at 5:30, Lunch, Thank you (+ picker previews) ── */
+[data-theme="valentines"] .scr-night,
+[data-theme="valentines"] .sign-prev.sign-bg-pink {
+  background:
+    radial-gradient(1.5px 1.5px at 12% 18%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 27% 8%, #fff 50%, transparent 51%),
+    radial-gradient(2px 2px at 43% 22%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 71% 27%, #fff 50%, transparent 51%),
+    radial-gradient(2px 2px at 93% 33%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 6% 41%, #fff 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 80% 60%, #fff 50%, transparent 51%),
+    radial-gradient(ellipse at 50% 115%, #8e1d5c 0, #4d0f3a 50%, #2a0821 100%);
+}
+[data-theme="valentines"] .scr-night::before {
+  content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(2px 2px at 20% 30%, #fff 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 52% 6%, #fff 50%, transparent 51%),
+    radial-gradient(2px 2px at 77% 19%, #fff 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 40% 66%, #fff 50%, transparent 51%);
+}
+[data-theme="valentines"] .scr-night.on::before { will-change: opacity; animation: fx-stars 3.2s ease-in-out infinite alternate; }
+[data-theme="valentines"] .scr-night .sign-title { text-shadow: 0 0 22px rgba(255,111,163,.7), 0 4px 0 rgba(0,0,0,.35); }
+[data-theme="valentines"] .scr-night .sign-sub { color: #ffe6f0; }
+[data-theme="valentines"] .sign-prev.sign-bg-pink .prev-title { text-shadow: 0 0 12px rgba(255,111,163,.6); }
+[data-theme="valentines"] .scr-night .candy { opacity: .85 !important; }
+[data-theme="valentines"] .scr-night .candy:nth-child(1 of .candy) { --c: #ff3b5c !important; box-shadow: 0 0 34px 10px rgba(255,59,92,.5); }
+[data-theme="valentines"] .scr-night .candy:nth-child(2 of .candy) { --c: #ffb3cf !important; box-shadow: 0 0 30px 8px rgba(255,179,207,.5); }
+[data-theme="valentines"] .scr-night .candy:nth-child(3 of .candy) { --c: #d9a7ff !important; box-shadow: 0 0 30px 8px rgba(217,167,255,.45); }
+
+/* ── Daytime: blush sky for Got Bulk? and Helping another booth ── */
+[data-theme="valentines"] .scr-day,
+[data-theme="valentines"] :is([data-sign-pick="bulk"], [data-sign-pick="otherbooth"]) .sign-prev {
+  background:
+    radial-gradient(circle at 84% 12%, rgba(255,255,255,.9) 0, rgba(255,240,245,.5) 8%, transparent 24%),
+    linear-gradient(180deg, #ffc2d9 0%, #ffe0ec 60%, #fff3f8 100%) !important;
+}

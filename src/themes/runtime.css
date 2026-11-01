@@ -1,0 +1,46 @@
+/* Shared pieces for every seasonal theme (the theme's own colours live in its folder). */
+
+/* Decorations sit behind each screen's content. Panels get their own layer so the particles
+   (z-index -1) stay above the panel's background but below everything else on it. */
+html:not([data-theme="classic"]) :is(#signsPicker, [data-sign], #thanks) { isolation: isolate; }
+
+.fx-particles { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.panel > .fx-particles { z-index: -1; }
+.fx-layer { position: absolute; left: -40px; right: -40px; will-change: transform; }
+
+.fx-deco { pointer-events: none; }
+.fx-deco[hidden] { display: none; }
+.fx-garland { position: absolute; left: 0; right: 0; top: 0; height: 90px; }
+.fx-garland svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.fx-deco.no-garland .fx-garland { display: none; }
+.fx-glow { will-change: opacity; animation: fx-twinkle 1.6s ease-in-out infinite alternate; }
+.fx-glow.b { animation-delay: -1.6s; }
+.fx-ground { position: absolute; left: 0; right: 0; bottom: 0; height: 70px; }
+.fx-ground svg { width: 100%; height: 100%; display: block; }
+@keyframes fx-twinkle { 0% { opacity: .15; } 100% { opacity: 1; } }
+
+/* Night-sky screens: stars can twinkle via ::before, but only on the screen that's showing. */
+@keyframes fx-stars { 0% { opacity: .2; } 100% { opacity: 1; } }
+
+/* Dark sub-screens (forms, QR, credits, pride, saved): light text where it sits on the background.
+   White cards keep their dark text. */
+[data-sub-tone="dark"] .split-left .h-title,
+[data-sub-tone="dark"] .panel-head .h-title,
+[data-sub-tone="dark"] [data-sign="saved"] .h-title { color: #fff; text-shadow: 0 3px 0 rgba(0,0,0,.25); }
+[data-sub-tone="dark"] .split-left .blurb,
+[data-sub-tone="dark"] .panel-head .head-sub,
+[data-sub-tone="dark"] #savedSub,
+[data-sub-tone="dark"] .saved-empty { color: #e3e9ff; opacity: .9; }
+[data-sub-tone="dark"] .flag-name { color: #fff; }
+[data-sub-tone="dark"] .flag-desc,
+[data-sub-tone="dark"] .flags-foot { color: #d6def7; opacity: .85; }
+[data-sub-tone="dark"] .note-chip { background: rgba(255,255,255,.92); }
+
+/* Theme card on the booth signs screen. */
+.theme-prev { height: 150px; border-radius: 20px; overflow: hidden; display: flex; }
+.theme-prev > div {
+  flex: 1; display: flex; align-items: center; justify-content: center; text-align: center; padding: 0 4px;
+  font-family: 'Bagel Fat One', cursive; font-size: 15px; line-height: 1.1; color: #fff; text-shadow: 0 2px 0 rgba(0,0,0,.3);
+  transition: filter 200ms;
+}
+.theme-prev > div.dim { filter: grayscale(.7) opacity(.4); }

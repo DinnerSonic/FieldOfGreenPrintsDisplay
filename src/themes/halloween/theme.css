@@ -1,0 +1,95 @@
+/* ═══ Halloween (October) ═══
+   Only applies under <html data-theme="halloween">. Screen groups (.scr-night/.scr-day/.scr-sub)
+   are tagged by src/themes/runtime.js. Inline colours in index.html need !important. */
+
+[data-theme="halloween"] {
+  --hw-orange: #ff7a1a;
+  --hw-orange-ledge: #b8500a;
+  --hw-purple: #9b59e6;
+  --hw-purple-ledge: #6a32ad;
+  --hw-night: #12071f;
+}
+
+/* ── Home + signs picker: purple night with a big glowing moon ── */
+[data-theme="halloween"] .wall,
+[data-theme="halloween"] .wall-bg {
+  background:
+    radial-gradient(circle at 88% 16%, #fff3c4 0, #ffe7a3 52px, rgba(255,214,130,.35) 56px, rgba(255,200,110,.12) 110px, transparent 170px),
+    radial-gradient(circle at 15% 85%, rgba(255,122,26,.16) 0, transparent 40%),
+    radial-gradient(ellipse at 50% 40%, #4a2475 0, #2a1248 60%, var(--hw-night) 100%);
+}
+[data-theme="halloween"] #signsPicker .h-title,
+[data-theme="halloween"] #signsPicker .head-sub { color: #fff; opacity: 1; text-shadow: 0 2px 0 rgba(0,0,0,.3); }
+
+/* Floating dots: pumpkin orange, potion purple, slime green. */
+[data-theme="halloween"] #stage > .candy { opacity: .9 !important; }
+[data-theme="halloween"] #stage > .candy:nth-child(1 of .candy) { --c: #ff8a1f !important; }
+[data-theme="halloween"] #stage > .candy:nth-child(2 of .candy) { --c: #a259ff !important; }
+[data-theme="halloween"] #stage > .candy:nth-child(3 of .candy) { --c: #6dff7a !important; }
+
+/* Main menu: Information orange, Payment stays brand pink, Credits purple. */
+[data-theme="halloween"] .menu-item[data-goto="info"] .round-btn {
+  --bg: var(--hw-orange) !important; --ledge: var(--hw-orange-ledge) !important; --soft: rgba(80,30,0,.4) !important;
+}
+[data-theme="halloween"] .menu-item[data-goto="credits"] .round-btn {
+  --bg: var(--hw-purple) !important; --ledge: var(--hw-purple-ledge) !important; --soft: rgba(40,10,70,.45) !important;
+}
+[data-theme="halloween"] .menu-item:is([data-goto="info"], [data-goto="credits"]) svg { stroke: #fff; }
+[data-theme="halloween"] .menu-item[data-goto="info"] svg circle[fill] { fill: #fff; }
+
+/* ── Sub-screens: dark purple night, no leaves ── */
+[data-theme="halloween"] .scr-sub {
+  background:
+    radial-gradient(1.5px 1.5px at 8% 14%, rgba(255,255,255,.7) 50%, transparent 51%),
+    radial-gradient(1px 1px at 47% 9%, rgba(255,255,255,.6) 50%, transparent 51%),
+    radial-gradient(2px 2px at 81% 12%, rgba(255,255,255,.7) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 4% 52%, rgba(255,255,255,.6) 50%, transparent 51%),
+    radial-gradient(1px 1px at 97% 61%, rgba(255,255,255,.6) 50%, transparent 51%),
+    radial-gradient(circle at 12% 92%, rgba(255,122,26,.14) 0, transparent 40%),
+    linear-gradient(180deg, #150a28 0%, #24113f 60%, #341a57 100%) !important;
+}
+[data-theme="halloween"] .commission-btn,
+[data-theme="halloween"] .photo-btn:not(.photo-btn-alt) {
+  background-color: #ff9a3c;
+  box-shadow: inset 0 -5px 0 rgba(0,0,0,.12), inset 0 4px 0 rgba(255,255,255,.45), 0 6px 0 #c0661a, 0 12px 20px rgba(60,20,40,.2);
+}
+
+/* ── Night: Be right back, Back at 5:30, Lunch, Thank you (+ picker previews) ── */
+[data-theme="halloween"] .scr-night,
+[data-theme="halloween"] .sign-prev.sign-bg-pink {
+  background:
+    radial-gradient(circle at 87% 15%, #fff3c4 0, #ffe7a3 44px, rgba(255,214,130,.3) 48px, rgba(255,200,110,.1) 96px, transparent 150px),
+    radial-gradient(1.5px 1.5px at 12% 18%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 27% 8%, #fff 50%, transparent 51%),
+    radial-gradient(2px 2px at 43% 22%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 58% 12%, #fff 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 6% 41%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 64% 48%, #fff 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 18% 63%, #fff 50%, transparent 51%),
+    radial-gradient(ellipse at 50% 115%, #4a2475 0, #2a1248 45%, var(--hw-night) 100%);
+}
+[data-theme="halloween"] .scr-night::before {
+  content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(2px 2px at 20% 30%, #fff 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 52% 6%, #fff 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 9% 74%, #fff 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 40% 66%, #fff 50%, transparent 51%);
+}
+[data-theme="halloween"] .scr-night.on::before { will-change: opacity; animation: fx-stars 3.2s ease-in-out infinite alternate; }
+[data-theme="halloween"] .scr-night .sign-title { text-shadow: 0 0 22px rgba(255,111,163,.6), 0 4px 0 rgba(0,0,0,.4); }
+[data-theme="halloween"] .scr-night .sign-sub { color: #f1e8ff; }
+[data-theme="halloween"] .sign-prev.sign-bg-pink .prev-title { text-shadow: 0 0 12px rgba(255,111,163,.6); }
+[data-theme="halloween"] .scr-night .candy { opacity: .85 !important; }
+[data-theme="halloween"] .scr-night .candy:nth-child(1 of .candy) { --c: #ff8a1f !important; box-shadow: 0 0 34px 10px rgba(255,138,31,.5); }
+[data-theme="halloween"] .scr-night .candy:nth-child(2 of .candy) { --c: #a259ff !important; box-shadow: 0 0 30px 8px rgba(162,89,255,.5); }
+[data-theme="halloween"] .scr-night .candy:nth-child(3 of .candy) { --c: #6dff7a !important; box-shadow: 0 0 30px 8px rgba(109,255,122,.45); }
+
+/* ── Daytime: warm harvest cream for Got Bulk? and Helping another booth ── */
+[data-theme="halloween"] .scr-day,
+[data-theme="halloween"] :is([data-sign-pick="bulk"], [data-sign-pick="otherbooth"]) .sign-prev {
+  background:
+    radial-gradient(circle at 15% 85%, rgba(255,140,40,.25) 0, transparent 45%),
+    radial-gradient(circle at 85% 15%, rgba(162,89,255,.18) 0, transparent 45%),
+    #fff1dc !important;
+}

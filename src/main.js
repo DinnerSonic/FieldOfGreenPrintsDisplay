@@ -1,10 +1,10 @@
 import './styles.css';
-import './theme.css';
 import QRCodeStyling from 'qr-code-styling';
 import brands from './data/brands.json';
 import flags from './data/flags.json';
 import { FOODS } from './data/foods.js';
-import { THEME_SETTINGS, themeSetting, setThemeSetting, activeTheme, addDecorations } from './theme.js';
+import { THEMES, SETTINGS as THEME_SETTINGS, themeSetting, setThemeSetting, activeThemeId, settingLabel, themeById } from './themes/index.js';
+import { markScreens, setTheme, placeDecorations, themeFrameColor } from './themes/runtime.js';
 import {
   APPS_SCRIPT_URL, SHOW_WELCOME, IDLE_SECONDS, PHOTO_MAX_EDGE, PHOTO_JPEG_QUALITY, KEEP_SENT_DAYS,
 } from './config.js';
@@ -31,7 +31,6 @@ const state = {
 };
 
 let photo = null;   // JPEG data URL of the current capture
-let snow = null;    // home-screen snowfall control (src/theme.js)
 
 function set(patch) { Object.assign(state, patch); render(); }
 
@@ -47,9 +46,8 @@ function render() {
   $('#phone').classList.toggle('on', s.phoneOpen);
   renderSelection();
   paintFrame();
-  // Holiday snow on the signs and thank-you screens runs from CSS while they're showing;
-  // the home screen's only while nothing covers it.
-  if (snow) snow.setHome(isHoliday() && s.screen === 'home' && !s.signs);
+  // Seasonal decorations live only on the screen that's showing.
+  placeDecorations(s, stage);
   // Refresh the saved-requests count/list whenever the artist screens open.
   if (s.signs !== lastSigns && (s.signs === 'picker' || s.signs === 'saved')) renderSaved();
   lastSigns = s.signs;
@@ -104,16 +102,10 @@ const FRAME_COLORS = {
   pride: '#FFF4F8', thanks: '#FFB8CE',
   brb: '#FFB8CE', at530: '#FFB8CE', lunch: '#FFB8CE', otherbooth: '#FFD98C', bulk: '#B7EFD1',
 };
-// Holiday: white where a snowbank meets the bottom edge, the night sky's bottom color elsewhere.
-const HOLIDAY_FRAME_COLORS = {
-  home: '#FFFFFF', thanks: '#FFFFFF', brb: '#FFFFFF', at530: '#FFFFFF', lunch: '#FFFFFF',
-  picker: '#7d0a1c', otherbooth: '#FFFFFF', bulk: '#FFFFFF',
-};
 function paintFrame() {
-  const colors = isHoliday() ? HOLIDAY_FRAME_COLORS : FRAME_COLORS;
-  const fallback = isHoliday() ? '#1d3a6e' : '#FFD9E3';
   const color = !isStandalone() ? '#9FECC4'
-    : colors[state.signs] || (state.signs ? fallback : colors[state.screen] || fallback);
+    : themeFrameColor(state) // a seasonal theme's colours
+      || FRAME_COLORS[state.signs] || (state.signs ? '#FFD9E3' : FRAME_COLORS[state.screen] || '#FFD9E3');
   for (const el of [document.documentElement, document.body, root]) el.style.background = color;
 }
 
@@ -725,30 +717,37 @@ document.addEventListener('visibilitychange', () => {
 setInterval(flush, 60000);
 
 // ─────────── Theme ───────────
-const isHoliday = () => document.documentElement.dataset.theme === 'holiday';
-const THEME_LABELS = { auto: 'Auto', holiday: 'Holiday', classic: 'Classic' };
-
-function applyTheme() {
-  const active = activeTheme();
-  document.documentElement.dataset.theme = active;
+// Seasonal themes live in src/themes/. Only the selected one is downloaded and shown.
+function renderThemeCard() {
   const setting = themeSetting();
-  $('#themeTitle').textContent = 'Theme: ' + THEME_LABELS[setting] + (setting === 'auto' ? ` (${THEME_LABELS[active]} now)` : '');
-  $('.theme-prev .classic').classList.toggle('dim', active !== 'classic');
-  $('.theme-prev .holiday').classList.toggle('dim', active !== 'holiday');
+  const active = activeThemeId();
+  $('#themeTitle').textContent = 'Theme: ' + settingLabel(setting)
+    + (setting === 'auto' ? ` (${themeById(active).label} now)` : '');
+  $$('.theme-prev > div').forEach((d) => d.classList.toggle('dim', d.dataset.theme !== active));
+}
+
+async function applyTheme() {
+  renderThemeCard();
+  if (await setTheme(activeThemeId())) render();
 }
 
 function cycleTheme() {
   const i = THEME_SETTINGS.indexOf(themeSetting());
   setThemeSetting(THEME_SETTINGS[(i + 1) % THEME_SETTINGS.length]);
   applyTheme();
-  render();
 }
 
-snow = addDecorations(stage);
+markScreens(stage);
+$('.theme-prev').replaceChildren(...THEMES.map((t) => {
+  const d = el('div', null, t.label);
+  d.dataset.theme = t.id;
+  d.style.background = t.swatch;
+  return d;
+}));
+document.documentElement.dataset.theme = 'classic';
 applyTheme();
 // In Auto, pick up the change of season without a restart.
-setInterval(() => { const before = document.documentElement.dataset.theme; applyTheme(); if (before !== document.documentElement.dataset.theme) render(); }, 10 * 60 * 1000);
-document.addEventListener('visibilitychange', () => render());
+setInterval(applyTheme, 10 * 60 * 1000);
 
 fitStage();
 render();
