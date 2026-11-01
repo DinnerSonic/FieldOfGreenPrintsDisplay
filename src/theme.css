@@ -2,7 +2,7 @@
    Everything here only applies under <html data-theme="holiday">; the classic look is
    untouched. Inline colors in index.html are overridden with !important where needed. */
 
-.holiday-deco, #snow { display: none; }
+.holiday-deco { display: none; }
 
 [data-theme="holiday"] {
   --wall: #FFF6EC;          /* sub-screens: warm cream instead of pink */
@@ -48,17 +48,37 @@
   --bg: var(--xmas-gold) !important; --ledge: var(--xmas-gold-ledge) !important; --soft: rgba(90,60,0,.3) !important;
 }
 
-/* ── Sub-screens: cream with soft red/green glows (no snow, stays readable) ── */
+/* ── Sub-screens (forms, QR codes, credits, pride, saved): night sky, no snow ──
+   White cards keep their dark text; text sitting right on the sky turns light. */
 [data-theme="holiday"] .pink-bg,
 [data-theme="holiday"] [data-screen="credits"],
 [data-theme="holiday"] [data-screen="pride"],
 [data-theme="holiday"] [data-sign="saved"],
 [data-theme="holiday"] .phone {
   background:
-    radial-gradient(circle at 12% 88%, rgba(31,157,85,.12) 0, transparent 42%),
-    radial-gradient(circle at 88% 10%, rgba(200,16,46,.12) 0, transparent 42%),
-    var(--wall) !important;
+    radial-gradient(1.5px 1.5px at 8% 14%, rgba(255,255,255,.8) 50%, transparent 51%),
+    radial-gradient(1px 1px at 22% 6%, rgba(255,255,255,.7) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 47% 9%, rgba(255,255,255,.8) 50%, transparent 51%),
+    radial-gradient(1px 1px at 63% 4%, rgba(255,255,255,.7) 50%, transparent 51%),
+    radial-gradient(2px 2px at 81% 12%, rgba(255,255,255,.8) 50%, transparent 51%),
+    radial-gradient(1px 1px at 95% 26%, rgba(255,255,255,.7) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 4% 52%, rgba(255,255,255,.7) 50%, transparent 51%),
+    radial-gradient(1px 1px at 97% 61%, rgba(255,255,255,.7) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 11% 86%, rgba(255,255,255,.7) 50%, transparent 51%),
+    radial-gradient(1px 1px at 89% 92%, rgba(255,255,255,.7) 50%, transparent 51%),
+    linear-gradient(180deg, var(--night) 0%, #132a58 60%, #1d3a6e 100%) !important;
 }
+[data-theme="holiday"] .split-left .h-title,
+[data-theme="holiday"] .panel-head .h-title,
+[data-theme="holiday"] [data-sign="saved"] .h-title { color: #fff; text-shadow: 0 3px 0 rgba(0,0,0,.25); }
+[data-theme="holiday"] .split-left .blurb,
+[data-theme="holiday"] .panel-head .head-sub,
+[data-theme="holiday"] #savedSub,
+[data-theme="holiday"] .saved-empty { color: #e3e9ff; opacity: .9; }
+[data-theme="holiday"] .flag-name { color: #fff; }
+[data-theme="holiday"] .flag-desc,
+[data-theme="holiday"] .flags-foot { color: #d6def7; opacity: .85; }
+[data-theme="holiday"] .note-chip { background: rgba(255,255,255,.92); }
 [data-theme="holiday"] .commission-btn,
 [data-theme="holiday"] .photo-btn:not(.photo-btn-alt) {
   background-color: var(--xmas-gold);
@@ -119,18 +139,19 @@
 .holiday-deco .l-glow.b { animation-delay: -1.6s; }
 .holiday-deco .snowbank { position: absolute; left: 0; right: 0; bottom: 0; height: 70px; pointer-events: none; }
 
-[data-theme="holiday"] #snow {
-  display: block; position: absolute; inset: 0; z-index: 50; pointer-events: none; overflow: hidden;
-  visibility: hidden; opacity: 0; transition: opacity 500ms ease, visibility 0s linear 500ms;
-}
-[data-theme="holiday"] #snow.on { visibility: visible; opacity: 1; transition: opacity 500ms ease, visibility 0s; }
-#snow .snow-layer {
+.snow { display: none; }
+[data-theme="holiday"] .snow { display: block; position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+/* In the panels it sits behind everything else (z-index -1 inside the panel's own layer). */
+[data-theme="holiday"] :is(#signsPicker, [data-sign], #thanks) { isolation: isolate; }
+[data-theme="holiday"] .panel > .snow { z-index: -1; }
+.snow .snow-layer {
   position: absolute; left: -40px; right: -40px; bottom: 0; will-change: transform;
   animation-timing-function: linear; animation-iteration-count: infinite; animation-play-state: paused;
 }
-#snow.on .snow-layer { animation-play-state: running; }
+/* Only the snow on the screen that's showing actually moves. */
+.panel.on > .snow .snow-layer, .home-snow.on .snow-layer { animation-play-state: running; }
 /* Each layer slides down exactly 3 tile-heights per loop, so it repeats seamlessly. */
-#snow .s1 {
+.snow .s1 {
   top: -900px; background-size: 260px 300px; animation-name: snow1; animation-duration: 18s;
   background-image:
     radial-gradient(circle at 30px 40px, rgba(255,255,255,.95) 0 2px, rgba(120,150,190,.35) 2px 2.7px, transparent 3px),
@@ -138,14 +159,14 @@
     radial-gradient(circle at 90px 210px, rgba(255,255,255,.95) 0 2px, rgba(120,150,190,.35) 2px 2.7px, transparent 3px),
     radial-gradient(circle at 220px 260px, rgba(255,255,255,.95) 0 2.5px, rgba(120,150,190,.35) 2.5px 3.2px, transparent 3.5px);
 }
-#snow .s2 {
+.snow .s2 {
   top: -1020px; background-size: 310px 340px; animation-name: snow2; animation-duration: 20s;
   background-image:
     radial-gradient(circle at 60px 70px, rgba(255,255,255,.95) 0 3.5px, rgba(120,150,190,.35) 3.5px 4.2px, transparent 4.5px),
     radial-gradient(circle at 240px 180px, rgba(255,255,255,.95) 0 3px, rgba(120,150,190,.35) 3px 3.7px, transparent 4px),
     radial-gradient(circle at 140px 300px, rgba(255,255,255,.95) 0 3.5px, rgba(120,150,190,.35) 3.5px 4.2px, transparent 4.5px);
 }
-#snow .s3 {
+.snow .s3 {
   top: -1260px; background-size: 380px 420px; animation-name: snow3; animation-duration: 22s;
   background-image:
     radial-gradient(circle at 100px 120px, rgba(255,255,255,.95) 0 5px, rgba(120,150,190,.35) 5px 5.7px, transparent 6px),

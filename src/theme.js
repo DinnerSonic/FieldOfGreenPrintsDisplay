@@ -57,7 +57,25 @@ function snowbankSvg() {
     + '</svg>';
 }
 
-/** Adds the lights + snowbank to each decorated screen (hidden by CSS unless holiday). */
+const NIGHT = ['[data-sign="brb"]', '[data-sign="at530"]', '[data-sign="lunch"]', '#thanks'];
+const SNOWY = [...NIGHT, '#signsPicker', '[data-sign="otherbooth"]', '[data-sign="bulk"]'];
+
+// Three layers of pre-drawn flakes (small, medium, large) slid downward by CSS transform
+// animations, like the pulsing button: cheap for an older iPad. Each snowy screen gets its own
+// snow just above its background, so buttons, text and cards cover it. It only runs while its
+// screen is showing (see theme.css).
+function snowEl() {
+  const d = document.createElement('div');
+  d.className = 'snow';
+  d.innerHTML = '<div class="snow-layer s1"></div><div class="snow-layer s2"></div><div class="snow-layer s3"></div>';
+  return d;
+}
+
+/**
+ * Adds the lights, snowbank and snow to the holiday screens (hidden by CSS unless holiday).
+ * Returns a control for the home screen's snow, which can't tell from CSS alone whether it's
+ * covered by another screen.
+ */
 export function addDecorations(stage) {
   const deco = () => {
     const d = document.createElement('div');
@@ -65,25 +83,13 @@ export function addDecorations(stage) {
     d.innerHTML = `<div class="lights">${lightsSvg()}</div><div class="snowbank">${snowbankSvg()}</div>`;
     return d;
   };
-  stage.querySelector('.wall').after(deco()); // home: above the wallpaper, below the content
-  for (const sel of ['[data-sign="brb"]', '[data-sign="at530"]', '[data-sign="lunch"]', '#thanks']) {
-    const panel = stage.querySelector(sel);
-    if (panel) panel.prepend(deco());
-  }
-}
-
-// ─────────── Snow ───────────
-// Three layers of pre-drawn flakes (small/fast-ish, medium, large/slow) slid downward by CSS
-// transform animations, like the pulsing button: cheap for an older iPad. Paused when hidden.
-export function createSnow(el) {
-  el.innerHTML = '<div class="snow-layer s1"></div><div class="snow-layer s2"></div><div class="snow-layer s3"></div>';
-  let on = false;
-  return {
-    set(next) {
-      if (next === on) return;
-      on = next;
-      el.classList.toggle('on', on);
-    },
-    fit() {},
-  };
+  // Home: wallpaper, snow, lights + snowbank, then the content on top.
+  const wall = stage.querySelector('.wall');
+  wall.after(deco());
+  const homeSnow = snowEl();
+  homeSnow.classList.add('home-snow');
+  wall.after(homeSnow);
+  for (const sel of NIGHT) stage.querySelector(sel)?.prepend(deco());
+  for (const sel of SNOWY) stage.querySelector(sel)?.prepend(snowEl());
+  return { setHome: (on) => homeSnow.classList.toggle('on', on) };
 }
