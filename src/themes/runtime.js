@@ -9,7 +9,8 @@
 //   subTone:   'dark' | 'light'  – background of the forms/QR/credits screens (dark = light text)
 //   garland:   { colors: [...], shape: 'bulb' | 'heart' } | null  – across the top of home + night screens
 //   ground:    'snowbank' | 'fog' | null                          – along the bottom of home, night, day screens
-//   particles: [{ tile: [w, h], dir: 'down' | 'up', dur, drift, shapes }] (svg shapes in a w×h tile)
+//   particles: [{ tile: [w, h], dir: 'down' | 'up', dur, drift, shapes }] (svg shapes in a w×h tile;
+//              dur = seconds to travel 3 tile-heights, i.e. it sets the speed)
 //   frame:     { home, picker, night, day, sub }  – colour for the strip iOS keeps at the bottom
 //   daypart:   optional { nightFrom: 18 } – evening switch. Sets <html data-daypart="day|night">
 //              so the theme's CSS can change with the clock; subTone and frame may then be
@@ -123,6 +124,8 @@ function removeFx() {
 
 // ─────────── Builders ───────────
 
+const MAX_LOOP_PX = 900;
+
 function buildFx(cfg) {
   const deco = document.createElement('div');
   deco.className = 'fx-deco';
@@ -135,7 +138,12 @@ function buildFx(cfg) {
   let css = '';
   (cfg.particles || []).forEach((p, i) => {
     const [w, h] = p.tile;
-    const dist = h * 3; // move exactly 3 tiles per loop so it repeats seamlessly
+    // Each loop moves a whole number of tiles so it repeats seamlessly. Keep the layer's image
+    // (screen height + loop distance) well under the iPad's ~4096px graphics limit: past it,
+    // iOS splits and redraws the layer while it moves, which stutters.
+    const tiles = Math.max(1, Math.min(3, Math.floor(MAX_LOOP_PX / h)));
+    const dist = h * tiles;
+    const dur = (p.dur * tiles / 3).toFixed(2); // same speed whatever the loop length
     const sign = p.dir === 'up' ? -1 : 1;
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">${p.shapes}</svg>`;
     const layer = document.createElement('div');
@@ -143,7 +151,7 @@ function buildFx(cfg) {
     particles.append(layer);
     css += `.fx-l${i}{${p.dir === 'up' ? `top:0;bottom:-${dist}px` : `top:-${dist}px;bottom:0`};`
       + `background-image:url("data:image/svg+xml,${encodeURIComponent(svg)}");background-size:${w}px ${h}px;`
-      + `animation:fx-k${i} ${p.dur}s linear infinite}`
+      + `animation:fx-k${i} ${dur}s linear infinite}`
       + `@keyframes fx-k${i}{0%{transform:translate3d(0,0,0)}50%{transform:translate3d(${p.drift}px,${sign * dist / 2}px,0)}100%{transform:translate3d(0,${sign * dist}px,0)}}`;
   });
   style.textContent = css;
