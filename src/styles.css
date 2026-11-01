@@ -15,7 +15,7 @@
   --green: #34D374;  --green-ledge: #1f8a47;
   --lavender: #C1A6F2; --lavender-ledge: #9575D6;
   --error: #e0416b;
-  --texture: url('../aesthetic-kit/assets/button-texture.png');
+  --texture: url('../aesthetic-kit/assets/button-texture-seamless.png');
   --card-shadow: 0 4px 0 rgba(0,0,0,.08), 0 8px 14px rgba(60,20,40,.1);
 }
 
