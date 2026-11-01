@@ -1,12 +1,12 @@
-// Seasonal theme. "auto" switches to the holiday look for November and December; the artist
-// can force Holiday or Classic from the booth signs screen (remembered on this iPad).
+// Seasonal theme. Classic by default; "auto" switches to the holiday look for November and
+// December. The artist picks one from the booth signs screen (remembered on this iPad).
 // Holiday styling lives in theme.css under [data-theme="holiday"].
 
 const KEY = 'fogp_theme';
-export const THEME_SETTINGS = ['auto', 'holiday', 'classic'];
+export const THEME_SETTINGS = ['classic', 'holiday', 'auto'];
 
 export function themeSetting() {
-  try { const v = localStorage.getItem(KEY); return THEME_SETTINGS.includes(v) ? v : 'auto'; } catch (e) { return 'auto'; }
+  try { const v = localStorage.getItem(KEY); return THEME_SETTINGS.includes(v) ? v : 'classic'; } catch (e) { return 'classic'; }
 }
 export function setThemeSetting(v) {
   try { localStorage.setItem(KEY, v); } catch (e) {}

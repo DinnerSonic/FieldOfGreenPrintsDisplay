@@ -37,7 +37,6 @@
   border-radius: 3px; background: linear-gradient(#e9e2c4, #a99c6a);
 }
 
-[data-theme="holiday"] .come-in { color: #fff; }
 
 /* Main menu: Information green, Payment stays brand pink, Credits gold. */
 [data-theme="holiday"] .menu-item[data-goto="info"] .round-btn {

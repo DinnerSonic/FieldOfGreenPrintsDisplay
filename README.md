@@ -54,5 +54,5 @@ then deletes it; requests that haven’t uploaded yet are never deleted.
 
 - Hold **top-right + bottom-left** corners together 0.5 s → booth signs picker. At the end of it,
   **Saved requests**, lists the requests stored on the iPad, with a two-tap Delete on each.
-  **Theme** switches between Auto (holiday look in November and December), Holiday and Classic.
+  **Theme** switches between Classic (the default), Holiday, and Auto (holiday look in November and December).
 - Hold **bottom-left** alone 0.5 s → reset to the welcome screen.
