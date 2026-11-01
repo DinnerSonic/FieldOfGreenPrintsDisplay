@@ -4,7 +4,7 @@ import brands from './data/brands.json';
 import flags from './data/flags.json';
 import { FOODS } from './data/foods.js';
 import { THEMES, SETTINGS as THEME_SETTINGS, themeSetting, setThemeSetting, activeThemeId, settingLabel, themeById } from './themes/index.js';
-import { markScreens, setTheme, placeDecorations, themeFrameColor } from './themes/runtime.js';
+import { markScreens, setTheme, placeDecorations, themeFrameColor, updateDaypart } from './themes/runtime.js';
 import {
   APPS_SCRIPT_URL, SHOW_WELCOME, IDLE_SECONDS, PHOTO_MAX_EDGE, PHOTO_JPEG_QUALITY, KEEP_SENT_DAYS,
 } from './config.js';
@@ -748,6 +748,8 @@ document.documentElement.dataset.theme = 'classic';
 applyTheme();
 // In Auto, pick up the change of season without a restart.
 setInterval(applyTheme, 10 * 60 * 1000);
+// Themes that change with the clock (Holiday's evening sky) check every minute.
+setInterval(() => { if (updateDaypart()) render(); }, 60 * 1000);
 
 fitStage();
 render();

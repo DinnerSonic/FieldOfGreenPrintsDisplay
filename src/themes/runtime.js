@@ -11,6 +11,9 @@
 //   ground:    'snowbank' | 'fog' | null                          – along the bottom of home, night, day screens
 //   particles: [{ tile: [w, h], dir: 'down' | 'up', dur, drift, shapes }] (svg shapes in a w×h tile)
 //   frame:     { home, picker, night, day, sub }  – colour for the strip iOS keeps at the bottom
+//   daypart:   optional { nightFrom: 18 } – evening switch. Sets <html data-daypart="day|night">
+//              so the theme's CSS can change with the clock; subTone and frame may then be
+//              given per daypart: { day: ..., night: ... }.
 
 import './runtime.css';
 import { themeById } from './index.js';
@@ -46,9 +49,26 @@ export async function setTheme(id) {
   removeFx();
   current = { id: entry.id, cfg };
   document.documentElement.dataset.theme = entry.id;
-  document.documentElement.dataset.subTone = cfg ? cfg.subTone || 'light' : 'light';
+  updateDaypart();
   if (cfg) fx = buildFx(cfg);
   return true;
+}
+
+// Day/evening for themes that change with the clock (e.g. Holiday's evening night sky).
+let daypart = 'day';
+// Only themes with a `daypart` setting give subTone/frame as { day, night }.
+const perDaypart = (v) => (current.cfg && current.cfg.daypart && v && typeof v === 'object' ? v[daypart] : v);
+
+/** Re-check the clock. Returns true if the theme's look changed (call every minute or so). */
+export function updateDaypart(now = new Date()) {
+  const cfg = current.cfg;
+  const html = document.documentElement;
+  const next = cfg && cfg.daypart && now.getHours() >= cfg.daypart.nightFrom ? 'night' : 'day';
+  const changed = next !== daypart;
+  daypart = next;
+  if (cfg && cfg.daypart) html.dataset.daypart = daypart; else delete html.dataset.daypart;
+  html.dataset.subTone = (cfg && perDaypart(cfg.subTone)) || 'light';
+  return changed && !!(cfg && cfg.daypart);
 }
 
 export const currentThemeId = () => current.id;
@@ -68,7 +88,7 @@ function screenGroup(state) {
 
 /** Colour for the bottom strip, or null to use the classic colours. */
 export function themeFrameColor(state) {
-  return current.cfg ? current.cfg.frame[screenGroup(state)] : null;
+  return current.cfg ? perDaypart(current.cfg.frame)[screenGroup(state)] : null;
 }
 
 /** Move the decorations onto the screen that's showing (or take them off if it gets none). */

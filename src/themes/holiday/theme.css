@@ -43,8 +43,15 @@
   --bg: var(--xmas-gold) !important; --ledge: var(--xmas-gold-ledge) !important; --soft: rgba(90,60,0,.3) !important;
 }
 
-/* ── Sub-screens (forms, QR codes, credits, pride, saved): starry night, no snow ── */
-[data-theme="holiday"] .scr-sub {
+/* ── Sub-screens (forms, QR codes, credits, pride, saved): pale winter sky by day, starry
+   night from 6 PM. No snow. ── */
+[data-theme="holiday"][data-daypart="day"] .scr-sub {
+  background:
+    radial-gradient(circle at 88% 8%, rgba(255,255,255,.9) 0, transparent 28%),
+    radial-gradient(circle at 10% 90%, rgba(111,185,238,.18) 0, transparent 40%),
+    linear-gradient(180deg, #cfe8fb 0%, #e6f3fd 55%, #f4f9fe 100%) !important;
+}
+[data-theme="holiday"][data-daypart="night"] .scr-sub {
   background:
     radial-gradient(1.5px 1.5px at 8% 14%, rgba(255,255,255,.8) 50%, transparent 51%),
     radial-gradient(1px 1px at 22% 6%, rgba(255,255,255,.7) 50%, transparent 51%),
@@ -65,9 +72,17 @@
 }
 [data-theme="holiday"] .home-btn { --green: var(--xmas-green); --green-ledge: var(--xmas-green-ledge); }
 
-/* ── Night sky: Be right back, Back at 5:30, Lunch, Thank you (+ their picker previews) ── */
-[data-theme="holiday"] .scr-night,
-[data-theme="holiday"] .sign-prev.sign-bg-pink {
+/* ── Be right back, Back at 5:30, Lunch, Thank you (+ their picker previews):
+   daytime winter sky, starry night from 6 PM ── */
+[data-theme="holiday"][data-daypart="day"] .scr-night,
+[data-theme="holiday"][data-daypart="day"] .sign-prev.sign-bg-pink {
+  background:
+    radial-gradient(circle at 84% 12%, rgba(255,250,220,.95) 0, rgba(255,244,190,.55) 7%, transparent 22%),
+    radial-gradient(ellipse at 20% 30%, rgba(255,255,255,.55) 0, transparent 30%),
+    linear-gradient(180deg, #6fb9ee 0%, #a9d8f8 55%, #e3f2fd 100%);
+}
+[data-theme="holiday"][data-daypart="night"] .scr-night,
+[data-theme="holiday"][data-daypart="night"] .sign-prev.sign-bg-pink {
   background:
     radial-gradient(1.5px 1.5px at 12% 18%, #fff 50%, transparent 51%),
     radial-gradient(1px 1px at 27% 8%, #fff 50%, transparent 51%),
@@ -84,7 +99,7 @@
     radial-gradient(ellipse at 50% 115%, #24467e 0, #12285a 45%, var(--night) 100%);
 }
 /* A second, twinkling star layer – it only animates on the screen that's showing. */
-[data-theme="holiday"] .scr-night::before {
+[data-theme="holiday"][data-daypart="night"] .scr-night::before {
   content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
   background:
     radial-gradient(2px 2px at 20% 30%, #fff 50%, transparent 51%),
@@ -94,11 +109,11 @@
     radial-gradient(2px 2px at 90% 70%, #fff 50%, transparent 51%),
     radial-gradient(1.5px 1.5px at 40% 66%, #fff 50%, transparent 51%);
 }
-[data-theme="holiday"] .scr-night.on::before { will-change: opacity; animation: fx-stars 3.2s ease-in-out infinite alternate; }
-[data-theme="holiday"] .scr-night .sign-title { text-shadow: 0 0 22px rgba(255,111,163,.65), 0 4px 0 rgba(0,0,0,.35); }
-[data-theme="holiday"] .scr-night .sign-sub { color: #f1e8ff; }
-[data-theme="holiday"] .sign-prev.sign-bg-pink .prev-title { text-shadow: 0 0 12px rgba(255,111,163,.6); }
-/* Floating dots on the night screens become glowing light bulbs. */
+[data-theme="holiday"][data-daypart="night"] .scr-night.on::before { will-change: opacity; animation: fx-stars 3.2s ease-in-out infinite alternate; }
+[data-theme="holiday"][data-daypart="night"] .scr-night .sign-title { text-shadow: 0 0 22px rgba(255,111,163,.65), 0 4px 0 rgba(0,0,0,.35); }
+[data-theme="holiday"][data-daypart="night"] .scr-night .sign-sub { color: #f1e8ff; }
+[data-theme="holiday"][data-daypart="night"] .sign-prev.sign-bg-pink .prev-title { text-shadow: 0 0 12px rgba(255,111,163,.6); }
+/* Floating dots on these screens become light bulbs (glowing brightest at night). */
 [data-theme="holiday"] .scr-night .candy { opacity: .85 !important; }
 [data-theme="holiday"] .scr-night .candy:nth-child(1 of .candy) { --c: #ff3b4e !important; box-shadow: 0 0 34px 10px rgba(255,59,78,.55); }
 [data-theme="holiday"] .scr-night .candy:nth-child(2 of .candy) { --c: #ffd23f !important; box-shadow: 0 0 30px 8px rgba(255,210,63,.55); }
@@ -112,3 +127,4 @@
     radial-gradient(ellipse at 20% 30%, rgba(255,255,255,.55) 0, transparent 30%),
     linear-gradient(180deg, #6fb9ee 0%, #a9d8f8 55%, #e3f2fd 100%) !important;
 }
+[data-theme="holiday"][data-daypart="day"] .scr-night .candy { box-shadow: 0 0 18px 4px rgba(255,255,255,.35) !important; }
