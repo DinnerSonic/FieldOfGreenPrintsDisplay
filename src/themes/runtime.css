@@ -6,7 +6,7 @@ html:not([data-theme="classic"]) :is(#signsPicker, [data-sign], #thanks) { isola
 
 .fx-particles { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
 .panel > .fx-particles { z-index: -1; }
-.fx-layer { position: absolute; left: -40px; right: -40px; will-change: transform; }
+.fx-sprite { position: absolute; background-size: 100% 100%; will-change: transform; }
 
 .fx-deco { pointer-events: none; }
 .fx-deco[hidden] { display: none; }

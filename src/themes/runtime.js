@@ -9,8 +9,8 @@
 //   subTone:   'dark' | 'light'  – background of the forms/QR/credits screens (dark = light text)
 //   garland:   { colors: [...], shape: 'bulb' | 'heart' } | null  – across the top of home + night screens
 //   ground:    'snowbank' | 'fog' | null                          – along the bottom of home, night, day screens
-//   particles: [{ tile: [w, h], dir: 'down' | 'up', dur, drift, shapes }] (svg shapes in a w×h tile;
-//              dur = seconds to travel 3 tile-heights, i.e. it sets the speed)
+//   particles: [{ sprites: [svg shape centred on 0,0, ...], size, count, dir: 'down' | 'up', speed, drift }]
+//              (size = sprite box in px, speed = px per second, drift = sideways sway in px)
 //   frame:     { home, picker, night, day, sub }  – colour for the strip iOS keeps at the bottom
 //   daypart:   optional { nightFrom: 18 } – evening switch. Sets <html data-daypart="day|night">
 //              so the theme's CSS can change with the clock; subTone and frame may then be
@@ -124,7 +124,8 @@ function removeFx() {
 
 // ─────────── Builders ───────────
 
-const MAX_LOOP_PX = 900;
+const STAGE_H = 768;
+const GOLDEN = 0.618034;
 
 function buildFx(cfg) {
   const deco = document.createElement('div');
@@ -136,23 +137,27 @@ function buildFx(cfg) {
   particles.className = 'fx-particles';
   const style = document.createElement('style');
   let css = '';
+  // Every sprite is its own tiny moving layer. A single tall image holding all of them costs
+  // tens of MB of graphics memory on the iPad, and iOS redraws parts of it as it moves (stutter).
   (cfg.particles || []).forEach((p, i) => {
-    const [w, h] = p.tile;
-    // Each loop moves a whole number of tiles so it repeats seamlessly. Keep the layer's image
-    // (screen height + loop distance) well under the iPad's ~4096px graphics limit: past it,
-    // iOS splits and redraws the layer while it moves, which stutters.
-    const tiles = Math.max(1, Math.min(3, Math.floor(MAX_LOOP_PX / h)));
-    const dist = h * tiles;
-    const dur = (p.dur * tiles / 3).toFixed(2); // same speed whatever the loop length
+    const { size, count, speed, drift } = p;
     const sign = p.dir === 'up' ? -1 : 1;
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">${p.shapes}</svg>`;
-    const layer = document.createElement('div');
-    layer.className = `fx-layer fx-l${i}`;
-    particles.append(layer);
-    css += `.fx-l${i}{${p.dir === 'up' ? `top:0;bottom:-${dist}px` : `top:-${dist}px;bottom:0`};`
-      + `background-image:url("data:image/svg+xml,${encodeURIComponent(svg)}");background-size:${w}px ${h}px;`
-      + `animation:fx-k${i} ${dur}s linear infinite}`
-      + `@keyframes fx-k${i}{0%{transform:translate3d(0,0,0)}50%{transform:translate3d(${p.drift}px,${sign * dist / 2}px,0)}100%{transform:translate3d(0,${sign * dist}px,0)}}`;
+    const travel = STAGE_H + size;
+    const dur = travel / speed;
+    css += `.fx-l${i}{${p.dir === 'up' ? 'bottom' : 'top'}:-${size}px;width:${size}px;height:${size}px;animation:fx-k${i} ${dur.toFixed(2)}s linear infinite}`
+      + `@keyframes fx-k${i}{0%{transform:translate3d(0,0,0)}50%{transform:translate3d(${drift}px,${sign * travel / 2}px,0)}100%{transform:translate3d(0,${sign * travel}px,0)}}`;
+    p.sprites.forEach((shape, j) => {
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="${-size / 2} ${-size / 2} ${size} ${size}">${shape}</svg>`;
+      css += `.fx-s${i}-${j}{background-image:url("data:image/svg+xml,${encodeURIComponent(svg)}")}`;
+    });
+    for (let n = 0; n < count; n++) {
+      const sprite = document.createElement('div');
+      sprite.className = `fx-sprite fx-l${i} fx-s${i}-${n % p.sprites.length}`;
+      // Evenly spread in time, golden-ratio spread across the width: no visible rows or columns.
+      sprite.style.left = `${((n * GOLDEN + i * 0.27) % 1) * 1104 - 40 - size / 2}px`;
+      sprite.style.animationDelay = `${(-dur * n / count).toFixed(2)}s`;
+      particles.append(sprite);
+    }
   });
   style.textContent = css;
   document.head.append(style);
