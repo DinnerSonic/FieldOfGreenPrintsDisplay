@@ -5,6 +5,7 @@ import flags from './data/flags.json';
 import { FOODS } from './data/foods.js';
 import { THEMES, SETTINGS as THEME_SETTINGS, themeSetting, setThemeSetting, activeThemeId, settingLabel, themeById } from './themes/index.js';
 import { markScreens, setTheme, placeDecorations, themeFrameColor, updateDaypart } from './themes/runtime.js';
+import { initPerf, perfGesture, perfScreenChanged, perfSpan } from './perf.js';
 import {
   APPS_SCRIPT_URL, SHOW_WELCOME, IDLE_SECONDS, PHOTO_MAX_EDGE, PHOTO_JPEG_QUALITY, KEEP_SENT_DAYS,
 } from './config.js';
@@ -51,6 +52,7 @@ function render() {
   // Refresh the saved-requests count/list whenever the artist screens open.
   if (s.signs !== lastSigns && (s.signs === 'picker' || s.signs === 'saved')) renderSaved();
   lastSigns = s.signs;
+  perfScreenChanged();
 }
 let lastSigns = null;
 
@@ -262,6 +264,7 @@ function resetIdle() {
 
 // ─────────── Secret corners ───────────
 // Hold top-right + bottom-left 0.5s → toggle booth signs. Hold bottom-left alone 0.5s → hard reset.
+// Hold top-left alone 1.5s → performance log.
 const corners = new Map();
 let cornerAction = null;
 let cornerTimer = null;
@@ -273,6 +276,7 @@ function cornerOf(x0, y0) {
   const x = (x0 - r.left) / k, y = (y0 - r.top) / k;
   const Z = 100;
   if (y < Z && x > w - Z) return 'tr';
+  if (y < Z && x < Z) return 'tl';
   if (y > h - Z && x < Z) return 'bl';
   return null;
 }
@@ -289,6 +293,7 @@ function evalCorners() {
   let want = null;
   if (zs.length === 2 && zs.includes('tr') && zs.includes('bl')) want = 'signs';
   else if (zs.length === 1 && zs[0] === 'bl') want = 'reset';
+  else if (zs.length === 1 && zs[0] === 'tl') want = 'perf';
   if (want === cornerAction) return;
   clearTimeout(cornerTimer);
   cornerAction = want;
@@ -298,13 +303,15 @@ function evalCorners() {
     if (want === 'signs') {
       // closed → picker; picker → closed; showing a sign → back to picker
       set({ signs: state.signs === 'picker' ? null : 'picker' });
+    } else if (want === 'perf') {
+      perfGesture();
     } else {
       stopStream();
       closeEditor();
       clearForm();
       set({ screen: 'home', entered: false, signs: null, cameraOpen: false, phoneOpen: false });
     }
-  }, 500);
+  }, want === 'perf' ? 1500 : 500);
 }
 
 function bindCorners() {
@@ -706,7 +713,10 @@ if (window.visualViewport) visualViewport.addEventListener('resize', fitStage);
 [120, 500, 1500].forEach((t) => setTimeout(fitStage, t));
 
 // Upload anything waiting, then tidy up old local copies.
-const flush = () => flushQueue().then(() => pruneSent().catch(() => {})).then(updateStamp);
+const flush = () => {
+  const done = perfSpan('upload check');
+  return flushQueue().then(() => pruneSent().catch(() => {})).then(updateStamp).finally(done);
+};
 addEventListener('online', flush);
 document.addEventListener('visibilitychange', () => {
   // Switching to another app (e.g. Square): let go of the camera, so iOS doesn't leave it
@@ -737,6 +747,11 @@ function cycleTheme() {
   applyTheme();
 }
 
+initPerf(() => {
+  const s = state;
+  const screen = s.signs ? 'sign:' + s.signs : (SHOW_WELCOME && !s.entered ? 'welcome' : s.screen);
+  return screen + (s.cameraOpen ? '+camera' : '') + (s.phoneOpen ? '+phone' : '');
+});
 markScreens(stage);
 $('.theme-prev').replaceChildren(...THEMES.map((t) => {
   const d = el('div', null, t.label);
