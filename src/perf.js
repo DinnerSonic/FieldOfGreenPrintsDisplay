@@ -64,7 +64,7 @@ function start() {
   log = {
     startedAt: new Date(), t0: now, screen: screenKey(), env: environment(),
     segments: new Map(), ticks: [], events: [], recent: [], marks: 0, slowEvents: 0, slowDropped: 0,
-    tick: newStats(), nextTick: now + TICK_MS, lastFrame: 0, lastBeat: 0,
+    tick: newStats(), nextTick: now + TICK_MS, tickCount: 0, lastFrame: 0, lastBeat: 0,
   };
   event('screen: ' + log.screen);
   countLater(log.screen);
@@ -84,14 +84,79 @@ function stop(why) {
   badge = null;
 }
 
-// Once a screen has settled, note how much is running on it.
+// Once a screen has settled, note how much is running on it, and what's in the page.
 function countLater(key) {
   setTimeout(() => {
     if (!log || log.screen !== key) return;
     const seg = segment();
     seg.anims = runningAnimations();
     seg.elements = document.querySelectorAll('*').length;
+    snapshot();
   }, 1000);
+}
+
+// ─────────── What's loaded ───────────
+// Drawn at all: false if it or anything around it is display:none.
+const shown = (el) => !!el && el.isConnected && el.getClientRects().length > 0;
+
+function nameOf(el) {
+  if (!el) return '?';
+  if (el.dataset.screen) return el.dataset.screen;
+  if (el.dataset.sign) return 'sign:' + el.dataset.sign;
+  if (el.id) return '#' + el.id;
+  return '.' + (el.classList[0] || el.tagName.toLowerCase());
+}
+
+// Which screen (or part of the page) an element belongs to.
+function placeOf(el) {
+  if (!el) return '?';
+  if (el.id === 'stage') return 'home';
+  const panel = el.closest('.panel, .camera, .phone, .editor');
+  if (panel) return nameOf(panel);
+  if (el.closest('.home, .wall') || el.matches('#stage > .candy, .pride-btn')) return 'home';
+  if (el.closest('.fx-particles, .fx-deco')) return 'decorations';
+  return nameOf(el);
+}
+
+function snapshot(prefix = '') {
+  const stage = document.querySelector('#stage');
+  const panels = [...stage.querySelectorAll('.panel')].filter(shown).map(nameOf);
+  const fx = document.querySelector('.fx-particles');
+  const deco = document.querySelector('.fx-deco');
+  const fxAt = fx && fx.isConnected ? placeOf(fx.parentElement) : 'none';
+  const parts = [
+    `drawn: ${panels.length ? panels.join(', ') : 'no screens'}`,
+    `home ${shown(stage.querySelector('.home')) ? 'drawn' : 'hidden'}`,
+    `snow/particles on ${fxAt}${fx && fx.isConnected ? ` (${fx.children.length} sprites)` : ''}`,
+    `lights/ground ${deco && deco.isConnected && !deco.hidden ? 'on ' + placeOf(deco.parentElement) : 'off'}`,
+    `camera ${shown(stage.querySelector('#camera')) ? 'open' : 'closed'}`,
+    `${document.querySelectorAll('*').length} elements`,
+    `${document.querySelectorAll('style').length} style tags`,
+    `${document.querySelectorAll('img, video, canvas').length} img/video/canvas`,
+  ];
+  event(`${prefix}loaded: ${parts.join(' · ')}`);
+
+  // Every running animation, grouped by what it is and where it lives.
+  let anims = [];
+  try { anims = document.getAnimations(); } catch (e) {}
+  const groups = new Map();
+  for (const a of anims) {
+    const target = a.effect && a.effect.target;
+    const what = (a.animationName || a.transitionProperty || 'animation')
+      + (a.effect && a.effect.pseudoElement ? a.effect.pseudoElement : '')
+      + (a.playState !== 'running' ? ` (${a.playState})` : '')
+      + (target && !shown(target) ? ' (not drawn)' : '');
+    const where = placeOf(target);
+    const key = `${where}|${what}`;
+    groups.set(key, (groups.get(key) || 0) + 1);
+  }
+  const byPlace = new Map();
+  for (const [key, n] of groups) {
+    const [where, what] = key.split('|');
+    if (!byPlace.has(where)) byPlace.set(where, []);
+    byPlace.get(where).push(n > 1 ? `${what} x${n}` : what);
+  }
+  event(`${prefix}animations (${anims.length}): ` + ([...byPlace].map(([w, list]) => `${w}: ${list.join(', ')}`).join(' | ') || 'none'));
 }
 
 function frame(now) {
@@ -128,6 +193,8 @@ function heartbeat() {
     log.nextTick = now + TICK_MS;
     if (log.tick.frames) log.ticks.push({ t: now - log.t0, screen: log.screen, ...log.tick });
     log.tick = newStats();
+    // Once a minute, even without a screen change: shows if anything builds up over time.
+    if (++log.tickCount % 6 === 0) snapshot('(1 min) ');
     if (now - log.t0 >= MAX_MS) stop('stopped automatically after 30 min');
     else save(false);
   }
