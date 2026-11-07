@@ -41,6 +41,7 @@ function render() {
   const welcomeOn = SHOW_WELCOME && !s.entered;
   stage.classList.toggle('entered', !welcomeOn);
   $('#prideBtn').classList.toggle('on', s.screen === 'home' && !s.signs && !welcomeOn);
+  coverHome(!!s.signs || s.screen !== 'home');
   showPanel($('#signsPicker'), s.signs === 'picker');
   $$('[data-sign]').forEach((el) => showPanel(el, el.dataset.sign === s.signs));
   $('#camera').classList.toggle('on', s.cameraOpen);
@@ -70,6 +71,17 @@ function showPanel(el, on) {
     el._hideTimer = setTimeout(() => { el._hideTimer = null; el.hidden = true; }, HIDE_AFTER_MS);
   } else if (!el._hideTimer) {
     el.hidden = true;
+  }
+}
+
+// Home sits underneath every other screen. Once one has fully faded in over it, home is hidden
+// too; it comes back straight away when leaving, so it's there as the screen fades out.
+let coverTimer = null;
+function coverHome(covered) {
+  clearTimeout(coverTimer);
+  if (!covered) stage.classList.remove('home-covered');
+  else if (!stage.classList.contains('home-covered')) {
+    coverTimer = setTimeout(() => stage.classList.add('home-covered'), HIDE_AFTER_MS);
   }
 }
 
