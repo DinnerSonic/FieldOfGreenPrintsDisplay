@@ -11,6 +11,8 @@
 //   ground:    'snowbank' | 'fog' | null                          – along the bottom of home, night, day screens
 //   particles: [{ sprites: [svg shape centred on 0,0, ...], size, count, dir: 'down' | 'up', speed, drift }]
 //              (size = sprite box in px, speed = px per second, drift = sideways sway in px)
+//              Keep the total count across layers to about 15: each piece is its own moving layer,
+//              and measured on the iPad, 14 run at a steady 60 fps while 29 already drop frames.
 //   frame:     { home, picker, night, day, sub }  – colour for the strip iOS keeps at the bottom
 //   daypart:   optional { nightFrom: 18 } – evening switch. Sets <html data-daypart="day|night">
 //              so the theme's CSS can change with the clock; subTone and frame may then be

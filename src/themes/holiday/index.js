@@ -11,9 +11,9 @@ export default {
   garland: { shape: 'bulb', colors: ['#ff3b4e', '#ffd23f', '#39d97a', '#4fb3ff', '#FF6FA3'] },
   ground: 'snowbank',
   particles: [
-    { sprites: [flake(2), flake(2.5)], size: 6, count: 30, dir: 'down', speed: 50, drift: 14 },
-    { sprites: [flake(3.5), flake(3)], size: 8, count: 18, dir: 'down', speed: 51, drift: -18 },
-    { sprites: [flake(5), flake(4.5)], size: 12, count: 10, dir: 'down', speed: 57, drift: 22 },
+    { sprites: [flake(2), flake(2.5)], size: 6, count: 6, dir: 'down', speed: 50, drift: 14 },
+    { sprites: [flake(3.5), flake(3)], size: 8, count: 5, dir: 'down', speed: 51, drift: -18 },
+    { sprites: [flake(5), flake(4.5)], size: 12, count: 4, dir: 'down', speed: 57, drift: 22 },
   ],
   // Bottom strip: white where the snowbank meets it, otherwise the sky's bottom colour.
   frame: {
