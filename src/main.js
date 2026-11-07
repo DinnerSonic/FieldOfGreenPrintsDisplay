@@ -5,7 +5,7 @@ import flags from './data/flags.json';
 import { FOODS } from './data/foods.js';
 import { THEMES, SETTINGS as THEME_SETTINGS, themeSetting, setThemeSetting, activeThemeId, settingLabel, themeById } from './themes/index.js';
 import { markScreens, setTheme, placeDecorations, themeFrameColor, updateDaypart } from './themes/runtime.js';
-import { initPerf, perfGesture, perfScreenChanged, perfSpan } from './perf.js';
+import { initPerf, perfGesture, perfScreenChanged, perfSpan, perfAutoRunning } from './perf.js';
 import {
   APPS_SCRIPT_URL, SHOW_WELCOME, IDLE_SECONDS, PHOTO_MAX_EDGE, PHOTO_JPEG_QUALITY, KEEP_SENT_DAYS,
 } from './config.js';
@@ -766,6 +766,7 @@ function renderThemeCard() {
 }
 
 async function applyTheme() {
+  if (perfAutoRunning()) return; // the performance auto test is going through the themes
   renderThemeCard();
   if (await setTheme(activeThemeId())) render();
 }
@@ -784,6 +785,11 @@ initPerf(() => {
   // The auto test moves between home and Be Right Back.
   resetIdle();
   set(where === 'brb' ? { signs: 'brb', entered: true } : { signs: null, screen: 'home', entered: true });
+}, {
+  // ...and through every theme, putting the chosen one back afterwards.
+  list: THEMES.map(({ id, label }) => ({ id, label })),
+  set: async (id) => { if (await setTheme(id)) render(); },
+  restore: applyTheme,
 });
 markScreens(stage);
 $('.theme-prev').replaceChildren(...THEMES.map((t) => {

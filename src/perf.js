@@ -20,28 +20,30 @@ const BEAT_MS = 100;
 const IGNORE_GAP_MS = 5000; // longer than this: the app was asleep, not lagging
 const MAX_SLOW_EVENTS = 200;
 
-// Auto test: how much snow the iPad can run smoothly, on home, a few seconds per amount.
-// (An earlier run of every effect on/off showed the snow was the whole cost; lights and
-// floating motion cost nothing measurable, and Be Right Back made no difference.)
-const AUTO_STEP_MS = 15 * 1000;
-const AUTO_SETTLE_MS = 1500; // the screen change itself hitches; measure after it
-const AUTO_CONFIGS = [[], ['snow-75'], ['snow-50'], ['snow-25'], ['snow']];
-const AUTO_SCREENS = ['home'];
-const CONFIG_NAMES = {
-  snow: 'snow off', lights: 'lights off', motion: 'floating off',
-  'snow-75': 'snow at 75%', 'snow-50': 'snow at 50%', 'snow-25': 'snow at 25%',
-};
-const AUTO_STEPS = AUTO_CONFIGS.flatMap((cfg) => AUTO_SCREENS.map((where) => ({ cfg, where })));
+// Auto test: every theme, on home then Be Right Back, a few seconds each.
+// (Earlier runs found the falling particles were the whole cost, about 15 being the most the
+// iPad runs at a steady 60 fps; lights and floating motion cost nothing measurable.)
+const AUTO_STEP_MS = 10 * 1000;
+const AUTO_SETTLE_MS = 2000; // the screen or theme change itself hitches; measure after it
+const AUTO_SCREENS = ['home', 'brb'];
+let AUTO_STEPS = [];
 
 let label = () => '';
 let go = () => {};
+let themes = { list: [], set: async () => {}, restore: () => {} };
 let log = null;     // the running log, or null
 let raf = 0, beat = 0;
 let badge = null, panel = null, closeTimer = 0;
 
-export function initPerf(getLabel, goTo) {
+/**
+ * getLabel: names the screen showing. goTo('home' | 'brb'): moves there.
+ * themeControl: { list: [{ id, label }], set(id): Promise, restore() } for the auto test.
+ */
+export function initPerf(getLabel, goTo, themeControl) {
   label = getLabel;
   go = goTo;
+  themes = themeControl;
+  AUTO_STEPS = themes.list.flatMap((theme) => AUTO_SCREENS.map((where) => ({ theme, where })));
   document.addEventListener('visibilitychange', () => {
     if (!log) return;
     event(document.hidden ? 'app hidden' : 'app visible');
@@ -84,10 +86,11 @@ function runAuto() {
   nextAutoStep();
 }
 
-function nextAutoStep() {
+async function nextAutoStep() {
   const a = log && log.auto;
   if (!a) return;
   if (a.cur) a.results.push(a.cur);
+  a.cur = null;
   a.i++;
   if (a.i >= AUTO_STEPS.length) {
     endAuto();
@@ -95,22 +98,31 @@ function nextAutoStep() {
     openPanel();
     return;
   }
-  const { cfg, where } = AUTO_STEPS[a.i];
-  setEffectsOff(cfg);
+  const { theme, where } = AUTO_STEPS[a.i];
+  badge.textContent = `● AUTO ${a.i + 1}/${AUTO_STEPS.length}${log.marks ? ' · ' + log.marks : ''}`;
+  await themes.set(theme.id);
+  if (!log || log.auto !== a || a.done) return; // stopped meanwhile
   go(where);
-  const flakes = [...document.querySelectorAll('.fx-sprite')].filter((s) => s.getClientRects().length).length;
+  const pieces = [...document.querySelectorAll('.fx-sprite')].filter((s) => s.getClientRects().length).length;
+  const daypart = document.documentElement.dataset.daypart;
   a.cur = {
-    name: `${where === 'brb' ? 'Be right back' : 'home'} · ${cfg.map((id) => CONFIG_NAMES[id]).join(', ') || 'everything on'} (${flakes} flakes)`,
+    name: `${theme.label}${daypart ? ' (' + daypart + ')' : ''} · ${where === 'brb' ? 'Be right back' : 'home'} · ${pieces} falling pieces`,
     from: performance.now() + AUTO_SETTLE_MS, ...newStats(),
   };
-  badge.textContent = `● AUTO ${a.i + 1}/${AUTO_STEPS.length}${log.marks ? ' · ' + log.marks : ''}`;
   a.timer = setTimeout(nextAutoStep, AUTO_STEP_MS);
+}
+
+/** True while the auto test is switching themes, so the app leaves the theme alone. */
+export function perfAutoRunning() {
+  return !!(log && log.auto && !log.auto.done);
 }
 
 // Put things back as they were before the test.
 function endAuto() {
+  log.auto.done = true;
   clearTimeout(log.auto.timer);
   setEffectsOff([]);
+  themes.restore();
   go('home');
 }
 
@@ -156,7 +168,7 @@ function start() {
 }
 
 function stop(why) {
-  if (log.auto && log.auto.i < AUTO_STEPS.length) {
+  if (log.auto && !log.auto.done) {
     event(`auto test stopped early, at step ${log.auto.i + 1}`);
     endAuto();
   }

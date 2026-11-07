@@ -32,9 +32,6 @@
 
 /* Effects switched off from the log panel, for comparing frame rates. */
 html[data-perf-off~="snow"] .fx-particles { display: none; }
-html[data-perf-off~="snow-75"] .fx-sprite:nth-child(4n),
-html[data-perf-off~="snow-50"] .fx-sprite:nth-child(2n),
-html[data-perf-off~="snow-25"] .fx-sprite:not(:nth-child(4n)) { display: none; }
 html[data-perf-off~="lights"] .fx-deco,
 html[data-perf-off~="lights"] .scr-night::before { display: none; }
 html[data-perf-off~="motion"] :is(.candy, .home, .split, .sign-body, .come-in, .pulse) { animation: none !important; }
