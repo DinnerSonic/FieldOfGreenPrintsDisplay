@@ -20,11 +20,17 @@ const BEAT_MS = 100;
 const IGNORE_GAP_MS = 5000; // longer than this: the app was asleep, not lagging
 const MAX_SLOW_EVENTS = 200;
 
-// Auto test: each effect setting, on home → Be Right Back → home, a few seconds each.
-const AUTO_STEP_MS = 10 * 1000;
+// Auto test: how much snow the iPad can run smoothly, on home, a few seconds per amount.
+// (An earlier run of every effect on/off showed the snow was the whole cost; lights and
+// floating motion cost nothing measurable, and Be Right Back made no difference.)
+const AUTO_STEP_MS = 15 * 1000;
 const AUTO_SETTLE_MS = 1500; // the screen change itself hitches; measure after it
-const AUTO_CONFIGS = [[], ['snow'], ['lights'], ['motion'], ['snow', 'lights', 'motion']];
-const AUTO_SCREENS = ['home', 'brb', 'home'];
+const AUTO_CONFIGS = [[], ['snow-75'], ['snow-50'], ['snow-25'], ['snow']];
+const AUTO_SCREENS = ['home'];
+const CONFIG_NAMES = {
+  snow: 'snow off', lights: 'lights off', motion: 'floating off',
+  'snow-75': 'snow at 75%', 'snow-50': 'snow at 50%', 'snow-25': 'snow at 25%',
+};
 const AUTO_STEPS = AUTO_CONFIGS.flatMap((cfg) => AUTO_SCREENS.map((where) => ({ cfg, where })));
 
 let label = () => '';
@@ -92,8 +98,9 @@ function nextAutoStep() {
   const { cfg, where } = AUTO_STEPS[a.i];
   setEffectsOff(cfg);
   go(where);
+  const flakes = [...document.querySelectorAll('.fx-sprite')].filter((s) => s.getClientRects().length).length;
   a.cur = {
-    name: `${where === 'brb' ? 'Be right back' : a.i % 3 ? 'home (after BRB)' : 'home'} · off: ${cfg.join(', ') || 'none'}`,
+    name: `${where === 'brb' ? 'Be right back' : 'home'} · ${cfg.map((id) => CONFIG_NAMES[id]).join(', ') || 'everything on'} (${flakes} flakes)`,
     from: performance.now() + AUTO_SETTLE_MS, ...newStats(),
   };
   badge.textContent = `● AUTO ${a.i + 1}/${AUTO_STEPS.length}${log.marks ? ' · ' + log.marks : ''}`;

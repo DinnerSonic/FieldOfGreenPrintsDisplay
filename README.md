@@ -63,8 +63,8 @@ then deletes it; requests that haven’t uploaded yet are never deleted.
   can stop logging or switch effects off one at a time (snow, lights, floating motion) to compare
   frame rates; effects come back on when the app restarts. Logs stop themselves after 30 minutes
   and the latest one is kept on the iPad until the next one replaces it.
-  **Auto test** (2.5 min) runs a log by itself: home, Be right back, home again, 10 s each, with
-  everything on and then with each effect off, and puts a results table at the top of the log.
+  **Auto test** (1.3 min) runs a log by itself on home with the snow at 100%, 75%, 50%, 25% and
+  off, 15 s each, and puts a results table at the top of the log.
 
 ## Seasonal themes
 
