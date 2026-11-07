@@ -59,8 +59,10 @@ then deletes it; requests that haven’t uploaded yet are never deleted.
   December, Valentine's in February), Halloween, Holiday and Valentine's.
 - Hold **bottom-left** alone 0.5 s → reset to the welcome screen.
 - Hold **top-left** alone 1.5 s → performance log panel (Start logging, Copy log). While logging,
-  tap the `LOG` badge whenever you see lag; hold the corner again to stop. Logs stop themselves
-  after 30 minutes and the latest one is kept on the iPad until the next one replaces it.
+  tap the `LOG` badge whenever you see lag. Holding the corner again reopens the panel, where you
+  can stop logging or switch effects off one at a time (snow, lights, floating motion) to compare
+  frame rates; effects come back on when the app restarts. Logs stop themselves after 30 minutes
+  and the latest one is kept on the iPad until the next one replaces it.
 
 ## Seasonal themes
 

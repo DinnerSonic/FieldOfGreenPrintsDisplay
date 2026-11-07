@@ -1,8 +1,10 @@
 // Performance log, for chasing lag on the iPad. Hidden: hold the top-left corner 1.5 s.
 //
 // Nothing here runs until logging starts. While logging, a small badge shows in the top-left;
-// tap it whenever you SEE lag, to put a mark in the log. Holding the corner again stops logging.
-// The log is autosaved, so it survives switching apps or the page being reloaded by iOS.
+// tap it whenever you SEE lag, to put a mark in the log. Holding the corner again reopens the
+// panel, to stop logging or to switch effects off one at a time (the log keeps running, and its
+// tables split by which effects were off). The log is autosaved, so it survives switching apps
+// or the page being reloaded by iOS.
 //
 // What it can measure: the page's own frame rate (requestAnimationFrame) and how late timers
 // run (the main thread being busy). iOS runs transform animations like the snow separately from
@@ -33,10 +35,24 @@ export function initPerf(getLabel) {
   });
 }
 
-/** The corner was held: stop a running log, otherwise open the panel. */
+/** The corner was held: open the panel. */
 export function perfGesture() {
-  if (log) stop('stopped by hand');
   openPanel();
+}
+
+// Effects that can be switched off for a test (not remembered: a restart turns them back on).
+const EFFECTS = [
+  ['snow', 'Snow / particles'],
+  ['lights', 'Lights + ground'],
+  ['motion', 'Floating + drifting'],
+];
+const off = new Set();
+
+function toggleEffect(id) {
+  if (off.has(id)) off.delete(id); else off.add(id);
+  document.documentElement.dataset.perfOff = [...off].join(' ');
+  if (log) event(`test: ${id} ${off.has(id) ? 'OFF' : 'on'}`);
+  perfScreenChanged();
 }
 
 /** Call after anything that may change the screen. */
@@ -123,12 +139,12 @@ function snapshot(prefix = '') {
   const panels = [...stage.querySelectorAll('.panel')].filter(shown).map(nameOf);
   const fx = document.querySelector('.fx-particles');
   const deco = document.querySelector('.fx-deco');
-  const fxAt = fx && fx.isConnected ? placeOf(fx.parentElement) : 'none';
+  const fxAt = fx && fx.isConnected ? placeOf(fx.parentElement) + (shown(fx) ? '' : ' but switched off') : 'none';
   const parts = [
     `drawn: ${panels.length ? panels.join(', ') : 'no screens'}`,
     `home ${shown(stage.querySelector('.home')) ? 'drawn' : 'hidden'}`,
     `snow/particles on ${fxAt}${fx && fx.isConnected ? ` (${fx.children.length} sprites)` : ''}`,
-    `lights/ground ${deco && deco.isConnected && !deco.hidden ? 'on ' + placeOf(deco.parentElement) : 'off'}`,
+    `lights/ground ${deco && shown(deco) ? 'on ' + placeOf(deco.parentElement) : 'off'}`,
     `camera ${shown(stage.querySelector('#camera')) ? 'open' : 'closed'}`,
     `${document.querySelectorAll('*').length} elements`,
     `${document.querySelectorAll('style').length} style tags`,
@@ -226,7 +242,9 @@ function mark() {
 
 function screenKey() {
   const html = document.documentElement.dataset;
-  return `${html.theme || 'classic'}${html.daypart ? '/' + html.daypart : ''} ${label()}`;
+  return `${html.theme || 'classic'}${html.daypart ? '/' + html.daypart : ''} ${label()}`
+    + (off.size ? ` [off: ${[...off].join(', ')}]` : '')
+    + (panel ? ' +log panel' : '');
 }
 
 function runningAnimations() {
@@ -301,19 +319,25 @@ function closePanel() {
   clearTimeout(closeTimer);
   panel?.remove();
   panel = null;
+  perfScreenChanged(); // time with the panel up is logged separately
 }
 
 function openPanel() {
   closePanel();
+  if (log) save(false);
   const text = savedReport();
   panel = document.createElement('div');
   panel.className = 'perf-panel';
   panel.innerHTML = `<div class="perf-card">
-    <div class="perf-title">Performance log</div>
+    <div class="perf-title">Performance log${log ? ' <span class="perf-live">(logging)</span>' : ''}</div>
     <textarea class="perf-text" readonly></textarea>
     <div class="perf-status"></div>
+    <div class="perf-row perf-effects">
+      <div class="perf-label">Test with effects off:</div>
+      ${EFFECTS.map(([id]) => `<button class="perf-btn perf-toggle" data-effect="${id}"></button>`).join('')}
+    </div>
     <div class="perf-row">
-      <button class="perf-btn" data-perf="start">Start logging</button>
+      <button class="perf-btn" data-perf="start">${log ? 'Stop logging' : 'Start logging'}</button>
       <button class="perf-btn" data-perf="copy">Copy log</button>
       <button class="perf-btn" data-perf="close">Close</button>
     </div>
@@ -321,13 +345,26 @@ function openPanel() {
   const area = panel.querySelector('.perf-text');
   const status = panel.querySelector('.perf-status');
   area.value = text || 'No log saved yet.\n\nStart logging, tap the badge in the top-left whenever you see lag, then hold this corner again to stop.';
+  const showToggles = () => panel.querySelectorAll('[data-effect]').forEach((b) => {
+    const [, name] = EFFECTS.find(([id]) => id === b.dataset.effect);
+    b.textContent = `${name}: ${off.has(b.dataset.effect) ? 'OFF' : 'on'}`;
+    b.classList.toggle('is-off', off.has(b.dataset.effect));
+  });
+  showToggles();
+  panel.querySelectorAll('[data-effect]').forEach((b) => b.addEventListener('click', () => {
+    toggleEffect(b.dataset.effect);
+    showToggles();
+  }));
   panel.querySelector('[data-perf="copy"]').disabled = !text;
-  panel.querySelector('[data-perf="start"]').addEventListener('click', () => { closePanel(); start(); });
+  panel.querySelector('[data-perf="start"]').addEventListener('click', () => {
+    if (log) { stop('stopped by hand'); openPanel(); } else { closePanel(); start(); }
+  });
   panel.querySelector('[data-perf="close"]').addEventListener('click', closePanel);
   panel.querySelector('[data-perf="copy"]').addEventListener('click', async () => {
     status.textContent = (await copy(text, area)) ? 'Copied.' : 'Could not copy: press and hold the text above to select it.';
   });
   document.querySelector('#stage').append(panel);
+  perfScreenChanged();
   // Don't leave it up if a customer finds it by accident.
   closeTimer = setTimeout(closePanel, 120 * 1000);
 }

@@ -24,3 +24,14 @@
   font: inherit; font-weight: 700; font-size: 20px;
 }
 .perf-btn:disabled { opacity: .3; }
+.perf-live { color: #c14275; font-size: 20px; }
+.perf-effects { align-items: center; }
+.perf-label { flex: 0 0 auto; font-weight: 700; font-size: 18px; }
+.perf-toggle { height: 50px; font-size: 17px; background: #e8dfea; color: #2a1a2e; }
+.perf-toggle.is-off { background: #c14275; color: #fff; }
+
+/* Effects switched off from the log panel, for comparing frame rates. */
+html[data-perf-off~="snow"] .fx-particles { display: none; }
+html[data-perf-off~="lights"] .fx-deco,
+html[data-perf-off~="lights"] .scr-night::before { display: none; }
+html[data-perf-off~="motion"] :is(.candy, .home, .split, .sign-body, .come-in, .pulse) { animation: none !important; }
