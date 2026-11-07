@@ -37,12 +37,12 @@ function set(patch) { Object.assign(state, patch); render(); }
 
 function render() {
   const s = state;
-  $$('[data-screen]').forEach((el) => el.classList.toggle('on', el.dataset.screen === s.screen));
+  $$('[data-screen]').forEach((el) => showPanel(el, el.dataset.screen === s.screen));
   const welcomeOn = SHOW_WELCOME && !s.entered;
   stage.classList.toggle('entered', !welcomeOn);
   $('#prideBtn').classList.toggle('on', s.screen === 'home' && !s.signs && !welcomeOn);
-  $('#signsPicker').classList.toggle('on', s.signs === 'picker');
-  $$('[data-sign]').forEach((el) => el.classList.toggle('on', el.dataset.sign === s.signs));
+  showPanel($('#signsPicker'), s.signs === 'picker');
+  $$('[data-sign]').forEach((el) => showPanel(el, el.dataset.sign === s.signs));
   $('#camera').classList.toggle('on', s.cameraOpen);
   $('#phone').classList.toggle('on', s.phoneOpen);
   renderSelection();
@@ -55,6 +55,23 @@ function render() {
   perfScreenChanged();
 }
 let lastSigns = null;
+
+// Screens that aren't showing are taken out of the page once they've faded out, so they don't
+// keep their graphics memory and animations running behind the screen that is.
+const HIDE_AFTER_MS = 450; // longer than the slowest fade
+function showPanel(el, on) {
+  if (on) {
+    clearTimeout(el._hideTimer);
+    el._hideTimer = null;
+    if (el.hidden) { el.hidden = false; void el.offsetWidth; } // so the fade-in still runs
+    el.classList.add('on');
+  } else if (el.classList.contains('on')) {
+    el.classList.remove('on');
+    el._hideTimer = setTimeout(() => { el._hideTimer = null; el.hidden = true; }, HIDE_AFTER_MS);
+  } else if (!el._hideTimer) {
+    el.hidden = true;
+  }
+}
 
 // ─────────── Stage fit ───────────
 function isStandalone() {
