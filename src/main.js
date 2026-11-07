@@ -780,6 +780,10 @@ initPerf(() => {
   const s = state;
   const screen = s.signs ? 'sign:' + s.signs : (SHOW_WELCOME && !s.entered ? 'welcome' : s.screen);
   return screen + (s.cameraOpen ? '+camera' : '') + (s.phoneOpen ? '+phone' : '');
+}, (where) => {
+  // The auto test moves between home and Be Right Back.
+  resetIdle();
+  set(where === 'brb' ? { signs: 'brb', entered: true } : { signs: null, screen: 'home', entered: true });
 });
 markScreens(stage);
 $('.theme-prev').replaceChildren(...THEMES.map((t) => {

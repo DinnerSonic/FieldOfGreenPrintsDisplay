@@ -20,13 +20,22 @@ const BEAT_MS = 100;
 const IGNORE_GAP_MS = 5000; // longer than this: the app was asleep, not lagging
 const MAX_SLOW_EVENTS = 200;
 
+// Auto test: each effect setting, on home → Be Right Back → home, a few seconds each.
+const AUTO_STEP_MS = 10 * 1000;
+const AUTO_SETTLE_MS = 1500; // the screen change itself hitches; measure after it
+const AUTO_CONFIGS = [[], ['snow'], ['lights'], ['motion'], ['snow', 'lights', 'motion']];
+const AUTO_SCREENS = ['home', 'brb', 'home'];
+const AUTO_STEPS = AUTO_CONFIGS.flatMap((cfg) => AUTO_SCREENS.map((where) => ({ cfg, where })));
+
 let label = () => '';
+let go = () => {};
 let log = null;     // the running log, or null
 let raf = 0, beat = 0;
 let badge = null, panel = null, closeTimer = 0;
 
-export function initPerf(getLabel) {
+export function initPerf(getLabel, goTo) {
   label = getLabel;
+  go = goTo;
   document.addEventListener('visibilitychange', () => {
     if (!log) return;
     event(document.hidden ? 'app hidden' : 'app visible');
@@ -49,10 +58,59 @@ const EFFECTS = [
 const off = new Set();
 
 function toggleEffect(id) {
-  if (off.has(id)) off.delete(id); else off.add(id);
-  document.documentElement.dataset.perfOff = [...off].join(' ');
-  if (log) event(`test: ${id} ${off.has(id) ? 'OFF' : 'on'}`);
+  setEffectsOff(off.has(id) ? [...off].filter((x) => x !== id) : [...off, id]);
+}
+
+function setEffectsOff(ids) {
+  const before = [...off].join(', ');
+  off.clear();
+  ids.forEach((id) => off.add(id));
+  document.documentElement.dataset.perfOff = ids.join(' ');
+  if (log && ids.join(', ') !== before) event(`test: effects off: ${ids.join(', ') || 'none'}`);
   perfScreenChanged();
+}
+
+// ─────────── Auto test ───────────
+function runAuto() {
+  start();
+  log.auto = { i: -1, cur: null, results: [], timer: 0 };
+  event(`auto test: ${AUTO_STEPS.length} steps of ${AUTO_STEP_MS / 1000} s`);
+  nextAutoStep();
+}
+
+function nextAutoStep() {
+  const a = log && log.auto;
+  if (!a) return;
+  if (a.cur) a.results.push(a.cur);
+  a.i++;
+  if (a.i >= AUTO_STEPS.length) {
+    endAuto();
+    stop('auto test finished');
+    openPanel();
+    return;
+  }
+  const { cfg, where } = AUTO_STEPS[a.i];
+  setEffectsOff(cfg);
+  go(where);
+  a.cur = {
+    name: `${where === 'brb' ? 'Be right back' : a.i % 3 ? 'home (after BRB)' : 'home'} · off: ${cfg.join(', ') || 'none'}`,
+    from: performance.now() + AUTO_SETTLE_MS, ...newStats(),
+  };
+  badge.textContent = `● AUTO ${a.i + 1}/${AUTO_STEPS.length}${log.marks ? ' · ' + log.marks : ''}`;
+  a.timer = setTimeout(nextAutoStep, AUTO_STEP_MS);
+}
+
+// Put things back as they were before the test.
+function endAuto() {
+  clearTimeout(log.auto.timer);
+  setEffectsOff([]);
+  go('home');
+}
+
+// The step being measured right now, if any.
+function autoStep(now) {
+  const cur = log.auto && log.auto.cur;
+  return cur && now >= cur.from ? cur : null;
 }
 
 /** Call after anything that may change the screen. */
@@ -91,6 +149,10 @@ function start() {
 }
 
 function stop(why) {
+  if (log.auto && log.auto.i < AUTO_STEPS.length) {
+    event(`auto test stopped early, at step ${log.auto.i + 1}`);
+    endAuto();
+  }
   cancelAnimationFrame(raf);
   clearInterval(beat);
   event(why);
@@ -181,7 +243,8 @@ function frame(now) {
   const gap = log.lastFrame ? now - log.lastFrame : 0;
   log.lastFrame = now;
   if (!gap || gap > IGNORE_GAP_MS) return;
-  for (const s of [segment(), log.tick]) {
+  for (const s of [segment(), log.tick, autoStep(now)]) {
+    if (!s) continue;
     s.ms += gap;
     s.frames++;
     if (gap > 25) s.o25++;
@@ -203,6 +266,8 @@ function heartbeat() {
   if (late >= 50 && late < IGNORE_GAP_MS) {
     segment().stalls++;
     log.tick.stalls++;
+    const step = autoStep(now);
+    if (step) step.stalls++;
     if (late >= 100) slowEvent(`main thread busy ${Math.round(late)} ms`);
   }
   if (now >= log.nextTick) {
@@ -282,9 +347,17 @@ function report(finished) {
     ...log.env,
     `Lag marks: ${log.marks}`,
     '',
+  ];
+  const auto = log.auto ? [...log.auto.results, ...(log.auto.cur && !log.auto.results.includes(log.auto.cur) ? [log.auto.cur] : [])] : [];
+  if (auto.length) {
+    lines.push(`AUTO TEST (${AUTO_STEP_MS / 1000} s per step, measured after the first ${AUTO_SETTLE_MS / 1000} s)`, `${head}  step`);
+    for (const s of auto) lines.push(`${row(s)}  ${s.name}`);
+    lines.push('');
+  }
+  lines.push(
     'BY SCREEN (frame counts; worst in ms)',
     `${head}   time  anims elems  screen`,
-  ];
+  );
   for (const [key, s] of log.segments) {
     lines.push(`${row(s)} ${pad(clock(s.ms), 6)} ${pad(s.anims ?? '-', 6)} ${pad(s.elements ?? '-', 5)}  ${key}`);
   }
@@ -337,7 +410,8 @@ function openPanel() {
       ${EFFECTS.map(([id]) => `<button class="perf-btn perf-toggle" data-effect="${id}"></button>`).join('')}
     </div>
     <div class="perf-row">
-      <button class="perf-btn" data-perf="start">${log ? 'Stop logging' : 'Start logging'}</button>
+      <button class="perf-btn" data-perf="start">${log ? (log.auto ? 'Stop auto test' : 'Stop logging') : 'Start logging'}</button>
+      <button class="perf-btn" data-perf="auto">Auto test (${Math.round(AUTO_STEPS.length * AUTO_STEP_MS / 1000 / 60 * 10) / 10} min)</button>
       <button class="perf-btn" data-perf="copy">Copy log</button>
       <button class="perf-btn" data-perf="close">Close</button>
     </div>
@@ -356,6 +430,9 @@ function openPanel() {
     showToggles();
   }));
   panel.querySelector('[data-perf="copy"]').disabled = !text;
+  const autoBtn = panel.querySelector('[data-perf="auto"]');
+  autoBtn.disabled = !!log;
+  autoBtn.addEventListener('click', () => { closePanel(); runAuto(); });
   panel.querySelector('[data-perf="start"]').addEventListener('click', () => {
     if (log) { stop('stopped by hand'); openPanel(); } else { closePanel(); start(); }
   });
