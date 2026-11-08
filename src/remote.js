@@ -14,8 +14,13 @@ const DONE_KEY = 'fogp_remote_done'; // the last command run, kept across a relo
  * status(): what to report. run(cmd): carries out a command, returns a short result
  * (or throws). Commands look like { id, do: 'go', to: 'home' }.
  */
+// A copy running on a development computer must not pose as the kiosk (or upload logs) on the
+// real script; it can still talk to a local test script.
+const isLocal = (host) => /^(localhost|127\.0\.0\.1|\[::1\])$/.test(host);
+const enabled = () => !!APPS_SCRIPT_URL && (!isLocal(location.hostname) || isLocal(new URL(APPS_SCRIPT_URL).hostname));
+
 export function startRemote({ status, run }) {
-  if (!APPS_SCRIPT_URL) return;
+  if (!enabled()) return;
   let last = readDone();
   let fast = false, busy = false, timer = 0;
 
@@ -46,7 +51,7 @@ export function startRemote({ status, run }) {
 }
 
 /** Save a performance log to the Drive folder the control page reads. */
-export const uploadLog = (name, text) => postToScript({ type: 'kiosk-log', name, text });
+export const uploadLog = (name, text) => (enabled() ? postToScript({ type: 'kiosk-log', name, text }) : Promise.resolve());
 
 function readDone() {
   try { return JSON.parse(localStorage.getItem(DONE_KEY) || 'null'); } catch (e) { return null; }
