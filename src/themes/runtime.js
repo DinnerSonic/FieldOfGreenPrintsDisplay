@@ -103,6 +103,13 @@ export function placeDecorations(state, stage) {
   else if (group === 'picker') target = stage.querySelector('#signsPicker');
   else if (group === 'night' || group === 'day') target = state.signs ? stage.querySelector(`[data-sign="${state.signs}"]`) : stage.querySelector('#thanks');
 
+  // A fresh set of particles for each new screen: on the iPad, a set that has been running a
+  // while can start to judder, and rebuilding it clears that. (A just-built set is kept.)
+  if (target !== fx.at) {
+    if (!fx.fresh) refreshParticles();
+    fx.fresh = false;
+    fx.at = target;
+  }
   if (!target) { fx.deco.remove(); fx.particles.remove(); return; }
   fx.deco.hidden = group === 'picker';
   fx.deco.classList.toggle('no-garland', group === 'day');
@@ -122,6 +129,13 @@ function removeFx() {
   fx.particles.remove();
   fx.style.remove();
   fx = null;
+}
+
+// Swap the particles for a newly built set (placeDecorations puts it in place).
+function refreshParticles() {
+  fx.particles.remove();
+  fx.style.remove();
+  Object.assign(fx, buildParticles(current.cfg));
 }
 
 // ─────────── Debug: particle style (from the control page; not remembered) ───────────
@@ -168,7 +182,10 @@ function buildFx(cfg) {
   deco.className = 'fx-deco';
   if (cfg.garland) deco.insertAdjacentHTML('beforeend', `<div class="fx-garland">${garlandSvg(cfg.garland)}</div>`);
   if (cfg.ground) deco.insertAdjacentHTML('beforeend', `<div class="fx-ground">${GROUNDS[cfg.ground]}</div>`);
+  return { deco, ...buildParticles(cfg), at: null, fresh: true };
+}
 
+function buildParticles(cfg) {
   const particles = document.createElement('div');
   particles.className = 'fx-particles';
   const style = document.createElement('style');
@@ -202,7 +219,7 @@ function buildFx(cfg) {
   });
   style.textContent = css;
   document.head.append(style);
-  return { deco, particles, style };
+  return { particles, style };
 }
 
 // Bulbs or hearts hanging from a sagging string. Static shapes, plus two pre-drawn glow

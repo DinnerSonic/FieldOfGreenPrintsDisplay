@@ -287,6 +287,15 @@ img { -webkit-user-drag: none; user-drag: none; pointer-events: none; }
   font-family: ui-monospace, monospace; font-size: 11px; letter-spacing: .02em; color: var(--body); opacity: .22;
 }
 
+/* Note shown when a command arrives from the remote control page. */
+.remote-toast {
+  position: absolute; top: 12px; left: 50%; z-index: 97; transform: translateX(-50%);
+  padding: 8px 16px; border-radius: 12px; background: rgba(42,26,46,.82); color: #fff;
+  font: 600 15px/1.2 system-ui, sans-serif; white-space: nowrap; pointer-events: none;
+  opacity: 0; transition: opacity 250ms ease;
+}
+.remote-toast.show { opacity: 1; }
+
 /* ── typing panel (shown while the on-screen keyboard is up) ── */
 .field input[readonly], .field textarea[readonly] { cursor: pointer; }
 .editor {

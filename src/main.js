@@ -842,6 +842,27 @@ async function runRemote(cmd) {
   throw new Error('unknown command ' + cmd.do);
 }
 
+// A small note at the top of the screen for each command, so you can see it arrive.
+let toastEl = null, toastTimer = 0;
+function remoteToast(text) {
+  if (!toastEl) { toastEl = el('div', 'remote-toast'); stage.append(toastEl); }
+  toastEl.textContent = text;
+  toastEl.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2500);
+}
+
+async function runRemoteWithToast(cmd) {
+  try {
+    const result = await runRemote(cmd);
+    remoteToast('Remote · ' + result);
+    return result;
+  } catch (e) {
+    remoteToast('Remote · failed: ' + ((e && e.message) || e));
+    throw e;
+  }
+}
+
 startRemote({
   status: () => ({
     screen: screenLabel(),
@@ -854,7 +875,7 @@ startRemote({
     particles: fxDebugLabel() || 'normal',
     upFor: Math.round(performance.now() / 1000),
   }),
-  run: runRemote,
+  run: runRemoteWithToast,
 });
 
 markScreens(stage);
