@@ -62,7 +62,7 @@
       </div>
       <form id="ctCount" class="ct-buttons">
         <span class="ct-label">How many:</span>
-        <input id="ctCountValue" type="number" min="0" max="60" step="1" value="15" class="ct-num">
+        <input id="ctCountValue" type="number" min="0" max="200" step="1" value="32" class="ct-num">
         <button type="submit">Set</button>
         <button type="button" data-count-default>Theme’s own</button>
       </form>
@@ -72,10 +72,14 @@
     <section class="ct-card">
       <h2>Performance</h2>
       <div class="ct-buttons">
-        <button data-perf="auto">Run auto test</button>
         <button data-perf="start">Start log</button>
+        <button data-perf="mark">Mark lag now</button>
         <button data-perf="stop">Stop log</button>
         <button data-perf="upload">Send saved log</button>
+      </div>
+      <div class="ct-buttons">
+        <button data-perf="auto">Auto test: themes (1.3 min)</button>
+        <button data-perf="auto-pieces">Auto test: 32 to 128 pieces (2 min)</button>
       </div>
       <div class="ct-buttons">
         <button data-numbers="1">Number the falling pieces</button>

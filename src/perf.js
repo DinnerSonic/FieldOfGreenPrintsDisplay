@@ -1,15 +1,12 @@
-// Performance log, for chasing lag on the iPad. Hidden: hold the top-left corner 1.5 s.
-//
-// Nothing here runs until logging starts. While logging, a small badge shows in the top-left;
-// tap it whenever you SEE lag, to put a mark in the log. Holding the corner again reopens the
-// panel, to stop logging or to switch effects off one at a time (the log keeps running, and its
-// tables split by which effects were off). The log is autosaved, so it survives switching apps
-// or the page being reloaded by iOS.
+// Performance log, for chasing lag on the iPad. Run from the control page (control.html):
+// start/stop a log, mark the moment you see lag, switch effects off, or run an auto test.
+// Nothing here runs until logging starts, and nothing shows on the kiosk's screen.
+// The log is autosaved, so it survives switching apps or the page being reloaded by iOS, and
+// every finished log is uploaded for the control page.
 //
 // What it can measure: the page's own frame rate (requestAnimationFrame) and how late timers
 // run (the main thread being busy). iOS runs transform animations like the snow separately from
-// the page, so they can stutter while these numbers look fine. Marks over clean numbers are a
-// result too: they point at the graphics side rather than the page's code.
+// the page, so they can stutter while these numbers look fine.
 
 import './perf.css';
 
@@ -20,41 +17,42 @@ const BEAT_MS = 100;
 const IGNORE_GAP_MS = 5000; // longer than this: the app was asleep, not lagging
 const MAX_SLOW_EVENTS = 200;
 
-// Auto test: every theme, on home then Be Right Back, a few seconds each.
-// (Earlier runs found the falling particles were the whole cost, about 15 being the most the
-// iPad runs at a steady 60 fps; lights and floating motion cost nothing measurable.)
+// Auto tests, a few seconds per step:
+//   themes: every theme, on home then Be Right Back.
+//   pieces: each theme with falling pieces, on home, at more and more pieces.
+// (Earlier runs found the falling pieces are the main cost; lights and floating motion cost
+// nothing measurable.)
 const AUTO_STEP_MS = 10 * 1000;
 const AUTO_SETTLE_MS = 2000; // the screen or theme change itself hitches; measure after it
-const AUTO_SCREENS = ['home', 'brb'];
-let AUTO_STEPS = [];
+const PIECE_COUNTS = [32, 64, 96, 128];
+let AUTO_TESTS = { themes: [], pieces: [] };
 
 let label = () => '';
 let go = () => {};
-let themes = { list: [], set: async () => {}, restore: () => {} };
+let themes = { list: [], set: async () => {}, restore: () => {}, pieces: () => {} };
 let log = null;     // the running log, or null
 let raf = 0, beat = 0;
-let badge = null, panel = null, closeTimer = 0;
 
 /**
  * getLabel: names the screen showing. goTo('home' | 'brb'): moves there.
- * themeControl: { list: [{ id, label }], set(id): Promise, restore() } for the auto test.
+ * themeControl, for the auto tests: { list: [{ id, label, particles }], set(id): Promise,
+ * restore(), pieces(count | null) }.
  */
 export function initPerf(getLabel, goTo, themeControl) {
   label = getLabel;
   go = goTo;
   themes = themeControl;
-  AUTO_STEPS = themes.list.flatMap((theme) => AUTO_SCREENS.map((where) => ({ theme, where })));
+  AUTO_TESTS = {
+    themes: themes.list.flatMap((theme) => ['home', 'brb'].map((where) => ({ theme, where }))),
+    pieces: themes.list.filter((t) => t.particles)
+      .flatMap((theme) => PIECE_COUNTS.map((count) => ({ theme, where: 'home', count }))),
+  };
   document.addEventListener('visibilitychange', () => {
     if (!log) return;
     event(document.hidden ? 'app hidden' : 'app visible');
     log.lastFrame = 0;
     log.lastBeat = 0;
   });
-}
-
-/** The corner was held: open the panel. */
-export function perfGesture() {
-  openPanel();
 }
 
 // Where finished logs are sent (the remote control's Drive folder), if anywhere.
@@ -65,13 +63,22 @@ function upload(name, text) {
   if (uploader && text) Promise.resolve(uploader(name, text)).catch(() => {});
 }
 
-/** Commands from the control page: start | stop | auto | upload. Returns a short result. */
+/** Commands from the control page: start | stop | mark | auto | auto-pieces | upload. */
 export function perfCommand(action) {
-  if (action === 'start' || action === 'auto') {
+  if (action === 'start') {
     if (log) return 'already logging';
-    closePanel();
-    if (action === 'auto') runAuto(); else start();
-    return action === 'auto' ? 'auto test started' : 'logging started';
+    start();
+    return 'logging started';
+  }
+  if (action === 'auto' || action === 'auto-pieces') {
+    if (log) return 'already logging';
+    runAuto(action === 'auto' ? 'themes' : 'pieces');
+    return `auto test (${log.auto.kind}) started`;
+  }
+  if (action === 'mark') {
+    if (!log) return 'not logging';
+    mark();
+    return `lag marked (${log.marks})`;
   }
   if (action === 'stop') {
     if (!log) return 'not logging';
@@ -92,7 +99,7 @@ export function perfCommand(action) {
 export function perfState() {
   return {
     logging: !!log,
-    auto: log && log.auto && !log.auto.done ? `${log.auto.i + 1}/${AUTO_STEPS.length}` : null,
+    auto: log && log.auto && !log.auto.done ? `${log.auto.kind} ${log.auto.i + 1}/${log.auto.steps.length}` : null,
     marks: log ? log.marks : 0,
     effectsOff: [...off],
     numbers: numbersOn(),
@@ -100,8 +107,7 @@ export function perfState() {
 }
 
 export function perfSetEffects(ids) {
-  const known = EFFECTS.map(([id]) => id);
-  setEffectsOff((Array.isArray(ids) ? ids : []).filter((id) => known.includes(id)));
+  setEffectsOff((Array.isArray(ids) ? ids : []).filter((id) => EFFECTS.includes(id)));
   return `effects off: ${[...off].join(', ') || 'none'}`;
 }
 
@@ -114,16 +120,8 @@ export function perfSetNumbers(on) {
 }
 
 // Effects that can be switched off for a test (not remembered: a restart turns them back on).
-const EFFECTS = [
-  ['snow', 'Snow'],
-  ['lights', 'Lights'],
-  ['motion', 'Floating'],
-];
+const EFFECTS = ['snow', 'lights', 'motion'];
 const off = new Set();
-
-function toggleEffect(id) {
-  setEffectsOff(off.has(id) ? [...off].filter((x) => x !== id) : [...off, id]);
-}
 
 function setEffectsOff(ids) {
   const before = [...off].join(', ');
@@ -135,10 +133,10 @@ function setEffectsOff(ids) {
 }
 
 // ─────────── Auto test ───────────
-function runAuto() {
+function runAuto(kind) {
   start();
-  log.auto = { i: -1, cur: null, results: [], timer: 0 };
-  event(`auto test: ${AUTO_STEPS.length} steps of ${AUTO_STEP_MS / 1000} s`);
+  log.auto = { kind, steps: AUTO_TESTS[kind], i: -1, cur: null, results: [], timer: 0 };
+  event(`auto test (${kind}): ${log.auto.steps.length} steps of ${AUTO_STEP_MS / 1000} s`);
   nextAutoStep();
 }
 
@@ -148,16 +146,15 @@ async function nextAutoStep() {
   if (a.cur) a.results.push(a.cur);
   a.cur = null;
   a.i++;
-  if (a.i >= AUTO_STEPS.length) {
+  if (a.i >= a.steps.length) {
     endAuto();
     stop('auto test finished');
-    openPanel();
     return;
   }
-  const { theme, where } = AUTO_STEPS[a.i];
-  badge.textContent = `● AUTO ${a.i + 1}/${AUTO_STEPS.length}${log.marks ? ' · ' + log.marks : ''}`;
+  const { theme, where, count } = a.steps[a.i];
   await themes.set(theme.id);
   if (!log || log.auto !== a || a.done) return; // stopped meanwhile
+  if (count != null) themes.pieces(count);
   go(where);
   const pieces = [...document.querySelectorAll('.fx-sprite')].filter((s) => s.getClientRects().length).length;
   const daypart = document.documentElement.dataset.daypart;
@@ -178,6 +175,7 @@ function endAuto() {
   log.auto.done = true;
   clearTimeout(log.auto.timer);
   setEffectsOff([]);
+  if (log.auto.kind === 'pieces') themes.pieces(null);
   themes.restore();
   go('home');
 }
@@ -219,7 +217,6 @@ function start() {
   countLater(log.screen);
   raf = requestAnimationFrame(frame);
   beat = setInterval(heartbeat, BEAT_MS);
-  showBadge();
   save(false);
 }
 
@@ -232,10 +229,8 @@ function stop(why) {
   clearInterval(beat);
   event(why);
   save(true);
-  upload(log.auto ? 'auto test' : 'log', savedReport());
+  upload(log.auto ? `auto test (${log.auto.kind})` : 'log', savedReport());
   log = null;
-  badge?.remove();
-  badge = null;
 }
 
 // Once a screen has settled, note how much is running on it, and what's in the page.
@@ -377,7 +372,6 @@ function mark() {
   const rate = ms ? (gaps.length * 1000 / ms).toFixed(1) : '-';
   log.marks++;
   event(`*** LAG SEEN *** last 3 s: ${rate} fps, worst frame ${Math.round(Math.max(0, ...gaps))} ms`);
-  badge.textContent = `● LOG · ${log.marks}`;
   save(false);
 }
 
@@ -385,8 +379,7 @@ function screenKey() {
   const html = document.documentElement.dataset;
   return `${html.theme || 'classic'}${html.daypart ? '/' + html.daypart : ''} ${label()}`
     + (off.size ? ` [off: ${[...off].join(', ')}]` : '')
-    + (html.fxDebug ? ` [${html.fxDebug}]` : '')
-    + (panel ? ' +log panel' : '');
+    + (html.fxDebug ? ` [${html.fxDebug}]` : '');
 }
 
 function runningAnimations() {
@@ -427,7 +420,7 @@ function report(finished) {
   ];
   const auto = log.auto ? [...log.auto.results, ...(log.auto.cur && !log.auto.results.includes(log.auto.cur) ? [log.auto.cur] : [])] : [];
   if (auto.length) {
-    lines.push(`AUTO TEST (${AUTO_STEP_MS / 1000} s per step, measured after the first ${AUTO_SETTLE_MS / 1000} s)`, `${head}  step`);
+    lines.push(`AUTO TEST: ${log.auto.kind} (${AUTO_STEP_MS / 1000} s per step, measured after the first ${AUTO_SETTLE_MS / 1000} s)`, `${head}  step`);
     for (const s of auto) lines.push(`${row(s)}  ${s.name}`);
     lines.push('');
   }
@@ -451,93 +444,4 @@ function save(finished) {
 
 function savedReport() {
   try { return localStorage.getItem(STORE_KEY) || ''; } catch (e) { return ''; }
-}
-
-// ─────────── Badge + panel ───────────
-function showBadge() {
-  let downAt = 0;
-  badge = document.createElement('button');
-  badge.className = 'perf-badge';
-  badge.textContent = '● LOG';
-  badge.addEventListener('pointerdown', () => { downAt = Date.now(); });
-  // A long press is the corner gesture, not a mark.
-  badge.addEventListener('click', () => { if (log && Date.now() - downAt < 600) mark(); });
-  document.querySelector('#stage').append(badge);
-}
-
-function closePanel() {
-  clearTimeout(closeTimer);
-  panel?.remove();
-  panel = null;
-  perfScreenChanged(); // time with the panel up is logged separately
-}
-
-function openPanel() {
-  closePanel();
-  if (log) save(false);
-  const text = savedReport();
-  panel = document.createElement('div');
-  panel.className = 'perf-panel';
-  panel.innerHTML = `<div class="perf-card">
-    <div class="perf-title">Performance log${log ? ' <span class="perf-live">(logging)</span>' : ''}</div>
-    <textarea class="perf-text" readonly></textarea>
-    <div class="perf-status"></div>
-    <div class="perf-row perf-effects">
-      <div class="perf-label">Test with effects off:</div>
-      ${EFFECTS.map(([id]) => `<button class="perf-btn perf-toggle" data-effect="${id}"></button>`).join('')}
-      <button class="perf-btn perf-toggle" data-perf="numbers"></button>
-    </div>
-    <div class="perf-row">
-      <button class="perf-btn" data-perf="start">${log ? (log.auto ? 'Stop auto test' : 'Stop logging') : 'Start logging'}</button>
-      <button class="perf-btn" data-perf="auto">Auto test (${Math.round(AUTO_STEPS.length * AUTO_STEP_MS / 1000 / 60 * 10) / 10} min)</button>
-      <button class="perf-btn" data-perf="copy">Copy log</button>
-      <button class="perf-btn" data-perf="close">Close</button>
-    </div>
-  </div>`;
-  const area = panel.querySelector('.perf-text');
-  const status = panel.querySelector('.perf-status');
-  area.value = text || 'No log saved yet.\n\nStart logging, tap the badge in the top-left whenever you see lag, then hold this corner again to stop.';
-  const showToggles = () => panel.querySelectorAll('[data-effect]').forEach((b) => {
-    const [, name] = EFFECTS.find(([id]) => id === b.dataset.effect);
-    b.textContent = `${name}: ${off.has(b.dataset.effect) ? 'OFF' : 'on'}`;
-    b.classList.toggle('is-off', off.has(b.dataset.effect));
-  });
-  const numbersBtn = panel.querySelector('[data-perf="numbers"]');
-  const showNumbers = () => {
-    numbersBtn.textContent = `Numbers: ${numbersOn() ? 'ON' : 'off'}`;
-    numbersBtn.classList.toggle('is-off', numbersOn());
-  };
-  showToggles();
-  showNumbers();
-  panel.querySelectorAll('[data-effect]').forEach((b) => b.addEventListener('click', () => {
-    toggleEffect(b.dataset.effect);
-    showToggles();
-  }));
-  numbersBtn.addEventListener('click', () => { perfSetNumbers(!numbersOn()); showNumbers(); });
-  panel.querySelector('[data-perf="copy"]').disabled = !text;
-  const autoBtn = panel.querySelector('[data-perf="auto"]');
-  autoBtn.disabled = !!log;
-  autoBtn.addEventListener('click', () => { closePanel(); runAuto(); });
-  panel.querySelector('[data-perf="start"]').addEventListener('click', () => {
-    if (log) { stop('stopped by hand'); openPanel(); } else { closePanel(); start(); }
-  });
-  panel.querySelector('[data-perf="close"]').addEventListener('click', closePanel);
-  panel.querySelector('[data-perf="copy"]').addEventListener('click', async () => {
-    status.textContent = (await copy(text, area)) ? 'Copied.' : 'Could not copy: press and hold the text above to select it.';
-  });
-  document.querySelector('#stage').append(panel);
-  perfScreenChanged();
-  // Don't leave it up if a customer finds it by accident.
-  closeTimer = setTimeout(closePanel, 120 * 1000);
-}
-
-async function copy(text, area) {
-  try {
-    await navigator.clipboard.writeText(text);
-    return true;
-  } catch (e) {
-    area.focus();
-    area.setSelectionRange(0, text.length);
-    try { return document.execCommand('copy'); } catch (e2) { return false; }
-  }
 }

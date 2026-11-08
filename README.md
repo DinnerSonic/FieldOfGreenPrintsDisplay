@@ -60,23 +60,25 @@ then deletes it; requests that haven’t uploaded yet are never deleted.
   **Theme** cycles Classic (the default), Auto (Halloween in October, Holiday in November and
   December, Valentine's in February), Halloween, Holiday and Valentine's.
 - Hold **bottom-left** alone 0.5 s → reset to the welcome screen.
-- Hold **top-left** alone 1.5 s → performance log panel (Start logging, Copy log). While logging,
-  tap the `LOG` badge whenever you see lag. Holding the corner again reopens the panel, where you
-  can stop logging or switch effects off one at a time (snow, lights, floating motion) to compare
-  frame rates; effects come back on when the app restarts. Logs stop themselves after 30 minutes
-  and the latest one is kept on the iPad until the next one replaces it.
-  **Auto test** (1.3 min) runs a log by itself through every theme, on home then Be right back,
-  10 s each, puts the chosen theme back, and puts a results table at the top of the log.
-  **Numbers** labels each falling piece (S1…, M1…, L1… by size) to point out which ones judder.
-
 ## Remote control
 
 `control.html` (e.g. <https://dinnersonic.github.io/FieldOfGreenPrintsDisplay/control.html>)
-shows what the kiosk is doing and lets you switch screens and themes, reload the app, run
-performance logs and turn on the numbered pieces from your computer. Commands go through the
-Apps Script, so both just need internet; they arrive within a few seconds while the page is in
-use. Every finished performance log is uploaded and listed there. It needs a password set in
-the Apps Script: see "Remote control" in `apps-script/README.md`.
+shows what the kiosk is doing and lets you switch screens and themes and reload the app from your
+computer. Commands go through the Apps Script, so both just need internet; they arrive within a
+few seconds while the page is in use, and the kiosk shows a small note at the top for each one.
+It needs a password set in the Apps Script: see "Remote control" in `apps-script/README.md`.
+
+Debug tools, all on the control page (nothing on the kiosk's screen):
+
+- **Performance log:** Start log, **Mark lag now** whenever you see lag on the iPad, Stop log.
+  Logs stop themselves after 30 minutes. Every finished log is uploaded and listed on the page.
+- **Auto tests:** *themes* (1.3 min) goes through every theme on home then Be right back;
+  *32 to 128 pieces* (2 min) runs each seasonal theme on home with 32, 64, 96 and 128 falling
+  pieces. Both put everything back afterwards and put a results table at the top of the log.
+- **Falling pieces (test):** normal / smooth / straight motion, and any number of pieces
+  (split evenly across small, medium and large) until the app reloads.
+- Switch effects off (snow, lights, floating), and **Number the falling pieces** (S1…, M1…,
+  L1… by size) to point out particular ones.
 
 ## Seasonal themes
 

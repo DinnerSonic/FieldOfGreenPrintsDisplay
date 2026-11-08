@@ -9,9 +9,9 @@ export default {
   garland: { shape: 'heart', colors: ['#ff3b5c', '#ffb3cf', '#ffffff', '#ff6fa3'] },
   ground: null,
   particles: [
-    { sprites: [heart(0.9, '#ffb3cf'), heart(0.8, '#ffffff')], size: 20, count: 7, dir: 'up', speed: 44, drift: 16 },
-    { sprites: [heart(1.2, '#ff6fa3'), heart(1.1, '#ff3b5c')], size: 26, count: 5, dir: 'up', speed: 44, drift: -20 },
-    { sprites: [heart(1.6, '#ffb3cf')], size: 34, count: 3, dir: 'up', speed: 44, drift: 24 },
+    { sprites: [heart(0.9, '#ffb3cf'), heart(0.8, '#ffffff')], size: 20, count: 11, dir: 'up', speed: 44, drift: 16 },
+    { sprites: [heart(1.2, '#ff6fa3'), heart(1.1, '#ff3b5c')], size: 26, count: 11, dir: 'up', speed: 44, drift: -20 },
+    { sprites: [heart(1.6, '#ffb3cf')], size: 34, count: 10, dir: 'up', speed: 44, drift: 24 },
   ],
   // Bottom strip: each background's bottom colour (no ground decoration).
   frame: { home: '#7a0f3a', night: '#6a1548', day: '#fff3f8', picker: '#7a0f3a', sub: '#fff0f5' },

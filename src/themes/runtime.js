@@ -11,8 +11,8 @@
 //   ground:    'snowbank' | 'fog' | null                          – along the bottom of home, night, day screens
 //   particles: [{ sprites: [svg shape centred on 0,0, ...], size, count, dir: 'down' | 'up', speed, drift }]
 //              (size = sprite box in px, speed = px per second, drift = sideways sway in px)
-//              Keep the total count across layers to about 15: each piece is its own moving layer,
-//              and measured on the iPad, 14 run at a steady 60 fps while 29 already drop frames.
+//              Each piece is its own moving layer. With the set rebuilt on every screen change,
+//              32 run smoothly on the iPad (the control page's "pieces" auto test goes higher).
 //   frame:     { home, picker, night, day, sub }  – colour for the strip iOS keeps at the bottom
 //   daypart:   optional { nightFrom: 18 } – evening switch. Sets <html data-daypart="day|night">
 //              so the theme's CSS can change with the clock; subTone and frame may then be
@@ -147,7 +147,7 @@ const MOTIONS = ['sway', 'smooth', 'straight'];
 
 export function setFxDebug({ motion, count }) {
   if (MOTIONS.includes(motion)) fxDebug.motion = motion;
-  if (count !== undefined) fxDebug.count = count === null || count === '' || isNaN(count) ? null : Math.max(0, Math.min(60, Math.round(Number(count))));
+  if (count !== undefined) fxDebug.count = count === null || count === '' || isNaN(count) ? null : Math.max(0, Math.min(200, Math.round(Number(count))));
   const label = fxDebugLabel();
   if (label) document.documentElement.dataset.fxDebug = label; else delete document.documentElement.dataset.fxDebug;
   if (current.cfg) { removeFx(); fx = buildFx(current.cfg); } // the caller re-renders to place them

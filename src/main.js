@@ -6,7 +6,7 @@ import { FOODS } from './data/foods.js';
 import { THEMES, SETTINGS as THEME_SETTINGS, themeSetting, setThemeSetting, activeThemeId, settingLabel, themeById } from './themes/index.js';
 import { markScreens, setTheme, placeDecorations, themeFrameColor, updateDaypart, currentThemeId, setFxDebug, fxDebugLabel } from './themes/runtime.js';
 import {
-  initPerf, perfGesture, perfScreenChanged, perfSpan, perfAutoRunning,
+  initPerf, perfScreenChanged, perfSpan, perfAutoRunning,
   setPerfUploader, perfCommand, perfState, perfSetEffects, perfSetNumbers,
 } from './perf.js';
 import { startRemote, uploadLog } from './remote.js';
@@ -297,7 +297,6 @@ function resetIdle() {
 
 // ─────────── Secret corners ───────────
 // Hold top-right + bottom-left 0.5s → toggle booth signs. Hold bottom-left alone 0.5s → hard reset.
-// Hold top-left alone 1.5s → performance log.
 const corners = new Map();
 let cornerAction = null;
 let cornerTimer = null;
@@ -309,7 +308,6 @@ function cornerOf(x0, y0) {
   const x = (x0 - r.left) / k, y = (y0 - r.top) / k;
   const Z = 100;
   if (y < Z && x > w - Z) return 'tr';
-  if (y < Z && x < Z) return 'tl';
   if (y > h - Z && x < Z) return 'bl';
   return null;
 }
@@ -326,7 +324,6 @@ function evalCorners() {
   let want = null;
   if (zs.length === 2 && zs.includes('tr') && zs.includes('bl')) want = 'signs';
   else if (zs.length === 1 && zs[0] === 'bl') want = 'reset';
-  else if (zs.length === 1 && zs[0] === 'tl') want = 'perf';
   if (want === cornerAction) return;
   clearTimeout(cornerTimer);
   cornerAction = want;
@@ -336,15 +333,13 @@ function evalCorners() {
     if (want === 'signs') {
       // closed → picker; picker → closed; showing a sign → back to picker
       set({ signs: state.signs === 'picker' ? null : 'picker' });
-    } else if (want === 'perf') {
-      perfGesture();
     } else {
       stopStream();
       closeEditor();
       clearForm();
       set({ screen: 'home', entered: false, signs: null, cameraOpen: false, phoneOpen: false });
     }
-  }, want === 'perf' ? 1500 : 500);
+  }, 500);
 }
 
 function bindCorners() {
@@ -798,9 +793,10 @@ initPerf(screenLabel, (where) => {
   set(where === 'brb' ? { signs: 'brb', entered: true } : { signs: null, screen: 'home', entered: true });
 }, {
   // ...and through every theme, putting the chosen one back afterwards.
-  list: THEMES.map(({ id, label }) => ({ id, label })),
+  list: THEMES.map(({ id, label, load }) => ({ id, label, particles: !!load })),
   set: async (id) => { if (await setTheme(id)) render(); },
   restore: applyTheme,
+  pieces: (count) => { setFxDebug({ count }); render(); },
 });
 setPerfUploader(uploadLog);
 

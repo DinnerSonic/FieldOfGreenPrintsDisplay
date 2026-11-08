@@ -153,7 +153,7 @@ document.addEventListener('click', (e) => {
 $('#ctCount').addEventListener('submit', (e) => {
   e.preventDefault();
   if (!password) return;
-  const n = Math.max(0, Math.min(60, Math.round(Number($('#ctCountValue').value) || 0)));
+  const n = Math.max(0, Math.min(200, Math.round(Number($('#ctCountValue').value) || 0)));
   $('#ctCountValue').value = n;
   send({ do: 'snow', count: n }, e.submitter);
 });
