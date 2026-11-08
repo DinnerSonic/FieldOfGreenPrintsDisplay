@@ -53,6 +53,23 @@
     </section>
 
     <section class="ct-card">
+      <h2>Falling pieces (test)</h2>
+      <div class="ct-buttons">
+        <span class="ct-label">Motion:</span>
+        <button data-motion="sway">Normal sway</button>
+        <button data-motion="smooth">Smooth sway</button>
+        <button data-motion="straight">Straight fall</button>
+      </div>
+      <form id="ctCount" class="ct-buttons">
+        <span class="ct-label">How many:</span>
+        <input id="ctCountValue" type="number" min="0" max="60" step="1" value="15" class="ct-num">
+        <button type="submit">Set</button>
+        <button type="button" data-count-default>Theme’s own</button>
+      </form>
+      <p class="ct-note">Split evenly across small, medium and large (any extra goes to the smaller sizes). Resets when the app reloads.</p>
+    </section>
+
+    <section class="ct-card">
       <h2>Performance</h2>
       <div class="ct-buttons">
         <button data-perf="auto">Run auto test</button>

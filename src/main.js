@@ -4,7 +4,7 @@ import brands from './data/brands.json';
 import flags from './data/flags.json';
 import { FOODS } from './data/foods.js';
 import { THEMES, SETTINGS as THEME_SETTINGS, themeSetting, setThemeSetting, activeThemeId, settingLabel, themeById } from './themes/index.js';
-import { markScreens, setTheme, placeDecorations, themeFrameColor, updateDaypart, currentThemeId } from './themes/runtime.js';
+import { markScreens, setTheme, placeDecorations, themeFrameColor, updateDaypart, currentThemeId, setFxDebug, fxDebugLabel } from './themes/runtime.js';
 import {
   initPerf, perfGesture, perfScreenChanged, perfSpan, perfAutoRunning,
   setPerfUploader, perfCommand, perfState, perfSetEffects, perfSetNumbers,
@@ -833,6 +833,12 @@ async function runRemote(cmd) {
   if (cmd.do === 'perf') return perfCommand(cmd.action);
   if (cmd.do === 'effects') return perfSetEffects(cmd.off);
   if (cmd.do === 'numbers') return perfSetNumbers(cmd.on);
+  if (cmd.do === 'snow') {
+    const result = setFxDebug({ motion: cmd.motion, count: cmd.count });
+    render();
+    perfScreenChanged();
+    return result;
+  }
   throw new Error('unknown command ' + cmd.do);
 }
 
@@ -845,6 +851,7 @@ startRemote({
     build: BUILD,
     pendingUploads,
     perf: perfState(),
+    particles: fxDebugLabel() || 'normal',
     upFor: Math.round(performance.now() / 1000),
   }),
   run: runRemote,

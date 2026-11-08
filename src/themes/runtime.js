@@ -124,6 +124,40 @@ function removeFx() {
   fx = null;
 }
 
+// ─────────── Debug: particle style (from the control page; not remembered) ───────────
+// motion: 'sway' (normal: sideways out and back, turning sharply halfway), 'smooth' (the same
+// sway as a gentle curve), 'straight' (no sway). count: total pieces split evenly across the
+// sizes, or null for the theme's own counts.
+const fxDebug = { motion: 'sway', count: null };
+const MOTIONS = ['sway', 'smooth', 'straight'];
+
+export function setFxDebug({ motion, count }) {
+  if (MOTIONS.includes(motion)) fxDebug.motion = motion;
+  if (count !== undefined) fxDebug.count = count === null || count === '' || isNaN(count) ? null : Math.max(0, Math.min(60, Math.round(Number(count))));
+  const label = fxDebugLabel();
+  if (label) document.documentElement.dataset.fxDebug = label; else delete document.documentElement.dataset.fxDebug;
+  if (current.cfg) { removeFx(); fx = buildFx(current.cfg); } // the caller re-renders to place them
+  return label || 'normal particles';
+}
+
+/** e.g. "smooth sway · 10 pieces", or '' when nothing is changed. */
+export function fxDebugLabel() {
+  return [
+    fxDebug.motion !== 'sway' ? (fxDebug.motion === 'smooth' ? 'smooth sway' : 'straight fall') : '',
+    fxDebug.count != null ? fxDebug.count + ' pieces' : '',
+  ].filter(Boolean).join(' · ');
+}
+
+// One fall: down (or up) by dy, swaying out by drift and back.
+function fallKeyframes(name, drift, dy) {
+  const at = (t, x) => `${+(t * 100).toFixed(3)}%{transform:translate3d(${x.toFixed(2)}px,${(dy * t).toFixed(2)}px,0)}`;
+  let k;
+  if (fxDebug.motion === 'straight') k = at(0, 0) + at(1, 0);
+  else if (fxDebug.motion === 'smooth') k = Array.from({ length: 13 }, (_, s) => at(s / 12, drift * Math.sin(Math.PI * s / 12))).join('');
+  else k = at(0, 0) + at(0.5, drift) + at(1, 0);
+  return `@keyframes ${name}{${k}}`;
+}
+
 // ─────────── Builders ───────────
 
 const STAGE_H = 768;
@@ -141,13 +175,17 @@ function buildFx(cfg) {
   let css = '';
   // Every sprite is its own tiny moving layer. A single tall image holding all of them costs
   // tens of MB of graphics memory on the iPad, and iOS redraws parts of it as it moves (stutter).
-  (cfg.particles || []).forEach((p, i) => {
-    const { size, count, speed, drift } = p;
+  const layers = cfg.particles || [];
+  layers.forEach((p, i) => {
+    const { size, speed, drift } = p;
+    const total = fxDebug.count;
+    const count = total == null ? p.count : Math.floor(total / layers.length) + (i < total % layers.length ? 1 : 0);
+    if (!count) return;
     const sign = p.dir === 'up' ? -1 : 1;
     const travel = STAGE_H + size;
     const dur = travel / speed;
     css += `.fx-l${i}{${p.dir === 'up' ? 'bottom' : 'top'}:-${size}px;width:${size}px;height:${size}px;animation:fx-k${i} ${dur.toFixed(2)}s linear infinite}`
-      + `@keyframes fx-k${i}{0%{transform:translate3d(0,0,0)}50%{transform:translate3d(${drift}px,${sign * travel / 2}px,0)}100%{transform:translate3d(0,${sign * travel}px,0)}}`;
+      + fallKeyframes(`fx-k${i}`, drift, sign * travel);
     p.sprites.forEach((shape, j) => {
       const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="${-size / 2} ${-size / 2} ${size} ${size}">${shape}</svg>`;
       css += `.fx-s${i}-${j}{background-image:url("data:image/svg+xml,${encodeURIComponent(svg)}")}`;

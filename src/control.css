@@ -26,6 +26,8 @@ button:disabled { opacity: .5; cursor: default; }
 .ct-card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 18px; margin-bottom: 14px; }
 .ct-buttons { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 8px; }
 .ct-small { padding: 4px 10px; font-size: 14px; font-weight: 600; }
+.ct-label { color: var(--muted); min-width: 92px; }
+.ct-num { width: 90px; }
 .ct-note { color: var(--muted); font-size: 14px; margin: 6px 0 0; }
 .ct-error { background: var(--pink-soft); color: var(--red); padding: 10px 14px; border-radius: 10px; }
 .ct-pill { font-size: 13px; padding: 2px 10px; border-radius: 99px; color: #fff; }

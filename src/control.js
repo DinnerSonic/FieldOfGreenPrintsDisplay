@@ -88,6 +88,7 @@ function renderStatus({ status: st, queued, now }) {
     row('Build', st.build),
     row('Waiting to upload', String(st.pendingUploads || 0)),
     row('Performance log', perf.auto ? `auto test, step ${perf.auto}` : perf.logging ? `logging (${perf.marks} marks)` : 'not logging'),
+    row('Falling pieces', st.particles || 'normal'),
     row('Debug', `numbers ${perf.numbers ? 'on' : 'off'} · effects off: ${(perf.effectsOff || []).join(', ') || 'none'}`),
     row('App open for', ago(st.upFor * 1000).replace(' ago', '')),
     row('Last command', last ? `${last.do}: ${last.ok ? '' : 'FAILED: '}${last.result} (${ago(now - last.at)})` : '—'),
@@ -111,6 +112,7 @@ function describe(cmd) {
   if (cmd.do === 'perf') return 'log ' + cmd.action;
   if (cmd.do === 'numbers') return 'numbers ' + (cmd.on ? 'on' : 'off');
   if (cmd.do === 'effects') return 'effects off: ' + (cmd.off.join(', ') || 'none');
+  if (cmd.do === 'snow') return 'pieces: ' + (cmd.motion || (cmd.count == null ? 'theme’s own count' : cmd.count));
   return cmd.do;
 }
 
@@ -144,6 +146,16 @@ document.addEventListener('click', (e) => {
   else if (b.dataset.numbers) send({ do: 'numbers', on: b.dataset.numbers === '1' }, b);
   else if ('effects' in b.dataset) send({ do: 'effects', off: b.dataset.effects ? [b.dataset.effects] : [] }, b);
   else if ('reload' in b.dataset) send({ do: 'reload' }, b);
+  else if (b.dataset.motion) send({ do: 'snow', motion: b.dataset.motion }, b);
+  else if ('countDefault' in b.dataset) send({ do: 'snow', count: null }, b);
+});
+
+$('#ctCount').addEventListener('submit', (e) => {
+  e.preventDefault();
+  if (!password) return;
+  const n = Math.max(0, Math.min(60, Math.round(Number($('#ctCountValue').value) || 0)));
+  $('#ctCountValue').value = n;
+  send({ do: 'snow', count: n }, e.submitter);
 });
 
 // ─────────── Logs ───────────

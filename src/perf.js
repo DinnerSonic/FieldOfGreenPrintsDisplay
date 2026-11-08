@@ -385,6 +385,7 @@ function screenKey() {
   const html = document.documentElement.dataset;
   return `${html.theme || 'classic'}${html.daypart ? '/' + html.daypart : ''} ${label()}`
     + (off.size ? ` [off: ${[...off].join(', ')}]` : '')
+    + (html.fxDebug ? ` [${html.fxDebug}]` : '')
     + (panel ? ' +log panel' : '');
 }
 
