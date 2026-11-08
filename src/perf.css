@@ -32,6 +32,13 @@
 
 /* Effects switched off from the log panel, for comparing frame rates. */
 html[data-perf-off~="snow"] .fx-particles { display: none; }
+
+/* Debug: label each falling piece (S3, M2, L1 = size and number). */
+html[data-fx-numbers] .fx-sprite::after {
+  content: attr(data-n); position: absolute; left: 100%; top: 50%; margin: -7px 0 0 3px;
+  font: 700 13px/14px ui-monospace, monospace; color: #fff; white-space: nowrap;
+  text-shadow: 0 0 2px #000, 0 0 2px #000;
+}
 html[data-perf-off~="lights"] .fx-deco,
 html[data-perf-off~="lights"] .scr-night::before { display: none; }
 html[data-perf-off~="motion"] :is(.candy, .home, .split, .sign-body, .come-in, .pulse) { animation: none !important; }

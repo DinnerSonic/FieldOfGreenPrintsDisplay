@@ -12,6 +12,10 @@
  * full-size photos here; they wait in a temporary folder until the request is submitted,
  * then move into the request's folder. Leftovers are cleaned up daily.
  *
+ * Remote control: the kiosk checks in here every few seconds with what it's showing and picks
+ * up commands sent from the control page (control.html, password protected). Performance logs
+ * the kiosk finishes are saved as text files in a folder next to the requests.
+ *
  * Setup steps are in README.md next to this file.
  */
 
@@ -28,6 +32,14 @@ const PHONE_SESSION_MINUTES = 30;
 const PHONE_MAX_PHOTOS = 10;
 const PHONE_MAX_CHARS = 45 * 1024 * 1024; // base64 text, about a 33 MB photo
 const CACHE_SECONDS = 6 * 60 * 60;         // longest CacheService allows
+
+// Remote control. The password is a script property (Project Settings → Script properties →
+// CONTROL_PASSWORD), never in the kiosk's public code.
+const LOG_FOLDER_NAME = '_Kiosk performance logs';
+const MAX_LOGS = 200;                      // older logs are moved to the trash
+const LOG_MAX_CHARS = 500 * 1024;
+const COMMAND_MINUTES = 10;                // commands the kiosk hasn't picked up by then are dropped
+const WATCH_MINUTES = 10;                  // the kiosk checks in quickly for this long after the control page was used
 
 /**
  * GET with no parameters: health check, shows {"ok":true,...}.
@@ -53,6 +65,9 @@ function doPost(e) {
   if (SHARED_KEY && data.key !== SHARED_KEY) return json_({ ok: false, error: 'bad key' });
   if (data.type === 'phone-session') return startPhoneSession_(data);
   if (data.type === 'phone-upload') return phoneUpload_(data);
+  if (data.type === 'kiosk-checkin') return kioskCheckin_(data);
+  if (data.type === 'kiosk-log') return kioskLog_(data);
+  if (data.type === 'control') return control_(data);
   return saveRequest_(data);
 }
 
@@ -180,6 +195,107 @@ function cleanupPhoneUploads() {
   }
 }
 
+// ─────────── Remote control ───────────
+
+// The kiosk reports what it's showing and collects any commands waiting for it.
+function kioskCheckin_(data) {
+  const cache = CacheService.getScriptCache();
+  const status = data.status && typeof data.status === 'object' ? data.status : {};
+  status.seen = Date.now();
+  const text = JSON.stringify(status);
+  if (text.length < 90000) cache.put('kiosk:status', text, CACHE_SECONDS);
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  let commands;
+  try {
+    commands = JSON.parse(cache.get('kiosk:cmds') || '[]');
+    if (commands.length) cache.remove('kiosk:cmds');
+  } finally {
+    lock.releaseLock();
+  }
+  return json_({ ok: true, commands: commands, fast: !!cache.get('kiosk:watch') });
+}
+
+// A performance log the kiosk finished, saved as a text file.
+function kioskLog_(data) {
+  const text = String(data.text || '');
+  if (!text || text.length > LOG_MAX_CHARS) return json_({ ok: false, error: 'bad log' });
+  const folder = getLogFolder_();
+  const stamp = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd HHmmss');
+  const file = folder.createFile(stamp + ' - ' + safeName_(data.name || 'log') + '.txt', text, MimeType.PLAIN_TEXT);
+  trimLogs_(folder);
+  return json_({ ok: true, id: file.getId() });
+}
+
+// Everything the control page does. Needs the password.
+function control_(data) {
+  const password = PropertiesService.getScriptProperties().getProperty('CONTROL_PASSWORD') || '';
+  if (password.length < 8) return json_({ ok: false, error: 'no password set: add CONTROL_PASSWORD (8+ characters) in the script properties' });
+  if (String(data.password || '') !== password) {
+    Utilities.sleep(1500); // slows down guessing
+    return json_({ ok: false, error: 'wrong password' });
+  }
+  const cache = CacheService.getScriptCache();
+  cache.put('kiosk:watch', '1', WATCH_MINUTES * 60);
+
+  if (data.action === 'status') {
+    return json_({
+      ok: true,
+      now: Date.now(),
+      status: JSON.parse(cache.get('kiosk:status') || 'null'),
+      queued: JSON.parse(cache.get('kiosk:cmds') || '[]'),
+    });
+  }
+  if (data.action === 'command') {
+    const cmd = data.command;
+    if (!cmd || typeof cmd !== 'object' || typeof cmd.do !== 'string' || JSON.stringify(cmd).length > 2000) {
+      return json_({ ok: false, error: 'bad command' });
+    }
+    cmd.id = Utilities.getUuid().slice(0, 8);
+    cmd.sent = Date.now();
+    const lock = LockService.getScriptLock();
+    lock.waitLock(10000);
+    try {
+      const cmds = JSON.parse(cache.get('kiosk:cmds') || '[]').slice(-19);
+      cmds.push(cmd);
+      cache.put('kiosk:cmds', JSON.stringify(cmds), COMMAND_MINUTES * 60);
+    } finally {
+      lock.releaseLock();
+    }
+    return json_({ ok: true, id: cmd.id });
+  }
+  if (data.action === 'logs') {
+    const files = getLogFolder_().getFiles();
+    const logs = [];
+    while (files.hasNext()) {
+      const f = files.next();
+      logs.push({ id: f.getId(), name: f.getName(), size: f.getSize(), date: f.getDateCreated().getTime() });
+    }
+    logs.sort((a, b) => b.date - a.date);
+    return json_({ ok: true, logs: logs.slice(0, 100) });
+  }
+  if (data.action === 'log') {
+    // Only files in the log folder can be read through here.
+    try {
+      const f = DriveApp.getFileById(String(data.id));
+      if (!inFolder_(f, getLogFolder_().getId())) return json_({ ok: false, error: 'not a log' });
+      return json_({ ok: true, name: f.getName(), text: f.getBlob().getDataAsString() });
+    } catch (err) {
+      return json_({ ok: false, error: 'not found' });
+    }
+  }
+  return json_({ ok: false, error: 'unknown action' });
+}
+
+function trimLogs_(folder) {
+  const files = [];
+  const it = folder.getFiles();
+  while (it.hasNext()) files.push(it.next());
+  if (files.length <= MAX_LOGS) return;
+  files.sort((a, b) => a.getDateCreated() - b.getDateCreated());
+  files.slice(0, files.length - MAX_LOGS).forEach((f) => f.setTrashed(true));
+}
+
 // ─────────── Setup & storage ───────────
 
 /**
@@ -190,6 +306,7 @@ function cleanupPhoneUploads() {
 function setup() {
   const root = getRoot_();
   getPhoneFolder_();
+  getLogFolder_();
   const sheet = getSheet_();
   formatSheet_(sheet);
   if (!ScriptApp.getProjectTriggers().some((t) => t.getHandlerFunction() === 'cleanupPhoneUploads')) {
@@ -197,6 +314,9 @@ function setup() {
   }
   Logger.log('Folder: ' + root.getUrl());
   Logger.log('Sheet:  ' + sheet.getParent().getUrl());
+  const password = PropertiesService.getScriptProperties().getProperty('CONTROL_PASSWORD') || '';
+  Logger.log(password.length >= 8 ? 'Remote control: password set.'
+    : 'Remote control: off. Add CONTROL_PASSWORD (8+ characters) in Project Settings → Script properties.');
 }
 
 function getRoot_() {
@@ -218,6 +338,17 @@ function getPhoneFolder_() {
   }
   const folder = getRoot_().createFolder(PHONE_FOLDER_NAME);
   props.setProperty('PHONE_ID', folder.getId());
+  return folder;
+}
+
+function getLogFolder_() {
+  const props = PropertiesService.getScriptProperties();
+  const id = props.getProperty('LOG_ID');
+  if (id) {
+    try { return DriveApp.getFolderById(id); } catch (e) {}
+  }
+  const folder = getRoot_().createFolder(LOG_FOLDER_NAME);
+  props.setProperty('LOG_ID', folder.getId());
   return folder;
 }
 

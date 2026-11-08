@@ -155,6 +155,7 @@ function buildFx(cfg) {
     for (let n = 0; n < count; n++) {
       const sprite = document.createElement('div');
       sprite.className = `fx-sprite fx-l${i} fx-s${i}-${n % p.sprites.length}`;
+      sprite.dataset.n = (['S', 'M', 'L'][i] || 'X' + i) + (n + 1); // label for the debug numbers
       // Evenly spread in time, golden-ratio spread across the width: no visible rows or columns.
       sprite.style.left = `${((n * GOLDEN + i * 0.27) % 1) * 1104 - 40 - size / 2}px`;
       sprite.style.animationDelay = `${(-dur * n / count).toFixed(2)}s`;

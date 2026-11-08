@@ -4,8 +4,12 @@ import brands from './data/brands.json';
 import flags from './data/flags.json';
 import { FOODS } from './data/foods.js';
 import { THEMES, SETTINGS as THEME_SETTINGS, themeSetting, setThemeSetting, activeThemeId, settingLabel, themeById } from './themes/index.js';
-import { markScreens, setTheme, placeDecorations, themeFrameColor, updateDaypart } from './themes/runtime.js';
-import { initPerf, perfGesture, perfScreenChanged, perfSpan, perfAutoRunning } from './perf.js';
+import { markScreens, setTheme, placeDecorations, themeFrameColor, updateDaypart, currentThemeId } from './themes/runtime.js';
+import {
+  initPerf, perfGesture, perfScreenChanged, perfSpan, perfAutoRunning,
+  setPerfUploader, perfCommand, perfState, perfSetEffects, perfSetNumbers,
+} from './perf.js';
+import { startRemote, uploadLog } from './remote.js';
 import {
   APPS_SCRIPT_URL, SHOW_WELCOME, IDLE_SECONDS, PHOTO_MAX_EDGE, PHOTO_JPEG_QUALITY, KEEP_SENT_DAYS,
 } from './config.js';
@@ -686,10 +690,14 @@ async function deleteSaved(btn) {
 }
 
 // ─────────── Build stamp ───────────
+const BUILD = typeof __BUILD_STAMP__ === 'string' ? __BUILD_STAMP__ : 'build dev';
+let pendingUploads = 0;
+
 async function updateStamp() {
-  let text = typeof __BUILD_STAMP__ === 'string' ? __BUILD_STAMP__ : 'build dev';
+  let text = BUILD;
   try {
     const n = await countPending();
+    pendingUploads = n;
     if (n) text += ` · ${n} waiting to upload`;
   } catch (e) {}
   $('#buildStamp').textContent = text;
@@ -777,11 +785,14 @@ function cycleTheme() {
   applyTheme();
 }
 
-initPerf(() => {
+// What's showing, for the performance log and the remote control.
+function screenLabel() {
   const s = state;
   const screen = s.signs ? 'sign:' + s.signs : (SHOW_WELCOME && !s.entered ? 'welcome' : s.screen);
   return screen + (s.cameraOpen ? '+camera' : '') + (s.phoneOpen ? '+phone' : '');
-}, (where) => {
+}
+
+initPerf(screenLabel, (where) => {
   // The auto test moves between home and Be Right Back.
   resetIdle();
   set(where === 'brb' ? { signs: 'brb', entered: true } : { signs: null, screen: 'home', entered: true });
@@ -791,6 +802,54 @@ initPerf(() => {
   set: async (id) => { if (await setTheme(id)) render(); },
   restore: applyTheme,
 });
+setPerfUploader(uploadLog);
+
+// ─────────── Remote control (control.html) ───────────
+const REMOTE_SCREENS = ['info', 'payment', 'credits', 'pride', 'commission'];
+
+function remoteGo(to) {
+  if (state.cameraOpen) closeCamera();
+  if (state.phoneOpen) closePhone();
+  closeEditor();
+  resetIdle();
+  if (to === 'welcome') set({ screen: 'home', signs: null, entered: false });
+  else if (to === 'home') set({ screen: 'home', signs: null, entered: true });
+  else if (to === 'picker') set({ signs: 'picker', entered: true });
+  else if (to.startsWith('sign:') && $(`[data-sign="${to.slice(5)}"]`)) set({ signs: to.slice(5), entered: true });
+  else if (REMOTE_SCREENS.includes(to)) set({ screen: to, signs: null, entered: true });
+  else throw new Error('unknown screen ' + to);
+  return 'showing ' + screenLabel();
+}
+
+async function runRemote(cmd) {
+  if (cmd.do === 'go') return remoteGo(String(cmd.to));
+  if (cmd.do === 'theme') {
+    if (!THEME_SETTINGS.includes(cmd.setting)) throw new Error('unknown theme');
+    setThemeSetting(cmd.setting);
+    await applyTheme();
+    return 'theme ' + settingLabel(cmd.setting);
+  }
+  if (cmd.do === 'reload') { setTimeout(() => location.reload(), 800); return 'reloading'; }
+  if (cmd.do === 'perf') return perfCommand(cmd.action);
+  if (cmd.do === 'effects') return perfSetEffects(cmd.off);
+  if (cmd.do === 'numbers') return perfSetNumbers(cmd.on);
+  throw new Error('unknown command ' + cmd.do);
+}
+
+startRemote({
+  status: () => ({
+    screen: screenLabel(),
+    themeSetting: themeSetting(),
+    theme: currentThemeId(),
+    daypart: document.documentElement.dataset.daypart || '',
+    build: BUILD,
+    pendingUploads,
+    perf: perfState(),
+    upFor: Math.round(performance.now() / 1000),
+  }),
+  run: runRemote,
+});
+
 markScreens(stage);
 $('.theme-prev').replaceChildren(...THEMES.map((t) => {
   const d = el('div', null, t.label);

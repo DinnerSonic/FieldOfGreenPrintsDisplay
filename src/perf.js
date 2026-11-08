@@ -57,11 +57,67 @@ export function perfGesture() {
   openPanel();
 }
 
+// Where finished logs are sent (the remote control's Drive folder), if anywhere.
+let uploader = null;
+export function setPerfUploader(fn) { uploader = fn; }
+
+function upload(name, text) {
+  if (uploader && text) Promise.resolve(uploader(name, text)).catch(() => {});
+}
+
+/** Commands from the control page: start | stop | auto | upload. Returns a short result. */
+export function perfCommand(action) {
+  if (action === 'start' || action === 'auto') {
+    if (log) return 'already logging';
+    closePanel();
+    if (action === 'auto') runAuto(); else start();
+    return action === 'auto' ? 'auto test started' : 'logging started';
+  }
+  if (action === 'stop') {
+    if (!log) return 'not logging';
+    stop('stopped from the control page');
+    return 'stopped; log saved';
+  }
+  if (action === 'upload') {
+    if (log) save(false);
+    const text = savedReport();
+    if (!text) return 'no log saved yet';
+    upload(log ? 'log in progress' : 'saved log', text);
+    return 'uploading the saved log';
+  }
+  throw new Error('unknown log action');
+}
+
+/** For the control page's status. */
+export function perfState() {
+  return {
+    logging: !!log,
+    auto: log && log.auto && !log.auto.done ? `${log.auto.i + 1}/${AUTO_STEPS.length}` : null,
+    marks: log ? log.marks : 0,
+    effectsOff: [...off],
+    numbers: numbersOn(),
+  };
+}
+
+export function perfSetEffects(ids) {
+  const known = EFFECTS.map(([id]) => id);
+  setEffectsOff((Array.isArray(ids) ? ids : []).filter((id) => known.includes(id)));
+  return `effects off: ${[...off].join(', ') || 'none'}`;
+}
+
+// Labels on the falling pieces (S3, M2, L1: size and number), to point out which ones judder.
+const numbersOn = () => document.documentElement.hasAttribute('data-fx-numbers');
+export function perfSetNumbers(on) {
+  document.documentElement.toggleAttribute('data-fx-numbers', !!on);
+  if (log) event(`test: piece numbers ${on ? 'on' : 'off'}`);
+  return `numbers ${on ? 'on' : 'off'}`;
+}
+
 // Effects that can be switched off for a test (not remembered: a restart turns them back on).
 const EFFECTS = [
-  ['snow', 'Snow / particles'],
-  ['lights', 'Lights + ground'],
-  ['motion', 'Floating + drifting'],
+  ['snow', 'Snow'],
+  ['lights', 'Lights'],
+  ['motion', 'Floating'],
 ];
 const off = new Set();
 
@@ -176,6 +232,7 @@ function stop(why) {
   clearInterval(beat);
   event(why);
   save(true);
+  upload(log.auto ? 'auto test' : 'log', savedReport());
   log = null;
   badge?.remove();
   badge = null;
@@ -427,6 +484,7 @@ function openPanel() {
     <div class="perf-row perf-effects">
       <div class="perf-label">Test with effects off:</div>
       ${EFFECTS.map(([id]) => `<button class="perf-btn perf-toggle" data-effect="${id}"></button>`).join('')}
+      <button class="perf-btn perf-toggle" data-perf="numbers"></button>
     </div>
     <div class="perf-row">
       <button class="perf-btn" data-perf="start">${log ? (log.auto ? 'Stop auto test' : 'Stop logging') : 'Start logging'}</button>
@@ -443,11 +501,18 @@ function openPanel() {
     b.textContent = `${name}: ${off.has(b.dataset.effect) ? 'OFF' : 'on'}`;
     b.classList.toggle('is-off', off.has(b.dataset.effect));
   });
+  const numbersBtn = panel.querySelector('[data-perf="numbers"]');
+  const showNumbers = () => {
+    numbersBtn.textContent = `Numbers: ${numbersOn() ? 'ON' : 'off'}`;
+    numbersBtn.classList.toggle('is-off', numbersOn());
+  };
   showToggles();
+  showNumbers();
   panel.querySelectorAll('[data-effect]').forEach((b) => b.addEventListener('click', () => {
     toggleEffect(b.dataset.effect);
     showToggles();
   }));
+  numbersBtn.addEventListener('click', () => { perfSetNumbers(!numbersOn()); showNumbers(); });
   panel.querySelector('[data-perf="copy"]').disabled = !text;
   const autoBtn = panel.querySelector('[data-perf="auto"]');
   autoBtn.disabled = !!log;

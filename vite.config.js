@@ -17,10 +17,12 @@ export default defineConfig({
   define: { __BUILD_STAMP__: JSON.stringify(buildStamp()) },
   build: {
     rollupOptions: {
-      // The kiosk, plus the page customers open on their phone from the kiosk's QR code.
+      // The kiosk, the page customers open on their phone from the kiosk's QR code, and the
+      // remote control for the artist's computer.
       input: {
         main: fileURLToPath(new URL('index.html', import.meta.url)),
         upload: fileURLToPath(new URL('upload.html', import.meta.url)),
+        control: fileURLToPath(new URL('control.html', import.meta.url)),
       },
     },
   },

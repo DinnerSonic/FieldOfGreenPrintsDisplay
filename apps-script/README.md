@@ -61,11 +61,38 @@ formatting, installs the daily cleanup, and asks for any new permissions), then
 **Deploy → Manage deployments → ✏️ → Version: New version → Deploy**.
 That keeps the same URL, so the kiosk doesn't need to change.
 
+## Remote control
+
+`control.html` on the kiosk's site (for example
+<https://dinnersonic.github.io/FieldOfGreenPrintsDisplay/control.html>) lets you watch and
+drive the kiosk from your computer: what it's showing, its theme and build, switching screens
+and themes, reloading the app, and running performance logs. Every log the kiosk finishes is
+saved to `Field of Green Prints Commissions/_Kiosk performance logs/` and can be opened,
+copied or downloaded from the control page.
+
+The kiosk checks in every few seconds while the control page has been used in the last 10
+minutes, otherwise every 30 seconds, and never while the app is in the background. So the
+first command after opening the page can take up to 30 seconds; after that, a few seconds.
+
+To turn it on (once):
+
+1. Paste in the new `Code.gs` and save.
+2. Click the gear (**Project Settings**) on the left. Under **Script properties**, click
+   **Add script property**: name `CONTROL_PASSWORD`, value a password of at least 8 characters
+   that you'll type on the control page. Save. (It's stored in your script, never in the app.)
+3. Back in the editor, run **`setup`** (it creates the logs folder and confirms the password
+   is set in its log).
+4. **Deploy → Manage deployments → ✏️ → Version: New version → Deploy.**
+
+To change the password later, edit the script property; no new deployment needed.
+
 ## Notes
 
 - "Anyone" access is needed so the iPad can post without signing in. The URL and the
   `SHARED_KEY` both end up in the public web page, so treat them as a spam filter, not a
   password. Nobody can *read* your Drive through this script; it can only add requests.
+  The one exception is the remote control, which needs `CONTROL_PASSWORD` and can only read
+  the kiosk's status and the files in the performance-log folder.
 - If you change `SHARED_KEY` in `Code.gs`, change `APPS_SCRIPT_KEY` in `src/config.js` to match.
 - Requests that fail are retried. The script ignores repeats of the same request ID, so you
   won't get duplicate folders.

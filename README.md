@@ -24,6 +24,8 @@ npm run build    # production build into dist/
 | Seasonal themes (list, Auto months, runtime) | `src/themes/index.js`, `src/themes/runtime.js` |
 | Each theme's colours + decorations | `src/themes/<name>/` (`holiday`, `halloween`, `valentines`) |
 | Phone page customers open from the QR code | `upload.html`, `src/upload.js`, `src/upload.css` |
+| Remote control page (for your computer) + kiosk side | `control.html`, `src/control.js`, `src/control.css`, `src/remote.js` |
+| Performance log (hidden panel, auto test) | `src/perf.js`, `src/perf.css` |
 | Settings (backend URL, idle time, photo size) | `src/config.js` |
 | Instagram / Etsy / payment links | `src/data/brands.json` |
 | Pride flags | `src/data/flags.json` + `public/assets/PrideFlags/small/` |
@@ -65,6 +67,16 @@ then deletes it; requests that haven’t uploaded yet are never deleted.
   and the latest one is kept on the iPad until the next one replaces it.
   **Auto test** (1.3 min) runs a log by itself through every theme, on home then Be right back,
   10 s each, puts the chosen theme back, and puts a results table at the top of the log.
+  **Numbers** labels each falling piece (S1…, M1…, L1… by size) to point out which ones judder.
+
+## Remote control
+
+`control.html` (e.g. <https://dinnersonic.github.io/FieldOfGreenPrintsDisplay/control.html>)
+shows what the kiosk is doing and lets you switch screens and themes, reload the app, run
+performance logs and turn on the numbered pieces from your computer. Commands go through the
+Apps Script, so both just need internet; they arrive within a few seconds while the page is in
+use. Every finished performance log is uploaded and listed there. It needs a password set in
+the Apps Script: see "Remote control" in `apps-script/README.md`.
 
 ## Seasonal themes
 

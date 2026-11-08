@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Kiosk control · Field of Green Prints</title>
+<script type="module" src="/src/control.js"></script>
+</head>
+<body>
+<main class="ct">
+  <header class="ct-head">
+    <h1>Kiosk control</h1>
+    <form id="ctLogin" class="ct-login">
+      <input id="ctPassword" type="password" placeholder="Control password" autocomplete="current-password">
+      <button type="submit">Connect</button>
+    </form>
+  </header>
+
+  <p id="ctError" class="ct-error" hidden></p>
+
+  <div id="ctMain" hidden>
+    <section class="ct-card">
+      <h2>Status <span id="ctOnline" class="ct-pill"></span></h2>
+      <dl id="ctStatus" class="ct-status"></dl>
+    </section>
+
+    <section class="ct-card">
+      <h2>Show a screen</h2>
+      <div class="ct-buttons" data-group="go">
+        <button data-go="welcome">Welcome</button>
+        <button data-go="home">Home</button>
+        <button data-go="info">Information</button>
+        <button data-go="payment">Payment</button>
+        <button data-go="credits">Credits</button>
+        <button data-go="pride">Pride flags</button>
+        <button data-go="commission">Commission form</button>
+      </div>
+      <div class="ct-buttons" data-group="go">
+        <button data-go="picker">Booth signs menu</button>
+        <button data-go="sign:brb">Be right back</button>
+        <button data-go="sign:at530">Back at 5:30</button>
+        <button data-go="sign:lunch">Lunch</button>
+        <button data-go="sign:bulk">Got bulk?</button>
+        <button data-go="sign:otherbooth">Helping another booth</button>
+        <button data-go="sign:saved">Saved requests</button>
+      </div>
+    </section>
+
+    <section class="ct-card">
+      <h2>Theme</h2>
+      <div id="ctThemes" class="ct-buttons"></div>
+    </section>
+
+    <section class="ct-card">
+      <h2>Performance</h2>
+      <div class="ct-buttons">
+        <button data-perf="auto">Run auto test</button>
+        <button data-perf="start">Start log</button>
+        <button data-perf="stop">Stop log</button>
+        <button data-perf="upload">Send saved log</button>
+      </div>
+      <div class="ct-buttons">
+        <button data-numbers="1">Number the falling pieces</button>
+        <button data-numbers="0">Numbers off</button>
+        <button data-effects="snow">Snow off</button>
+        <button data-effects="lights">Lights off</button>
+        <button data-effects="motion">Floating off</button>
+        <button data-effects="">All effects on</button>
+        <button data-reload>Reload the app</button>
+      </div>
+      <p class="ct-note">Commands reach the kiosk within a few seconds while this page is open (up to 30 s the first time).</p>
+    </section>
+
+    <section class="ct-card">
+      <h2>Performance logs <button id="ctRefreshLogs" class="ct-small">Refresh</button></h2>
+      <p class="ct-note">Every log the kiosk finishes is saved here (and in Google Drive, in “_Kiosk performance logs”).</p>
+      <ul id="ctLogs" class="ct-logs"></ul>
+      <div id="ctLogView" class="ct-logview" hidden>
+        <div class="ct-buttons">
+          <button id="ctCopyLog">Copy</button>
+          <button id="ctDownloadLog">Download</button>
+          <button id="ctCloseLog">Close</button>
+          <span id="ctLogMsg" class="ct-note"></span>
+        </div>
+        <pre id="ctLogText"></pre>
+      </div>
+    </section>
+  </div>
+</main>
+</body>
+</html>
